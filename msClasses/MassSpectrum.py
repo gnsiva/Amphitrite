@@ -1,3 +1,8 @@
+"""Class for deconvoluting and plotting native mass spectra."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com>"
+
+
 import TwoDdata as tdd
 import Species, Gaussian
 from scipy import optimize
@@ -190,6 +195,7 @@ class MassSpectrum(tdd.TwoDdata):
         traceLabels can be 'mass' or 'name', with name the Species name is printed on the
         right tail of the trace.
         Species names allow you to change the order of the list
+        All matplotlib.pyplot.plot() arguments are allowed in **kwargs.
         """
         # TODO - if you work out why you want to be able to supply the axes, write it down here!
         # colours

@@ -1,3 +1,8 @@
+"""Class to hold the information for molecular species which can used with MassSpectrum()."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com>"
+
+
 import numpy as np
 import lib.utils as utils
 import Gaussian
