@@ -1,4 +1,4 @@
 Amphitrite
 ==========
 
-Programme for processing ion mobility mass spectrometry (MS) and native MS data.
+Program for processing ion mobility mass spectrometry (MS) and native MS data.
