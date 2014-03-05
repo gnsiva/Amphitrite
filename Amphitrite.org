@@ -1,0 +1,352 @@
+* GUI elements
+|---------------------+---------------------+------------------------------------------------------|
+| Name                | Spectral Averaging? | Functions                                            |
+|---------------------+---------------------+------------------------------------------------------|
+| Atropos             | No                  |                                                      |
+| Calibration         | No                  |                                                      |
+| Apply calibration   | Yes                 | Convert ATD to CCS distribution (plus calculator)    |
+| Spectral averaging  | Yes                 | Plain mass spectrum                                  |
+| IES                 | No                  | 3 independent plots                                  |
+| CCS plot            | Yes                 | Clemmer plot, CCS vs. $m/z$ plot (deluxe driftscope) |
+| Difference plot     | Yes                 | Very similar to CCS plot                             |
+| Raw file processing | No                  |                                                      |
+|---------------------+---------------------+------------------------------------------------------|
+** Full list (in order of completion)
+*** Atropos
+*** ImProcessor
+*** CalibrationGui
+*** ApplyCalibration
+*** SpectralAveraging
+*** IesGui
+*** ContourPlot
+** Time taken
+|---------------------+------------------+------------------|
+| Name                | Started          | Ended            |
+|---------------------+------------------+------------------|
+| Raw file processing | <2013-04-05 Fri> | <2013-04-09 Tue> |
+| IES                 | <2013-04-09 Tue> | <2013-04-22 Mon> |
+| Spectral Averaging  | <2013-04-23 Tue> |                  |
+| CcsMz               |                  | <2013-06-04 Tue> |
+|---------------------+------------------+------------------|
+* Bugs
+** To do
+*** ImProcessorGui
+**** DONE Actually delete the bloody lines in the listCtrl when you change the folder
+**** DONE Improve the way the try catch works for failed conversions
+**** DONE Set default spacing to 1 m/z
+**** DONE Give warning dialog if number entered is below 0.5
+**** DONE Do something about when the open dialog box is closed without selection
+**** TODO Fix cppapplication.exe with Kostas
+*** Atropos
+**** DONE Add please wait bar to Atropos fit button
+**** DONE Open Amphitrite file
+**** DONE Fix Changing the calculated charges for the simulation
+It now enters the correct charges when you enter the peak ids for calculation
+But when you change that it has no effect on the simulation
+**** DONE Let user assign mass spectrum without doing auto peak picking
+**** DONE Give warning after 1000 (??) peaks are going to be identified
+**** Grain has no effect on amphitrite files (Decided to leave it alone)
+**** DONE Species names bug <========== (apparently not a problem anymore??)
+**** DONE Set the displayRadioBox to None after clicking update
+**** DONE Automatic charge state assignment for amphitrite files
+**** DONE Let user show theoretical charge states without entering peaks
+**** DONE Make theo's from mass work with toggling to Zs in radiobox
+**** DONE Stop mass being manually changed after peakId assignment 
+(i.e. they should open a new species for the manual mass display feature)
+**** TODO Radiobox for spectrum labels to be mass or species name
+**** TODO There is a bug in the peak finding making it take much longer (can't recreate on linux)
+This is definitely happening with amphi files
+**** TODO Species key error problem persists
+***** TODO Seems to be triggered by reloading the mass spectrum
+***** TODO When reloading the spectrum, have a popup box:
+Ask if reloading or entering a different protein (i.e. the assignment listctrl needs to be wiped)
+***** TODO Written a TODO in ListCtrlAssigningSpecies.py file to this effect
+**** TODO Single FWHM checkbox still prints to CLI saying it hasn't been implemented
+*** IesGui
+**** DONE ATDs right hand side is cutoff (labels too)
+     CLOSED: [2013-04-19 Fri 18:30]
+**** DONE Hiding panels before overwriting
+**** DONE Add try catch for loading the calibration and atropos files <-
+- Check to make sure they havent tried something genius like renaming a random file.
+- Also this will give away that you are using pickles
+**** DONE Stop xfill from changing the y axis limits
+**** DONE Get rid of yticks with CCSds
+**** DONE Change 'ATDs' tickbox to 'ATDs/CCSDs'
+**** DONE Rearrange inputs
++ Put species and charge above the multipliers
++ Put calibration at the bottom, on a separate little panel maybe
+**** DONE Add \AA^2 to the CCSD plot legend
+**** DONE Changing species and charge choices
+- It should retick the massSpectra checkbox
+- Simulataneously disabling the others
+**** DONE Put width multipliers below sp and z choices
+**** DONE Clean up the terminal output (stop printing BS)
+**** TODO Fix conformation tracking for CCS
+**** TODO Make track conformations work with tds
+**** TODO Be able to delete items from list of open spectra
+**** TODO Make sure contours are normed before combining (pretty sure I've already done this)
+**** TODO Add a try catch for multiplies so it doesn't fill terminal with errors
+**** TODO Redraw of MS redraws the first MS several times
+**** TODO [Kostas] which way up should the plots go
+*** SpectralAveraging
+**** TODO Move File information
++ All the filenames should be manipulated in listCtrlFiles
++ Just store (a copy of?) filenames and data in settings
++ This should also be done with IesGui
+**** TODO Different axes for different files?!?!
+- You are going to have to do some clever interpolation, its going to be gash
+**** TODO Different normalisation options for amphitrite (IM) files
+- Normalise BPI
+- Normalise Volume
+- Normalise BPI of massspectrum (I used this one)
+**** TODO Testing functions
+***** TODO normalisationBpiByMs (ImData)
+***** DONE eventButtonExportIm [[file:~/Dropbox/workspaces/Amphitrite_2.0/gui/SpectralAveragingGui/SpectralAveragingGui.py::def%20eventButtonExportIm%20self%20event%20wxGlade%20SpectralAveragingGui%20event_handler][gui]]
+***** DONE loadFolderAuto [[file:~/Dropbox/workspaces/Amphitrite_2.0/imClasses/Im.py::def%20loadFolderAuto%20self%20folderName][im]]
+***** DONE Unpickling amphitrite files [[file:~/Dropbox/workspaces/Amphitrite_2.0/lib/utils.py::def%20unPickleAmphitriteProject%20self%20filename][utils]]
+*** ContourGui
+**** Arrangement/Looks
+***** DONE Move sash a little to the right
+***** DONE Axes labels for contour plot
+***** DONE Atd peak picking limits
+***** DONE Fwhm Fill selection
+***** DONE Charge state plot panel
+****** DONE Rename peak picking
+****** DONE Move Show charge state plot to Plotting options panel
+**** Functionality
+***** DONE Auto charge state width limits
+***** DONE Make autolimits show on MS as well
+***** DONE Show Charge State Plot (CCS)
+***** TODO Show Charge State Plot (ATD)
+***** DONE Show Atd peak tops
+***** DONE Smoothing for Atd peak picking
+***** DONE Limits for Atd peak picking (+ relation to selection)
+***** DONE Scale colour intensity 
+***** DONE Difference plots
+**** Bugs
+***** General
+****** DONE fwhm selection region bug
+****** TODO Normalise mass spectrum
+***** Peakpicking
+****** DONE Charge state plot, no auto peak picking
+****** TODO Set default limit to 5 at least
+****** TODO Sort the colours out so you can actually see them
+***** Charge state plot
+****** TODO Colour in the region between slices (like grey or something)
+***** Difference plot
+****** TODO ATDs the x and y axes of both data files need to be the same
+****** TODO This isn't even checked for
+****** TODO A warning dialog might go well here
+****** TODO Peak tops only found for imOb1
+**** To Do Later
+***** This [[file:~/Dropbox/workspaces/Amphitrite_2.0/gui/ContourGui/CtrPlotPanel.py::def%20plotCcsVsMzPeakTops%20self%20ax%20species%20colour%20b][function]] should be in Im.Im()
+See [[file:~/Dropbox/workspaces/Amphitrite_2.0/gui/ContourGui/CtrPlotPanel.py::self%20settings%20imOb%20plotChargeStateContourPeaktops][here]] for example
+*** General
+**** TODO Fix resizing plot display bug
+- You could alter the function of the zoom out button so that it takes lims you provide
+**** TODO Make sure you can track intensities of diff species in mass spectra
+- i.e. same as peak height analysis of ATDs in IesGui
+- Should probably be in the IesGui for that reason
+**** TODO Combine blac1 and blac2 in Calibrant
+**** TODO Add try catch for opening .a files (just check if file exists)
+** 130828 last bugs before release
+*** Apply Calibration Gui
+**** TODO Hide panel before overwriting
+**** TODO Remove default paths
+**** TODO Coordinate file, error's out if there is an extra newline at the end
+This is especially bad because thats how masslynx gives it...
+**** TODO When you open a coord file, the radiobox should automatically change to 'Display td'
+**** TODO Changing to 'Display CCS' shouldn't print out the coords for harpal anymore
+**** TODO Fix the Plotting options listctrl
+***** TODO Remove auto axis option
+***** TODO Make it actually autoaxis when you click the update button
+**** TODO Make the calculate button work
+*** Atropos
+**** Do anywhere
+***** DONE Remove default paths
+***** DONE After opening a new file, shit fucks up
+if you press simulate the your ms module has no idea about the information in the table and so can't find the species name from the table in the species dictionary...
+... text files don't overwrite the species dictionary and so work fine ...
+***** DONE If you are on peak finding when you click update it should go back to this automatically
+***** DONE make the default level for limit 1
+***** TODO If peak IDs section is selected and nothing is filled in, nothing should happen, its been bugging out cos of that
+**** wxGlade
+***** DONE Change Display radiobox orientation so that they are listed vertically
+***** DONE Maybe make the whole start size bigger
+***** TODO If you can make the peak finding panel a bit bigger
+*** Calibration Gui
+**** Do anywhere
+***** DONE Remove default paths
+***** DONE Change start wave velocity to 350
+***** DONE Get rid of yticks on the mass spectrum panel
+***** DONE Hiding panel thing
+***** TODO Sort out the autoaxis in Y dimension for PyK (others seem fine)
+***** TODO PICK BUTTON HAS BROKEN (IT WORKED THIS MORNING) 130902
+**** wxGlade
+***** DONE Improve the names of the calibrants
+***** DONE Get rid of the apply calibration button and make the save button bigger
+***** DONE Fix name in top left (was moved for unhidden panel)
+*** Contour Plot
+**** DONE Remove default paths
+**** DONE Can't open calibration files properly (windows only)
+**** DONE There is some weird issue with the afit not working on the second file
+I think the second file isn't initialised properly:
+
+Traceback (most recent call last):
+  File "ContourGui.py", line 360, in eventRadioboxPlotPanel
+    self.plotPanel.refresh_plot()
+  File "/home/ganesh/Dropbox/workspaces/Amphitrite_2.1/gui/ContourGui/CtrPlotPanel.py", line 311, in refresh_plot
+    self.plotCcsVsMzForRefreshPlot(ax,limitsD)
+  File "/home/ganesh/Dropbox/workspaces/Amphitrite_2.1/gui/ContourGui/CtrPlotPanel.py", line 232, in plotCcsVsMzForRefreshPlot
+    dataSlices = self.getDataSliceDifferences(dataSlices,dataSlices2)
+  File "/home/ganesh/Dropbox/workspaces/Amphitrite_2.1/gui/ContourGui/CtrPlotPanel.py", line 269, in getDataSliceDifferences
+    dataSlice.matrix -= dataSlices2[sp][z].matrix
+KeyError: u'Dimer'
+
+
+The problem happens if you follow the order of the gui:
+file 1
+cal
+atropos
+file 2
+
+if you do atropos last it doesn't fix it
+calibration last doesn't fix it
+
+this doesn't work either:
+file1 file2
+cal atropos
+
+or this:
+file1 file2
+atropos cal
+
+or this
+file1 atropos 
+file2 cal
+
+Can't work out how I made it work now
+
+Something hasn't made it's dataSlices basically
+
+*DONE*
+In the end I hadn't called generateSpeciesSlices, I had only called getSpeciesSlices
+**** TODO Maybe use different colours for each species range
+**** TODO For peakTops use white with an alpha value as the centre (still need black ring round outside) (half done)
+**** TODO Include ATD charge state plots (atropos without calibration)
+**** TODO Make peak top identification work without calibration
+**** Refresh plot after
+***** DONE 'Show peak tops' 
+***** DONE 'Auto Limits'
+***** DONE 'Show Charge State Plot'
+***** DONE choice box for 'Show Charge State Plot'
+***** DONE choice scale
+***** DONE choice background colour
+**** wxGlade
+***** DONE Add event for auto limits checkbox
+*** Ies Gui
+**** TODO Change the name of it
+**** TODO Until atropos file is added you shouldn't be able to press process
+Then after you add the click drag functionality you can get that to undo the greying out
+**** TODO [windows] full screening the window mkes the right panel get enormous, should be fixed
+**** TODO complaining about calibration file                                          <========== SUPER IMPORTANT
+**** TODO The CCSDs aren't labelled for some reason.. because of autoaxis??
+**** TODO After you add extra files and press process it only shows the new ones
+**** TODO Conformation tracking gives weird error
+Traceback (most recent call last):
+  File "/home/ganesh/Dropbox/workspaces/Amphitrite_2.1/gui/IesGui/IesGui.py", line 437, in eventCheckboxPeakMarkers
+    self.plotPanel.refresh_plot()
+  File "/home/ganesh/Dropbox/workspaces/Amphitrite_2.1/gui/IesGui/IesPlotPanel.py", line 167, in refresh_plot
+    self.draw()
+  File "/home/ganesh/Dropbox/workspaces/Amphitrite_2.1/gui/IesGui/IesPlotPanel.py", line 192, in draw
+    self.canvas.draw()
+  File "/usr/lib/pymodules/python2.7/matplotlib/backends/backend_wxagg.py", line 59, in draw
+    FigureCanvasAgg.draw(self)
+  File "/usr/lib/pymodules/python2.7/matplotlib/backends/backend_agg.py", line 421, in draw
+    self.figure.draw(self.renderer)
+  File "/usr/lib/pymodules/python2.7/matplotlib/artist.py", line 55, in draw_wrapper
+    draw(artist, renderer, *args, **kwargs)
+  File "/usr/lib/pymodules/python2.7/matplotlib/figure.py", line 898, in draw
+    func(*args)
+  File "/usr/lib/pymodules/python2.7/matplotlib/artist.py", line 55, in draw_wrapper
+    draw(artist, renderer, *args, **kwargs)
+  File "/usr/lib/pymodules/python2.7/matplotlib/axes.py", line 1997, in draw
+    a.draw(renderer)
+  File "/usr/lib/pymodules/python2.7/matplotlib/artist.py", line 55, in draw_wrapper
+    draw(artist, renderer, *args, **kwargs)
+  File "/usr/lib/pymodules/python2.7/matplotlib/axis.py", line 1041, in draw
+    ticks_to_draw = self._update_ticks(renderer)
+  File "/usr/lib/pymodules/python2.7/matplotlib/axis.py", line 931, in _update_ticks
+    tick_tups = [ t for t in self.iter_ticks()]
+  File "/usr/lib/pymodules/python2.7/matplotlib/axis.py", line 880, in iter_ticks
+    self.major.formatter.set_locs(majorLocs)
+  File "/usr/lib/pymodules/python2.7/matplotlib/ticker.py", line 457, in set_locs
+    self._set_offset(d)
+  File "/usr/lib/pymodules/python2.7/matplotlib/ticker.py", line 468, in _set_offset
+    ave_loc = np.mean(locs)
+  File "/usr/lib/pymodules/python2.7/numpy/core/fromnumeric.py", line 2374, in mean
+    return mean(axis, dtype, out)
+TypeError: unsupported operand type(s) for +: 'NoneType' and 'NoneType'
+
+*** Spectral Averaging Gui
+**** TODO Clicking 'Open' for amphitrite datafiles doesn't work <===== VERY IMPORTANT
+**** TODO In windows it doesn't open text files... No idea why error below <===== VERY IMPORTANT
+Says windows in the error, and says there is a missing | in the wildcard string
+**** TODO Change color of standard deviation boundaries (reduce the alpha or something)
+**** TODO If you opened the text files you shouldn' be able to export an amphi file
+Grey it out or give a warning text box
+**** TODO Saving the text file doesn't actually do anything
+* Documentation progress (first round)
+** TODO msClasses
+Need to redo them all in the Sphinx format
+*** TODO Gaussian.py
+*** TODO MassSpectrum.py
+*** TODO Species.py
+*** TODO TwoDdata.py
+** TODO imClasses
+*** Files
+**** DONE Atd.py
+**** TODO Calibrant.py
+**** TODO Calibration.py
+**** DONE CcsD.py
+**** DONE CeRamp.py
+**** DONE CeRampComparison.py
+**** DONE ChargeStatePeak.py
+**** DONE DataSlice.py
+**** TODO Im.py
+**** DONE ImData.py
+**** DONE LeastsqAtds.py
+**** DONE MsMsCalibrant.py
+**** DONE SpecialFigures.py
+*** Files removed (not necessary for Amphitrite)
++ LeastsqAtds.py
++ CeRamp.py
++ CeRampComparison.py
++ MsMsCalibration.py
+*** Issues
+**** TODO SpecialFigures() is basically not used by anything
++ Got more notes in the actual file
+
+**** TODO ChargeStatePeak() is shit, fix it
++ Only used by Contour Gui, and does a bad job
++ Re-write it from scratch for what you actually want it to do
+  + One function is to find the mid points between charge states and use that as limits
+    + For edge cases, just calculate for the charge above and below as if it was actually there
+  + Second, find it but for all the species in the spectrum
+    + Just pass the species, don't let contour gui do any of the work
+**** TODO DataSlice.py
++ Need to change how you deal with creating and storing CCSDs
++ getCcsDistribution()
+  + returns the y axis for the CCSD
+    + Get it to return both axes, the object or rename
+  + Used in:
+    + IesGui/IesSettings.py
+    + imClasses/DataSlice.py
+    + imClasses/SpecialFigures.py
++ Start again
+  + try to reattach to the functions in the other files
+**** TODO TwoDdata()
++ Add set methods for x and y axes
+  + Atd() needs to be updated for it
+  + CcsD() as well
+  + Probably MassSpectrum() too
