@@ -1,0 +1,12 @@
+*.pyc
+cygwin.dll
+cdt.dll
+temp/*
+paths.py
+src/*
+docs/*
+*.wxg
+*.wxg*
+*~
+.DS_Store
+*.emacs.desktop

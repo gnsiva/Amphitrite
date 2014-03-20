@@ -15,16 +15,16 @@ class Gaussian():
         self.amplitude = 0.0
 
     def _gaussian(self,xvals,amplitude,centre,fwhm):
-        """Generate a Gaussian given the input parameters.
-        Returns the associated array of y values.
-        xvals must be a numpy array (or a scalar value)
+        """| Generate a Gaussian given the input parameters.
+        |Returns the associated array of y values.
+        |xvals must be a numpy array (or a scalar value)
         """
         return amplitude*np.exp((-(xvals-centre)**2)/(2*(fwhm/2.3548200450309493)**2))
 
     def getData(self,xvals):
-        """Generates the associated Gaussian y values for the supplied xvals
-        (which should be a numpy array or scalar).
-        self.amplitude, self.centre and self.fwhm should already have been set
+        """
+        | Generates the associated Gaussian y values for the supplied xvals (which should be a numpy array or scalar).
+        | self.amplitude, self.centre and self.fwhm should already have been set
         """
         yvals = self._gaussian(xvals,self.amplitude,self.centre,self.fwhm)
         return yvals
@@ -44,12 +44,12 @@ class Gaussian():
         self.fwhm = fwhm
 
     def estimateParameters(self,xvals,yvals,setValues=True):
-        """Estimate values for the 3 parameter Gaussian
-        The estimation is crude and is usually used to determine initial values for
+        """| Estimate values for the 3 parameter Gaussian
+        | The estimation is crude and is usually used to determine initial values for
         optimise parameters, which is much more robust.
-        If setValues is True, use the estimated parameters as the values
+        | If setValues is True, use the estimated parameters as the values
         for self.amplitude, self.centre and self.fwhm.
-        Otherwise values are returned as a list [amplitude,centre,fwhm]
+        | Otherwise values are returned as a list [amplitude,centre,fwhm]
         """
         fwhm = max(xvals) - min(xvals)
         amplitude = max(yvals)
@@ -62,11 +62,10 @@ class Gaussian():
             return amplitude,centre,fwhm
 
     def optimiseParameters(self,xvals,yvals,setValues=1):
-        """Use non linear least squares to fit the parameters of the
+        """| Use non linear least squares to fit the parameters of the
         Gaussian.
-        setValues means the optimised parameters are
-        set to this object, else the parameters are returned
-        as a dictionary
+        | setValues means the optimised parameters are set to this object,
+        else the parameters are returned as a dictionary.
         """
         fitfunc = lambda p,x: self._gaussian(x,p[0],p[1],p[2])
         errorfunc = lambda p,x,y: fitfunc(p,x)-y
@@ -92,8 +91,8 @@ class Gaussian():
             return d
 
     def plot(self,xvals,ax,**kwargs):
-        """Plot the Gaussian using the objects Gaussian parameters
-        All matplotlib.pyplot.plot() arguments are allowed in **kwargs.
+        """| Plot the Gaussian using the objects Gaussian parameters
+        | All matplotlib.pyplot.plot() arguments are allowed in **kwargs.
         """
         yvals = self._gaussian(xvals,self.amplitude,self.centre,self.fwhm)
         ax.plot(xvals,yvals,**kwargs)

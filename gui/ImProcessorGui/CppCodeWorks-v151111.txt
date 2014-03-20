@@ -1,0 +1,464 @@
+/* 
+ * File:   IMRFgetMass.cpp
+ * Author: kthalassinos
+ *
+ * Created on 11 November 2011, 14:36
+ */
+
+#include "stdio.h"
+#include "../include/cdtdefs.h"
+#include "../include/compresseddatacluster.h"
+#include "iostream"
+#include "fstream"
+#include <math.h>
+#include <string>
+#include <vector>
+#include "memory.h"
+
+using namespace std;
+
+char *headerLocation = 0; //header file to get calibration params
+char *externLocation = 0; //extern file to get pusher frequency
+float *pfMZ = 0; // mass axis array
+int nMassAxisLength = 0; // number of points on mass axis
+char *flnMassSpectrum = "MassSpectrum.txt";
+char *flnMobilogram = "Mobilogram.txt";
+char *flnMassMobility = "MassMobility.txt";
+char *flnMassMobilityMassAxis = "MassMobilityXaxis.txt";
+char *flnMassMobilityTimeAxis = "MassMobilityYaxis.txt";
+float *pfIntensity = 0; // array to hold the signal (mass intensity)
+float *pfMassMobility = 0; // array to hold the mass mobility (2D) data
+float *pfMobilogram = 0; // recreate the mobilogram i.e. total arrival time distribution
+float *pfATDintensity = 0; //store individual mass-selected ATD
+float *pfATDtimeaxis = 0; //store the actual arrival time as the x axis
+float *pfMassMobilityMassAxis = 0; //store the bined m/z values corresponding to the mass mobility matrix
+int nScansInBlock = 0; //number of scans in a block
+int prntMassSpectrum = 1;
+int prntMassMobility = 1;
+float massBinSize = 2;
+float pusherFreq = 0.09; //in msec
+
+/*
+ * Create new strings in order to use and open the header and extern files.
+ * The header file is used to extract the calibration parameters
+ * The extern file is used to extract the pusher frequency
+ *
+ */
+void CreateHeader(char *rawDataFile) {
+
+    char *headerprefix = "\\_HEADER.TXT";
+    int wordA = strlen(rawDataFile);
+    int wordB = strlen(headerprefix);
+    headerLocation = new char[wordA + wordB];
+    strcat(strcpy(headerLocation, rawDataFile), headerprefix);
+
+    char *externprefix = "\\_extern.inf";
+    
+    int wordC = strlen(externprefix);
+    externLocation = new char[wordA + wordC];
+    strcat(strcpy(externLocation, rawDataFile), externprefix);    
+    
+    
+}
+
+/*
+ * Extract the pusher frequency from the _extern.inf file
+ * The frequency in the file is saved in usec so multiply here by 0.001 to 
+ * convert to msec
+ */
+void getPusherFrequency() {
+    
+    ifstream inFile2;
+    string line2;
+    
+    inFile2.open(externLocation);
+    
+    if (!inFile2.fail()) {
+
+        while (!inFile2.eof()) {
+
+            getline(inFile2, line2);
+            
+            if (line2.find("Pusher Interval")) {
+                        
+            }    
+            else { //be careful here the pusherFreq is listed in two places of that file!
+                //printf("%s\n", line2.c_str());
+                int tabpos = line2.find_first_of("\t");
+                string pusherF = line2.substr(tabpos + 1, 4);
+                pusherFreq = atof(pusherF.c_str()) * 0.001; //convert pusherFreq string to float and convert to msec from usec
+                //printf("%f\n", pusherFreq);
+            }
+            
+        }
+    }
+    
+    inFile2.close();
+    
+}
+
+/*
+ * Open the _header.txt file extract the calibration parameters and
+ * use these to calibrate the mass scale. This sub needs to be called after
+ * the mass axis array has been populated
+ */
+void CalibrateMassScale() {
+
+    ifstream inFile;
+    string line;
+    int nCalibcoeffs = 0;
+    float *pfCalCoeffs;
+
+    inFile.open(headerLocation);
+
+    if (!inFile.fail()) {
+
+        while (!inFile.eof()) {
+
+            getline(inFile, line);
+            if (line.find("$$ Cal Function 1")) {
+
+            } else {
+
+                int lastComma = line.rfind(','); //calibration coefficients are separated by ,
+                int startFrom = line.find(":");
+                string toTokenize = line.substr(startFrom + 2, lastComma - startFrom - 2);
+
+                int pos = toTokenize.find_first_of(",");
+                while (pos != string::npos) {
+                    //printf("[Calibration parameters] %i\n", pos);
+                    pos = toTokenize.find_first_of(",", pos + 1);
+                    nCalibcoeffs++;
+                }
+
+                pfCalCoeffs = new float[nCalibcoeffs + 1];
+
+                int counter = 0;
+                int oldpos = -1;
+                int pos2 = toTokenize.find_first_of(",");
+                while (pos2 != string::npos) {
+
+                    string coeefTemp = toTokenize.substr(oldpos + 1, pos2 - oldpos - 1);
+                    oldpos = pos2;
+                    pfCalCoeffs[counter] = atof(coeefTemp.c_str());
+                    pos2 = toTokenize.find_first_of(",", pos2 + 1);
+                    counter++;
+                }
+                string coeefTemp = toTokenize.substr(oldpos + 1, toTokenize.length() - oldpos);
+                oldpos = pos2;
+                pfCalCoeffs[counter] = atof(coeefTemp.c_str());
+            }
+        }
+
+    } else {
+        printf("[IMRFgetMass] !!! Cannot open Header file\n");
+    }
+    inFile.close();
+    printf("[IMRFgetMass] Applying mass calibration with a %i degree polynomial\n", nCalibcoeffs + 1);
+
+    for (int nMassIdx = 0; nMassIdx < nMassAxisLength; nMassIdx++) {
+        float tempMass = pfMZ[nMassIdx];
+        float calibratedMass = 0;
+        tempMass = sqrt(tempMass);
+        for (int k = 0; k < nCalibcoeffs + 1; k++) {
+            calibratedMass += (pfCalCoeffs[k] * pow(tempMass, float(k)));
+        }
+        calibratedMass = pow(calibratedMass, 2);
+        pfMZ[nMassIdx] = calibratedMass;
+
+    }
+
+
+}
+
+/*
+ * Clean up some arrays
+ */
+
+void CleanUp() {
+
+    delete [] pfIntensity;
+    delete [] pfMobilogram;
+    delete [] pfATDintensity;
+    delete [] pfATDtimeaxis;
+    delete [] pfMassMobility;
+}
+
+/*
+ * Save the mass spec data to a file. Could change the file name by 
+ * changing the value of flnMassSpectrum variable
+ */
+void SaveMassSpecData() {
+    printf("[IMRFgetMass] Saving Mass Spectrum to file\n");
+    FILE * output = 0; // output file
+    output = fopen(flnMassSpectrum, "w");
+
+    if (!output) {
+        printf("Error opening output file");
+        CleanUp();
+    }
+
+    for (int nMassIdx = 0; nMassIdx < nMassAxisLength; nMassIdx++) {
+        fprintf(output, "%5.4f %5.4f\n", pfMZ[nMassIdx], pfIntensity[nMassIdx]);
+    }
+
+    fclose(output);
+    output = 0;
+}
+
+/*
+ * Save the mobilogram data to a file. Could change the file name by 
+ * changing the value of flnMobilogram variable
+ * The mobilogram is the accumulated ATD intensity over each of the 200 scans
+ */
+void SaveMobilogram() {
+    printf("[IMRFgetMass] Saving Mobilogram to file\n");
+    FILE * output2 = fopen(flnMobilogram, "w");
+
+    if (!output2) {
+        printf("Error opening output file");
+        CleanUp();
+    }
+
+    for (int nScanIdx = 0; nScanIdx < nScansInBlock; nScanIdx++) {
+        fprintf(output2, "%i %5.4f\n", nScanIdx, pfMobilogram[nScanIdx]);
+    }
+
+    fclose(output2);
+    output2 = 0;
+
+}
+
+/*
+ * Save the mass mobility data to a file. It also saves files with the 
+ * first mass of each bin width (x-axis) and the time information for each
+ * scan, basically converts ATD scan times to ATD time by scan x pusherfreq (y-axis)
+ * Could change the file names by changing the values of flnMassMobility, 
+ * flnMassMobilityMassAxis, flnMassMobilityTimeAxis variables
+ * 
+ * It also used the binWidth variable to determine the resolution of the resulting
+ * matrix / image. For each bin width value the program accumulates the ATD intensities
+ * in that mass bin window. Setting the bin width anything less than one would take
+ * a lot of time!
+ * 
+ */
+void SaveMassMobility() {
+    printf("[IMRFgetMass] Saving Mass Mobility data to file\n");
+    FILE * output4 = fopen(flnMassMobility, "w");
+    FILE * output5 = fopen(flnMassMobilityMassAxis, "w");
+    FILE * output6 = fopen(flnMassMobilityTimeAxis, "w");
+
+    if (!output4) {
+        printf("Error opening output file");
+        CleanUp();
+    }
+    if (!output5) {
+        printf("Error opening output file");
+        CleanUp();
+    }
+    if (!output6) {
+        printf("Error opening output file");
+        CleanUp();
+    }
+
+
+    int printMZaxis = 0; // A flag so that the x-axis info is only printed once
+    int printTimeaxis = 0; // A flag so that the y-axis (ATD in time) info is only printed once
+    float minMass = pfMZ[0];
+    float maxMass = pfMZ[nMassAxisLength - 1];
+    //float nResultingBins = 250; //how many bins to create
+    //float massRangePerBin = (maxMass - minMass) / nResultingBins;
+    
+
+    float massRangePerBin = massBinSize; // How many Daltons each bin will be
+
+    printf("[IMRFgetMass] Mass bin %f \n", massRangePerBin);
+    printf("[IMRFgetMass] Pusher frequency (msec) %f \n", pusherFreq);
+    printf("[IMRFgetMass] Min Mass:%f - Max Mass:%f - Mass Range:%f\n", minMass, maxMass, maxMass - minMass);
+
+
+    for (int g = nScansInBlock - 1; g > -1; g--) {
+
+        if(printTimeaxis == 0) {
+            fprintf(output6, "%f\n", (g+1) * pusherFreq); //add 1 to g since first bin should be 1 not 0
+        }
+        
+        float massDiffCounter = 0; // calculate the difference between the current and the previous mass
+        float tempMass = minMass; //assign the minimum mass to start the process
+        float averti = 0; //average intensity per bin
+
+        for (int e = 0; e < nMassAxisLength; e++) {
+
+            float tm = pfMZ[e]; //mass each time
+
+            if (massDiffCounter == 0 && printMZaxis == 0) { //use this only once to write the first mass of each bin (x-axis information)
+                fprintf(output5, "%f,", tm);
+            }
+
+            massDiffCounter += (tm - tempMass); //add up the mass difference each loop
+
+            float ti = pfMassMobility[g + nScansInBlock * e];
+            averti += ti; //add up the intensity at each loop
+
+            if (massDiffCounter >= massRangePerBin) { //when the mass difference exceeds the bin print data and zero the variables
+                fprintf(output4, "%f,", averti);
+                averti = 0;
+                massDiffCounter = 0;
+            }
+
+            tempMass = tm; //the current mass now becomes the old mass for the next round of the loop
+
+        }
+        fprintf(output4, "\n");
+        printMZaxis++;
+    }
+
+    fclose(output4);
+    output4 = 0;
+    fclose(output5);
+    output5 = 0;
+    fclose(output6);
+    output6 = 0;
+}
+
+/*
+ * 
+ */
+int main(int argc, char* argv[]) {
+
+    
+    if(argc < 5) {
+        
+        printf("\n");
+        printf("[IMRFgetMass] Program that interfaces to the ctd.dll Waters library\n");
+        printf("to extract mass, mobilogram and mass-mobility plots from raw data.\n");
+        printf("K Thalassinos 15 Nov 2011\n");
+        printf("\n");
+        printf("Params\n");
+        printf("1) File Name (string): the raw data file name\n");
+        printf("2) Save Mass Spectrum (0|1): set to 1 to save 0 to skip\n");
+        printf("3) Save Mobilogram and Mass Mobility Matrix (0|1): set to 1 to save 0 to skip\n");
+        printf("4) Mass Mobility Bin Width (number): value in Da of how wide the mass bin\n");
+        printf("should be e.g. over how many Da to reconstruct the arrival time distributions\n");
+        printf("\n");
+        printf("Example usage:\n");
+        printf("Process file KT071009_09.raw, do not save mass spectrum, \n");
+        printf("save mass mobility plot using 3 Da bin window: \n");
+        printf("\n");
+        printf("cppapplication.exe KT071009_09.raw 0 1 3\n");
+        printf("\n");
+        return 0;
+        
+    }
+    
+    const int nFuncNum = 1; //which function to read in
+    char *flnRawData = argv[1];
+    int *pnTempMass = 0; // temporary array to hold mass indices
+    float *pfTempSignal = 0; // temporary array to hold signals
+    int nBlocks = 0; //number of blocks in a CDC
+    prntMassSpectrum = atoi(argv[2]);
+    prntMassMobility = atoi(argv[3]);
+    massBinSize = atof(argv[4]);
+    
+    
+    if (massBinSize < 0.5) {
+        printf("\n");
+        printf("[IMRFgetMass] The minimum value allowed for Mass Mobility Bin Width is 0.5 (Da)\n");
+        printf("\n");  
+        return 0;
+    }
+
+    CreateHeader(flnRawData);
+    getPusherFrequency();
+
+    printf("[IMRFgetMass] File to process: %s %s\n", flnRawData, headerLocation);
+    CompressedDataCluster C(flnRawData, nFuncNum);
+
+    if (!C.isInitialised()) {
+        printf("[IMRFgetMass] Error initialising data cluster:\n");
+        printf("\t%s\n\n", CompressedDataCluster::resultCodeToString(C.getInitialiseResult()));
+        CleanUp();
+    } else {
+        printf("[IMRFgetMass] CDC initialised successfully\n");
+    }
+
+
+    C.getMassAxisLength(nMassAxisLength); // get length of mass axis and assign to nMassAxisLength variable
+    printf("[IMRFgetMass] Mass axis length: %i\n", nMassAxisLength);
+
+    pfMZ = new float[nMassAxisLength]; // initialise mass axis array
+    pfIntensity = new float[nMassAxisLength]; //initialise intensity array
+    memset(pfIntensity, 0, nMassAxisLength * sizeof (float)); //set all elements of intensity array to 0
+
+    C.getMassAxis(pfMZ); //get copy of mass axis values
+    C.getNumberOfBlocks(nBlocks); // get total number of blocks in the data
+    C.getScansInBlock(nScansInBlock); // get number of scans in a block of the data
+
+    pnTempMass = new int[nMassAxisLength]; //initialise the size of arrays to be used
+    pfTempSignal = new float[nMassAxisLength];
+    pfMobilogram = new float[nScansInBlock];
+    pfATDintensity = new float[nScansInBlock];
+    pfATDtimeaxis = new float[nScansInBlock];
+    pfMassMobility = new float[nScansInBlock * nMassAxisLength];
+
+    CalibrateMassScale();
+
+    printf("[IMRFgetMass] Blocks in data: %i\n", nBlocks);
+    printf("[IMRFgetMass] Scans in block: %i\n", nScansInBlock);
+
+    /*
+     * The data in the CSC cluster is arranged so that: 
+     * Each Block (basically how long did you acquire data for)-> 
+     * has 200 scans (for each packet of ions there are 200 pushes on the pusher )
+     * Each scan has a mass spectrum for it basically mass and intensity information
+     * the pnTempMass array holds indexes of which m/zs have intensity associated with them
+     * At each step you start accumulating signal and this way you can reconstruct the
+     * mass intensity arrays but also the ATD profiles.
+     */
+
+    for (int BlockId = 0; BlockId < nBlocks; BlockId++) {
+
+        float fRT = 0.f;
+        C.getRT(BlockId, 0, fRT);
+        printf("Block %i RT %5.4f min's RT raw %5.4f\n", BlockId + 1, fRT / 60.f, fRT);
+
+        C.loadDataBlock(BlockId);
+
+        for (int ScanId = 0; ScanId < nScansInBlock; ScanId++) {
+
+            int nScanSize = 0;
+            C.getScan(BlockId, ScanId, pnTempMass, pfTempSignal, nScanSize);
+
+            for (int n = 0; n < nScanSize; n++) {
+                int mzindex = pnTempMass[n];
+                pfIntensity[ mzindex ] += pfTempSignal[n];
+                pfMobilogram[ ScanId ] += pfTempSignal[n];
+                pfMassMobility[ScanId + nScansInBlock * mzindex] += pfTempSignal[n]; //a trick to make a 1D array behave like a 2D array in C
+                //basically what is the intensity for each separate scan and particular mz range
+                //data from this last array is binned into m/z bins of 1 or 2 Da during the printing process later on otherwise
+                //using the data from each m/z value (~0.01 Da) would make the array massive and impractical to use.
+            }
+        }
+    }
+
+
+    if (prntMassSpectrum == 1) {
+        SaveMassSpecData();
+    }
+    
+
+    if (prntMassMobility == 1) {
+        SaveMobilogram();
+        SaveMassMobility();
+    }
+
+    delete [] pnTempMass;
+    delete [] pfTempSignal;
+    delete [] pfMobilogram;
+    delete [] pfATDintensity;
+    delete [] pfATDtimeaxis;
+    delete [] pfMassMobility;
+
+    return 0;
+}
+

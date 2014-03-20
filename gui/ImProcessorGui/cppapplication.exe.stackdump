@@ -1,0 +1,10 @@
+Exception: STATUS_ACCESS_VIOLATION at eip=004035A3
+eax=00000000 ebx=00000000 ecx=00000001 edx=00000000 esi=20039DB0 edi=611A1E9F
+ebp=0028AB18 esp=0028A900 program=C:\Users\gns\Dropbox\workspaces\Amphitrite_2.1\gui\ImProcessorGui\cppapplication.exe, pid 4436, thread main
+cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
+Stack trace:
+Frame     Function  Args
+0028AB18  004035A3  (0F437EC0, 0044D038, 00138998, 00403BA9)
+0028AC08  00403FEF  (00000006, 0028AC30, 200282B8, 611A1EB6)
+0028ACF8  6100763A  (00000000, 0028CD78, 61006C50, 00000000)
+End of stack trace

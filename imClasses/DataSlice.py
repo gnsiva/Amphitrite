@@ -70,7 +70,6 @@ class DataSlice(ImData.ImData):
 
         :returns: proportion of axis (float)
         """
-        ''''''
         maxI = self.getMsApexI()
         entries = len(self.massSpectrum.xvals)
         return float(maxI)/entries

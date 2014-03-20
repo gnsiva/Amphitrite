@@ -5,8 +5,8 @@ datasets (its the superclass of Im()).
 
 __author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com>"
 
-import Atd
-import classes.MassSpectrum as MassSpectrum
+from imClasses import Atd
+from msClasses import MassSpectrum
 import numpy as np
 import matplotlib.pyplot as plt
 import lib.utils as utils
@@ -27,8 +27,8 @@ class ImData():
         self.xaxisUnaltered = np.array([])
         self.yaxisUnaltered = np.array([])
 
-        self.atd = Atd.Atd()
-        self.massSpectrum = MassSpectrum.MassSpectrum()
+        self.atd = Atd()
+        self.massSpectrum = MassSpectrum()
 
 
     # Setters
@@ -37,6 +37,7 @@ class ImData():
 
         :parameter x: numpy array
         """
+        # TODO(gns) - works on IM data, when generating a MSpectrum the whole x range
         self.xaxis = x
         self.xlims = [x.min(),x.max()]
         if len(self.xaxisUnaltered) == 0:

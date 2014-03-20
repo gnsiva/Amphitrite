@@ -2,13 +2,13 @@
 
 __author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com>"
 
-import msClasses.TwoDdata as tdd
+from msClasses import TwoDdata
 from lib import utils
 
-class Atd(tdd.TwoDdata):
+class Atd(TwoDdata):
     
     def __init__(self):
-        tdd.TwoDdata.__init__(self)
+        TwoDdata.__init__(self)
     
     def setAtdYvals(self,yvals):
         """Set the y axis values for the object.
@@ -84,3 +84,16 @@ class Atd(tdd.TwoDdata):
             right = ccsAxisValues.max()
 
 
+    def plot(self,ax,**kwargs):
+        """Overwrites TwoDdata()'s function to get axis labels right
+        Can take matplotlib axes object, as well as any standard
+        inputs for matplotlib.pyplot.plot().
+        """
+        ax = utils.checkAx(ax)
+        if not 'color' in kwargs:
+            kwargs['color'] = 'black'
+        if not 'lw' in kwargs:
+            kwargs['lw'] = 0.8
+        ax.plot(self.xvals,self.yvals,**kwargs)
+        ax.set_ylabel('Intensity')
+        ax.set_xlabel('$t_d$')

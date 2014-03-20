@@ -1,7 +1,3 @@
-"""TwoDdata Class - used for data with x and y values."""
-
-__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com>"
-
 import numpy as np
 import matplotlib.pyplot as plt
 from lib import utils
@@ -24,14 +20,14 @@ class TwoDdata():
     # Data manipulation
     #===========================================================================
     def readFile(self,filename,x_range=0,grain=1):
-        """Reads in x y coordinate pairs from text file
+        '''Reads in x y coordinate pairs from text file
         ' ' separator as in copy spectrum list in MassLynx
+
         x_range - allows you to select lower and upper bounds
         in the format of [lower,upper]
-        grain - allows the missing of data to speed up processing
-        a grain of 2 means that every second value will be used.
-        """
 
+        grain - allows the missing of data to speed up processing
+        a grain of 2 means that every second value will be used'''
         raw_data = open(filename,'r').readlines()
         count = 0
         self.xvals = []
@@ -57,23 +53,19 @@ class TwoDdata():
         self._normalisePreset()
 
     def normalisationBpi(self):
-        """Normalise to base peak intensity (0-100)."""
+        '''Normalise to base peak intensity (0-100)'''
         self.yvals = self.yvals/self.yvals.max()*100
         self.setNormalisationType(type='bpi')
     def normalisationArea(self):
-        """Normalise intensity (yvals) to total area under the y values."""
         self.yvals = self.yvals/np.sum(self.yvals)
         self.setNormalisationType(type='area')
 
-    def setNormalisationType(self,normalisationType):
-        """Set whether to use 'none', 'bpi' or 'area' normalisation."""
-        self.normalisationType = normalisationType
+    def setNormalisationType(self,type):
+        self.normalisationType = type
 
     def smoothingSG(self,window_len=3,smoothes=2,poly_order=1):
-        """Should only really be used on equally spaced data
-        Actual window length used is 2*window_len+1 to avoid breakage
-        as the value needs to be odd.
-        """
+        '''Should only really be used on equally spaced data
+        Actual window length used is 2*window_len+1 to avoid breakage'''
         window_len = 2*window_len + 1
         self.restoreRawYvals()
         for i in xrange(smoothes):
@@ -81,7 +73,6 @@ class TwoDdata():
         self._normalisePreset()
 
     def _normalisePreset(self):
-        """Run the currently set normalisation type (self.normalisationType) on the data."""
         if self.normalisationType == 'bpi':
             self.normalisationBpi()
         elif self.normalisationType == 'area':
@@ -90,15 +81,14 @@ class TwoDdata():
             pass
 
     def restoreRawYvals(self):
-        """Undo normalisation and return y axis data to original form."""
         self.yvals = self.rawyvals.copy()
         self._normalisePreset()
 
     def getAxesWithoutNans(self):
-        """The CCS calibration can cause some xvals to become NaNs, this function
-        returns x and yvals truncated to remove the NaNs.
+        """The CCS calibration can cause some xvals
+        to become NaNs, this function returns x and yvals
+        truncated to remove the NaNs
         """
-        # TODO(gns) - remove the isnan problem in the calibation function
         xvals = self.xvals[np.invert(np.isnan(self.xvals))]
         yvals = self.yvals[np.invert(np.isnan(self.xvals))]
         return xvals,yvals
@@ -107,9 +97,6 @@ class TwoDdata():
     # Calculations
     #===========================================================================
     def calculateWeightedMeanStandardDeviation(self):
-        """Returns the mean and standard deviation of the data as a list.
-        The value is the average x value using the y values as weights.
-        """
         yvals = self.yvals/self.yvals.max()*100
         average,stdev = utils.weightedAverageAndStd(self.xvals,yvals)
         return average,stdev
@@ -139,12 +126,10 @@ class TwoDdata():
         self.gradient = np.array(self.gradient)
 
     def findPeaks(self,limit=0):
-        """Using the first derivative, find peak tops in the data and
-        save in self.gPeaks. 
-        gPeak format is gPeak[id] = [mz,intensity]
-        limit allows you to ignore low intensity peaks (remove noise)
-        value is as a percentage of BPI e.g. 5 % cutoff should be 5"""
+        """limit allows you to ignore slow peaks (remove noise)
+        percentage of BPI e.g. 5 % cutoff should be 5"""
 
+        # get gradient for peak picking
         self._calculateGradient()
 
         gPeaks = OrderedDict()
@@ -173,10 +158,8 @@ class TwoDdata():
             self.gPeaks = gPeaks
 
     def addPeak(self,mz):
-        """This function allows you to add additional peaks (to self.gPeaks) not
-        found using the findPeaks method
-        gPeak format is gPeak[id] = [mz,intensity]
-        """
+        """This function allows you to add additional peaks not found using the
+        findPeaks method"""
         try:
             keys = sorted(self.gPeaks.keys())
             id = 1+keys[-1]
@@ -195,9 +178,8 @@ class TwoDdata():
     #===========================================================================
     def plot(self,ax,**kwargs):
         """Plot 2D data (e.g. MS and ATDs)
-        Can take matplotlib axes object, if one doesn't need to be created enter
-        ax=False
-        All matplotlib.pyplot.plot() arguments are allowed in **kwargs.
+        Can take matplotlib axes object, as well as any standard
+        inputs for matplotlib.pyplot.plot().
         """
         ax = utils.checkAx(ax)
         if not 'color' in kwargs:
@@ -208,11 +190,9 @@ class TwoDdata():
         ax.set_ylabel('Intensity')
         ax.set_xlabel('$m/z$')
 
-    def plotgPeaks(self,ax,xlabels=False,**kwargs):
-        """Plot the peaks in self.gPeaks with labels for the peak ids.
-        if xlabels=False then only peak id's are displayed otherwise x-values are
-        also shown.
-        All matplotlib.pyplot.axvline() arguments are allowed in **kwargs.
+    def plotgPeaks(self,ax,labels=0,**kwargs):
+        """if labels=0 then only peak id's are displayed
+        otherwise x-values are shown as well
         """
         if not 'color' in kwargs:
             kwargs['color'] = 'gray'
@@ -220,6 +200,8 @@ class TwoDdata():
             kwargs['alpha'] = 0.5
 
         for i,k in enumerate(self.gPeaks):
+            #print k
+            #print self.gPeaks.keys()
             ax.axvline(self.gPeaks[k][0], **kwargs)
             if labels:
                 label = str(i)+':'+str(self.gPeaks[k][0])
