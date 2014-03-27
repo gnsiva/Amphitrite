@@ -76,7 +76,7 @@ class CtrPlotPanel():
     #====================
     # Adding other panel components        
     def setSettings(self,settings):
-        """
+        """Set the CtrSettings() object.
         :parameter settings: CtrSettings() object
         """
         self.settings = settings
@@ -91,6 +91,8 @@ class CtrPlotPanel():
     ############################################################        
     def _preparePlottingSections(self,rows,columns):
         """Set up the plot panel using GridSpec.
+        :parameter rows: Number of plot areas per row
+        :parameter columns: Number of plot areas per column
         """
         self.fig.clf(keep_observers=True)
         self.gs = gridspec.GridSpec(rows,columns)
@@ -209,7 +211,10 @@ class CtrPlotPanel():
     ################################################################
 
     def plotAtdForRefreshPlot(self,ax):
-        '''Handles: Plain, log scale and difference atd contour plots '''
+        """Plot arrival time distribution(s). Handles plain, log
+        scale and difference atd contour plots.
+        :parameter ax: Matplotlib Axes instance
+        """
         matrix,x,y = self.settings.imOb._getMatrixWithinLimits()
         if self.gui.choiceScale.GetSelection() == 1:
             matrix = self.logScaleMatrix(matrix)
@@ -239,8 +244,13 @@ class CtrPlotPanel():
         ax.set_ylabel('t$_d$ ($ms$)')
 
     def plotCcsVsMzForRefreshPlot(self,ax,limitsD):
-        '''Deals with CCS vs. mass spectrum and
-        charge state clemmer CCS plot'''
+        """Plot contour plots. Deals with CCS vs. mass spectrum and
+        charge state clemmer CCS plot.
+        :parameter ax: Matplotlib Axes instance
+        :parameter limitsD: Dictionary of lists of [lower,upper] m/z values
+        for plotting extraction limits
+        """
+        ''''''
         ########
         # Extracting data in the imOb
         # Auto peak limits
@@ -310,12 +320,21 @@ class CtrPlotPanel():
 
             
     def getDataSliceDifferences(self,dataSlices1,dataSlices2):
+        """Create a difference matrix and return as a data slice.
+        :parameter dataSlices1: imClasses.DataSlice() object
+        :parameter dataSlices2: imClasses.DataSlice() object
+        :returns: imClasses.DataSlices() object
+        """
         for sp,spSlices in dataSlices1.items():
             for z,dataSlice in spSlices.items():
                 dataSlice.matrix -= dataSlices2[sp][z].matrix
         return dataSlices1
         
     def plotMsForRefreshPlot(self,limitsD):
+        """Plot the mass spectrum and the extraction limits if relevant.
+        :parameter limitsD: Dictionary of m/z region limits for extraction
+        (not by this function).
+        """
         ax,ax2 = self.getDoubleAxes()
         colour1 = 'k'
         
@@ -334,6 +353,8 @@ class CtrPlotPanel():
 
         
     def refresh_plot(self):
+        """Update the plot area using the current GUI settings.
+        """
         # Autopeak limits (maximising charge state strip width)
         limitsD = None
         if self.gui.checkboxAutoLimits.IsChecked():
@@ -361,8 +382,9 @@ class CtrPlotPanel():
                 
         
     def plotPeakTops(self,ax,species=0):
-        '''Handles all possibilities for displaying the peak tops:
-        CCS vs. m/z (not clemmer plot) -> plotCcsVsMzPeakTops'''
+        """Handles all possibilities for displaying the peak tops:
+        CCS vs. m/z (not clemmer plot) -> plotCcsVsMzPeakTops
+        """
         #### NOT FINISHED ####
 
         # Get information from gui
@@ -389,7 +411,8 @@ class CtrPlotPanel():
                         
             
     def plotCcsVsMzPeakTops(self,ax,species,colour='green'):
-        """
+        """Plot the peak tops found using first order derivative on
+        CCS against m/z contour plots.
         :parameter ax: Matplotlib Axes() object
         :parameter species: Molecular species name
         :parameter colour: Matplotlib compatible colour string

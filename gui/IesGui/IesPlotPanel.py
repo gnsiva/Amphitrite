@@ -1,3 +1,7 @@
+"""Plotting area for IesGui()."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import matplotlib
 matplotlib.use('WXAgg')
 from matplotlib.figure import Figure
@@ -53,9 +57,15 @@ class IesPlotPanel():
         self.gui = yourself
         
     def setSettings(self,settings):
+        """Set the Gui settings class.
+        :parameter settings: IesSettings() object
+        """
         self.settings = settings
 
     def getSingleAxis(self):
+        """Recreate plotting area with a single set of axes.
+        :returns: Matplotlib Axes instance
+        """
         self._preparePlottingSections(1,1)
         self.axes = [None]
         self.axes[0] = self.fig.add_subplot(self.gs[0,0])
@@ -64,10 +74,17 @@ class IesPlotPanel():
     
         
     def _preparePlottingSections(self,rows,columns):
+        """Clear currently plotted information and recreate the plot area.
+        :parameter rows: Rows of Matplotlib Axes instances
+        :parameter columns: Columns of Matplotlib Axes instances
+        """
         self.fig.clf(keep_observers=True)
         self.gs = gridspec.GridSpec(rows,columns)
 
     def getDoubleColumnAxes(self):
+        """Recreate plotting area with a two sets of axes (in a column).
+        :returns: List of two Matplotlib Axes instances
+        """
         self._preparePlottingSections(1,2)
         self.axes = [None,None]
         self.axes[0] = self.fig.add_subplot(self.gs[0])
@@ -76,6 +93,9 @@ class IesPlotPanel():
         return self.axes[0],self.axes[1]
 
     def getDoubleRowAxes(self):
+        """Recreate plotting area with a two sets of axes (in a row).
+        :returns: List of two Matplotlib Axes instances
+        """
         self._preparePlottingSections(2,1)
         self.axes = [None,None]
         self.axes[0] = self.fig.add_subplot(self.gs[0])
@@ -84,6 +104,10 @@ class IesPlotPanel():
         return self.axes[0],self.axes[1]
 
     def getTripleAxes(self):
+        """Recreate plotting area with a three sets of axes. Arranged
+        as two side by side with one below.
+        :returns: List of three Matplotlib Axes instances
+        """
         self._preparePlottingSections(3,2)
         self.axes = [None,None,None]
         self.axes[0] = self.fig.add_subplot(self.gs[0:2,0])
@@ -94,6 +118,9 @@ class IesPlotPanel():
         
     
     def plotMassSpectra(self):
+        """Change plot area to single set of axes and plot the stacked
+        mass spectra.
+        """
         ax = self.getSingleAxis()
         self.settings._forPlotMassSpectra(ax,lift=self.lift)
         self.label1dPlots(ax)
@@ -101,8 +128,10 @@ class IesPlotPanel():
         self.draw()
 
     def plotMassSpectraWidthLimits(self):
+        """Run self.plotMassSpectra() and fill in the m/z value regions which
+        are to be used for extracting ATDs.
+        """
         self.plotMassSpectra()
-
         species,z = self.settings.getSpeciesAndCharge()
         
         limits = self.settings._getMzLimits(species,z)
@@ -111,7 +140,8 @@ class IesPlotPanel():
         self.axes[0].set_ylim(ylims)
         
     def refresh_plot(self):
-        print 'refreshing plot!'
+        """Update the plotting window, given the current settings.
+        """
         self.settings.checkboxStates.printStates()
         plotType = self.settings.checkboxStates.getPlotType()
         self.currentPlot = self.settings.checkboxStates.getEnum()
@@ -150,7 +180,7 @@ class IesPlotPanel():
                 self.plotCcsDistributions(ax1)
                 self.plotConformationHeights(ax2)
             else:
-                print 'plot type = 2 but this aint done yet'
+                print 'plot type = 2 but this option hasnt been implemented yet'
 
         elif plotType == 3:
             ax1,ax2,ax3 = self.getTripleAxes()
@@ -167,6 +197,9 @@ class IesPlotPanel():
         self.draw()
             
     def on_pick(self,event):
+        """Clicking on the plotting area (still to be implemented).
+        """
+        # TODO(gns) - Still to be implemented
         if True: #self.pickingActive:
             #my attempt to make a new function
             plotState = self.settings.checkboxStates.getEnum()
@@ -189,16 +222,15 @@ class IesPlotPanel():
     
       
     def draw(self):
+        """Update plotting area.
+        """
         self.canvas.draw()
 
-    def plotConformations(self,ax):
-        ##########################
-        # TODO
-        ##########################
-        ax.plot([1,2,3],[1,2,3])
-        self.draw()
-
     def plotContourPlots(self,ax):
+        """Plot the 3D data as contour plots. Automatically switches between ATD and CCS
+        depending on whether a calibration has been added.
+        :parameter ax: Matplotlib Axes instance
+        """
         if self.settings.calibrationOb:
             # get the data
             ccsAxis, matrices = self.settings.getCcsAxisAndGrid()
@@ -220,7 +252,7 @@ class IesPlotPanel():
             ax.set_xlim(ccsLims)
             self.labelContourPlots(ax)
         else:
-            '''see rant in plotCcsDistributions'''
+            '''see explanation in plotCcsDistributions'''
             tdAxis,matrices = self.settings.getAtdAxisAndGrid()
             for i,matrix in enumerate(matrices):
                 ax.imshow(matrix,
@@ -239,6 +271,9 @@ class IesPlotPanel():
             self.labelContourPlots(ax)
 
     def plotCcsDistributions(self,ax):
+        """Plot CCS distributions.
+        :parameter ax: Matplotlib Axes instance
+        """
         ax.clear()
         if self.settings.calibrationOb:
             ccsAxes,ccsLines = self.settings.getCcsLines()
@@ -267,33 +302,42 @@ class IesPlotPanel():
             ax.set_xlabel('t$_d$')
             
     def calculateAutoAxes(self,ccsAxes,ccsLines):
+        """Create automatic x axis limits for CCS distributions.
+        :parameter ccsAxes: CCS distribution x axis
+        :parameter ccsLines: CCS distribution y axis
+        :returns: [lowerLimit,upperLimit]
+        """
         minX = min([utils.findFirstNonZeroXvalue(axis,line,zero=2) for axis,line in zip(ccsAxes,ccsLines)])
         #maxX = ax.get_xlim()[1]
         maxX = max([ utils.findLastNonZeroXvalue(axis,line)for axis,line in zip(ccsAxes,ccsLines)])
         return [minX,maxX]
         
     def autoAxesCcsDistributions(self,ax,ccsAxes,ccsLines):
+        """Plot CCS distributions with automatic x axis limits.
+        :parameter ax: Matplotlib Axes instance
+        :parameter ccsAxes: CCS distribution x axis
+        :parameter ccsLines: CCS distribution y axis
+        """
         minX,maxX = self.calculateAutoAxes(ccsAxes,ccsLines)
         ax.set_xlim([minX,maxX])
 
     def autoAxesImshow(self,ccsAxis,matrices):
-        # ccsLims = [ccsAxis[0],ccsAxis[-1]]
-        # for matrix in matrices:
-        #     collapsed = np.sum(matrix,axis=0)
-        #     thismin = utils.findFirstNonZeroXvalue(ccsAxis,collapsed)
-        #     thismax = utils.findLastNonZeroXvalue(ccsAxis,collapsed)
-        #     if ccsLims[0]<thismin:
-        #         ccsLims[0] = thismin
-        #     if ccsLims[1]>thismax:
-        #         ccsLims[1] = thismax
-        # return ccsLims
+        """Create automatic CCS axis limits for 3D contour plots.
+        :parameter ccsAxes: CCS axis
+        :parameter matrices: Matrix of intensities
+        :returns: [lowerLimit,upperLimit]
+        """
         ccsLines = [ np.sum(matrix,axis=0) for matrix in matrices ]
         ccsAxes = [ ccsAxis for x in matrices ]
         minX,maxX = self.calculateAutoAxes(ccsAxes,ccsLines)
         return [minX,maxX]
         
     def label1dPlots(self,ax):
-        '''needs a fully populated list of values even if just blank strings'''
+        """Label stacked mass spectra or ATDs/CCSDs (e.g. '5V', '10V' in
+        voltage ramp experiments).
+        :parameter ax: Matplotlib Axes instance
+        """
+        # needs a fully populated list of values even if just blank strings
         values = self.settings.values
         yheights = [i*self.lift + (self.lift*0.1) for i in xrange(len(values))]
 
@@ -305,6 +349,10 @@ class IesPlotPanel():
 
 
     def labelContourPlots(self,ax):
+        """Draw individual contour plot labels (e.g. '5 V', '10 V' in
+        volage ramps).
+        :parameter ax: Matplotlib Axes instance
+        """
         yheights = [5 + (10*i) for i in xrange(len(self.settings.values))]
         xlims = ax.get_xlim()
         xpos = xlims[0] + (xlims[1]-xlims[0])*0.05
@@ -312,6 +360,14 @@ class IesPlotPanel():
         self._labelPlots(ax,alignment,xpos,yheights,'cyan')
 
     def _labelPlots(self,ax,alignment,xpos,yheights,colour):
+        """Draw labels for spectra or contour plots (stacked) in a plot area.
+        Function gets the values and units for labels from IesSettings() object.
+        :parameter ax: Matplotlib Axes instance
+        :parameter alignment: Text alignment for annotation
+        :parameter xpos: Horizontal position for the labels
+        :parameter yheights: Vertical positions for the labels (list)
+        :parameter colour: Matplotlib colour for the labels
+        """
         units = self.settings.units
         ints = True
         for i,value in enumerate(self.settings.values):
@@ -333,12 +389,19 @@ class IesPlotPanel():
     #===========================================================================
 
     def oneClickPicking(self,onoff):
+        """Turn on one click (to add a peak) mode. This activates the
+        peak picking function (self._oneClick()).
+        :parameter onoff: Boolean for turning on or off peak picking
+        """
         if onoff:
             self.picker = self.fig.canvas.mpl_connect('button_press_event',self._oneClick)
         else:
             self.fig.canvas.mpl_disconnect(self.picker)
 
     def _oneClick(self,event):
+        """Function to process a click in one click per
+        peak mode.
+        """
         xlabel = event.inaxes.get_xlabel()
         import re
         if re.search('CCS', xlabel):
@@ -346,9 +409,14 @@ class IesPlotPanel():
             self.settings.addConformation(ccs)
             self.refresh_plot()
         else:
+            # TODO(gns) - Consider removing or turning into a warning dialog
             print 'Axis label not matched'
 
     def togglePicking(self,onoff):
+        """Turn off or on peak picking. In the form of adding a peak
+        to the GUI when the toggle is turned back to off.
+        :parameter onoff: Boolean 
+        """
         if onoff:
             self.picker = self.fig.canvas.mpl_connect('button_press_event',self._togglePicking)
         else:
@@ -356,8 +424,9 @@ class IesPlotPanel():
             self.pickedValue = None
 
     def _togglePicking(self,event):
-        print 'pick noticed'
-        print event.xdata
+        """Sub function for self.togglePicking().
+        """
+        #print event.xdata
         xlabel = event.inaxes.get_xlabel()
         import re
         self.settings.removeConformation(self.pickedValue)
@@ -370,6 +439,9 @@ class IesPlotPanel():
         
 
     def drawCcsLines(self):
+        """Draw vertical lines corresponding to the CCS value of the user defined
+        conformation positions.
+        """
         enum = self.settings.checkboxStates.getEnum()
         ps = IesPlotState
         justax1 = [ps.CONTOUR,ps.ATD,ps.ATD_CONFORMATIONS,ps.CONTOUR_CONFORMATIONS]
@@ -385,6 +457,9 @@ class IesPlotPanel():
 
 
     def plotConformationHeights(self,ax):
+        """Track the abundance of the different conformations across
+        the data files and plot them.
+        """
         # gather the data
         ccsAxes,ccsLines = self.settings.getCcsLines()
         ccsDic = OrderedDict()

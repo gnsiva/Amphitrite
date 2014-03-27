@@ -68,6 +68,15 @@ But when you change that it has no effect on the simulation
 *** DONE Do something about when the open dialog box is closed without selection
 *** TODO Fix cppapplication.exe with Kostas
 ** IesGui
+*** TODO Add a click and drag to extract ATDs
+*** TODO If species/charge/atropos hasn't been entered, clicking process should extract the full ATD
+*** TODO Fix conformation tracking for CCS
+*** TODO Make track conformations work with tds
+*** TODO Be able to delete items from list of open spectra
+*** TODO Make sure contours are normed before combining (pretty sure I've already done this)
+*** TODO Add a try catch for multiplies so it doesn't fill terminal with errors
+*** TODO Redraw of MS redraws the first MS several times
+*** TODO [Kostas] which way up should the plots go
 *** DONE ATDs right hand side is cutoff (labels too)
     CLOSED: [2013-04-19 Fri 18:30]
 *** DONE Hiding panels before overwriting
@@ -86,13 +95,6 @@ But when you change that it has no effect on the simulation
 - Simulataneously disabling the others
 *** DONE Put width multipliers below sp and z choices
 *** DONE Clean up the terminal output (stop printing BS)
-*** TODO Fix conformation tracking for CCS
-*** TODO Make track conformations work with tds
-*** TODO Be able to delete items from list of open spectra
-*** TODO Make sure contours are normed before combining (pretty sure I've already done this)
-*** TODO Add a try catch for multiplies so it doesn't fill terminal with errors
-*** TODO Redraw of MS redraws the first MS several times
-*** TODO [Kostas] which way up should the plots go
 ** SpectralAveraging
 *** TODO Move File information
 + All the filenames should be manipulated in listCtrlFiles
@@ -302,14 +304,14 @@ Says windows in the error, and says there is a missing | in the wildcard string
 Grey it out or give a warning text box
 **** TODO Saving the text file doesn't actually do anything
 * Documentation progress (first round)
-** TODO msClasses
+** Files
+*** TODO msClasses
 Need to redo them all in the Sphinx format
-*** TODO Gaussian.py
-*** TODO MassSpectrum.py
-*** TODO Species.py
-*** TODO TwoDdata.py
-** TODO imClasses
-*** Files
+**** TODO Gaussian.py
+**** TODO MassSpectrum.py
+**** TODO Species.py
+**** TODO TwoDdata.py
+*** TODO imClasses
 **** DONE Atd.py
 **** TODO Calibrant.py
 **** TODO Calibration.py
@@ -323,12 +325,60 @@ Need to redo them all in the Sphinx format
 **** DONE LeastsqAtds.py
 **** DONE MsMsCalibrant.py
 **** DONE SpecialFigures.py
-*** Files removed (not necessary for Amphitrite)
+**** Files removed (not necessary for Amphitrite)
 + LeastsqAtds.py
 + CeRamp.py
 + CeRampComparison.py
 + MsMsCalibration.py
-*** Issues
+*** DONE gui
+**** DONE AtroposGui/AtroposGui.py
+**** DONE AtroposGui/AtroposGuiSettings.py
+**** DONE AtroposGui/EditableListCtrl.py
+**** DONE AtroposGui/ListCtrlAssigningSpecies.py
+**** DONE AtroposGui/ListCtrlOptimisation.py
+**** DONE AtroposGui/ListCtrlSmoothing.py
+**** DONE AtroposGui/MassSpectrumPanel.py
+**** DONE CalibrationGui/130125_unequal_x_y_bugfix.py
+**** DONE CalibrationGui/CalibrantGuiGrids.py
+**** DONE CalibrationGui/CalibrationGui.py
+**** DONE CalibrationGui/CalibrationGuiPlotting.py 
+**** DONE CalibrationGui/CalibrationGuiSettings.py
+**** DONE ContourGui/ContourGui.py
+**** DONE ContourGui/CtrPlotPanel.py
+**** DONE ContourGui/CtrSettings.py
+**** DONE ImProcessorGui/ImProcessorGui.py
+**** DONE ImProcessorGui/ImProcessorSettings.py
+**** DONE ApplyCalibrationGui/ApplyCalibrationGui.py
+**** DONE ApplyCalibrationGui/ApplyCalibrationSettings.py
+**** DONE ApplyCalibrationGui/AtdPanel.py
+**** DONE ApplyCalibrationGui/CcsCalculatorListCtrl.py
+**** DONE ApplyCalibrationGui/EditableListCtrl.py
+**** DONE ApplyCalibrationGui/PlottingOptionsListCtrl.py
+**** DONE ApplyCalibrationGui/WarningDialog.py
+**** DONE IesGui/IesCheckboxStates.py
+**** DONE IesGui/IesGui.py
+**** DONE IesGui/IesPlotPanel.py
+**** DONE IesGui/IesSettings.py
+**** DONE IesGui/ListCtrlConformationsIes.py
+**** DONE IesGui/ListCtrlFilesIes.py
+**** DONE IesGui/writeCoordinates.py
+**** DONE SpectralAveragingGui/SpectralAveragingGui.py
+**** DONE SpectralAveragingGui/SaSettings.py
+**** DONE SpectralAveragingGui/SaPlotPanel.py
+**** DONE SpectralAveragingGui/ListCtrlFilesSa.py
+*** TODO lib
+**** TODO utils.py
+**** TODO RawFileProcessor.py
+**** TODO RawFileProcessor_v2.py
+**** TODO fast_driftscope_image.py
+**** TODO paths.py
+**** TODO SG.py
+**** TODO AmphitriteProcessCppAppOutput.py
+**** TODO ProcessImRawFiles.py
+** Issues
+*** TODO rename fast_driftscope_image.py to camelCase
+*** TODO msClasses
+*** TODO imClasses
 **** TODO SpecialFigures() is basically not used by anything
 + Got more notes in the actual file
 
@@ -355,44 +405,7 @@ Need to redo them all in the Sphinx format
   + Atd() needs to be updated for it
   + CcsD() as well
   + Probably MassSpectrum() too
-** TODO gui
-*** Files
-**** DONE AtroposGui/AtroposGui.py
-**** DONE AtroposGui/AtroposGuiSettings.py
-**** DONE AtroposGui/EditableListCtrl.py
-**** DONE AtroposGui/ListCtrlAssigningSpecies.py
-**** DONE AtroposGui/ListCtrlOptimisation.py
-**** DONE AtroposGui/ListCtrlSmoothing.py
-**** DONE AtroposGui/MassSpectrumPanel.py
-**** DONE CalibrationGui/130125_unequal_x_y_bugfix.py
-**** DONE CalibrationGui/CalibrantGuiGrids.py
-**** DONE CalibrationGui/CalibrationGui.py
-**** DONE CalibrationGui/CalibrationGuiPlotting.py 
-**** DONE CalibrationGui/CalibrationGuiSettings.py
-**** DONE ContourGui/ContourGui.py
-**** TODO ContourGui/CtrPlotPanel.py
-**** DONE ContourGui/CtrSettings.py
-**** DONE ImProcessorGui/ImProcessorGui.py
-**** DONE ImProcessorGui/ImProcessorSettings.py
-**** DONE ApplyCalibrationGui/ApplyCalibrationGui.py
-**** DONE ApplyCalibrationGui/ApplyCalibrationSettings.py
-**** DONE ApplyCalibrationGui/AtdPanel.py
-**** DONE ApplyCalibrationGui/CcsCalculatorListCtrl.py
-**** DONE ApplyCalibrationGui/EditableListCtrl.py
-**** DONE ApplyCalibrationGui/PlottingOptionsListCtrl.py
-**** DONE ApplyCalibrationGui/WarningDialog.py
-**** TODO IesGui/IesCheckboxStates.py
-**** DONE IesGui/IesGui.py
-**** TODO IesGui/IesPlotPanel.py
-**** TODO IesGui/IesSettings.py
-**** TODO IesGui/ListCtrlConformationsIes.py
-**** TODO IesGui/ListCtrlFilesIes.py
-**** TODO IesGui/writeCoordinates.py
-**** TODO SpectralAveragingGui/SpectralAveragingGui.py
-**** TODO SpectralAveragingGui/SaSettings.py
-**** TODO SpectralAveragingGui/SaPlotPanel.py
-**** TODO SpectralAveragingGui/ListCtrlFilesSa.py
-*** Issues
+*** TODO gui
 **** TODO (Atropos) - Display radiobox needs a popout to pick charge states
 **** TODO (Atropos) - Move EditableListCtrl.py up a level
 **** TODO (Atropos) - (new version) - just have a button for display theoretical m/z values
@@ -400,15 +413,11 @@ Need to redo them all in the Sphinx format
   + Assigning species determined masses
   + Optimised masses
   + Operator defined mass
-** TODO lib
-*** TODO utils.py
-*** TODO RawFileProcessor.py
-*** TODO RawFileProcessor_v2.py
-*** TODO fast_driftscope_image.py
-*** TODO paths.py
-*** TODO SG.py
-*** TODO AmphitriteProcessCppAppOutput.py
-*** TODO ProcessImRawFiles.py
-** Issues
-*** TODO rename fast_driftscope_image.py to camelCase
+**** TODO (IesGui) - MultiDirDialog gives bullshit paths, you haven't fixed the problem
+***** Look for "# TODO(gns) - DANGER THIS NEEDS TO BE FIXED"
+***** Bright light! This is using the old amphitrite format with directories instead of files.
+**** TODO (SpectralAveraging) - Same problem with MultiDirDialog
+***** Look for "# TODO(gns) - DANGER THIS NEEDS TO BE FIXED"
+***** Bright light! This is using the old amphitrite format with directories instead of files.
+**** TODO (SpectralAveraging) - Change to use amphitrite files
 

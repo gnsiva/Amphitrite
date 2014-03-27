@@ -15,6 +15,11 @@ from AmphitriteEnums import *
 # begin wxGlade: extracode
 # end wxGlade
 
+"""Program for testing the reproducibility of IM-MS data, and for creating
+averaged spectra to better represent replicated datasets.
+"""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
 
 class SpectralAveragingGui(wx.Frame):
     def __init__(self, *args, **kwds):
@@ -200,6 +205,9 @@ class SpectralAveragingGui(wx.Frame):
         # end wxGlade
 
     def eventButtonOpenTxtFiles(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Triggered when button to open text file data is pressed.
+        Creates FileDialog.
+        """
         dlg = wx.FileDialog(
             self,message = 'Select Coordinate Pair Txt Files',
             defaultFile = '',
@@ -210,14 +218,24 @@ class SpectralAveragingGui(wx.Frame):
             self.listCtrlFiles.addTxtFiles(paths)
             self._turnOffImComponents()
         dlg.Destroy()
+        
     def _turnOffImComponents(self):
+        """When text file data is used, this function can disable the
+        ion mobility based features and change the plot panel radiobox
+        to mass spectrum.
+        """
         self.radioBoxPlotPanel.SetSelection(0)
         self.switchImComponents(False)
 
     def _turnOnImComponents(self):
+        """Re-enable ion mobility functionality of program.
+        """
         self.switchImComponents(True)
 
     def switchImComponents(self,onoff):
+        """Turn off or on the ion mobility functionality of the program.
+        :parameter onoff: Boolean
+        """
         # Radiobox
         self.radioBoxPlotPanel.Enable(onoff)
         # Atropos Stuff
@@ -233,6 +251,9 @@ class SpectralAveragingGui(wx.Frame):
         self.buttonClearSelection.Enable(onoff)
         
     def eventButtonOpenAmphiFiles(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Open amphitrite data files.
+        """
+        # TODO(gns) - This needs to change to the new single file based system
         home = os.path.expanduser('~')
         dlg = MDD.MultiDirDialog(self, title="Choose a directory:",
                                  defaultPath=os.path.join(home,
@@ -246,6 +267,9 @@ class SpectralAveragingGui(wx.Frame):
         
 
     def eventChoicePlottingOptions(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Update the options for displaying the variability around the
+        averaged mass spectrum.
+        """
         sel = event.GetSelection()
         if sel == 0:
             self.settings.boundaryAlgorithm = SaBndAlg.MIN_MAX
@@ -259,6 +283,9 @@ class SpectralAveragingGui(wx.Frame):
         self.plotPanel.refresh_plot()
 
     def eventCheckboxDisplayIndividualSpectra(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Enable or disable the display of the individual spectra added on a second
+        set of axes.
+        """
         showLines = self.checkboxDisplayIndividualSpectra.IsChecked()
         selection = self.radioBoxPlotPanel.GetSelection()
         self.settings.setPlotType(selection,showLines)
@@ -266,6 +293,9 @@ class SpectralAveragingGui(wx.Frame):
         
 
     def eventRadioBoxPlotPanel(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Updates the plotting window when selected option in the plotting
+        options radio box is changed.
+        """
         showLines = self.checkboxDisplayIndividualSpectra.IsChecked()
         selection = event.GetSelection()
         self.settings.setPlotType(selection,showLines)
@@ -274,15 +304,21 @@ class SpectralAveragingGui(wx.Frame):
     # Atropos Stuff
     #=====================================================================
     def eventButtonAtropos(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Loading an Amphitrite mass spectrum fit file using a FileDialog.
+        """
         path = gf.openAtroposFile(self)
         if path:
             self.textCtrlAtropos.SetValue(path)
             self.settings.loadAtroposSpeciesAndCharges(path)
             self._populateSpeciesChoices()
         else:
+            # TODO(gns) - This should be a warning dialog
             print 'Atropos path problem: %s' %path
 
     def _populateSpeciesChoices(self):
+        """Update dropdown list with the species names taken from the
+        Atropos fit file.
+        """
         self.choiceSpecies.Enable(True)
         self.choiceSpecies.Clear()
         
@@ -291,6 +327,9 @@ class SpectralAveragingGui(wx.Frame):
             self.choiceSpecies.Append(item=sp)
 
     def _populateCharges(self):
+        """Update dropdown list with the charge states taken from the
+        Atropos fit file, for the currently selected species.
+        """        
         sp = self._getChoiceSpecies()
         zs = self.settings.speciesCharges[sp]
 
@@ -300,10 +339,17 @@ class SpectralAveragingGui(wx.Frame):
             self.choiceChargeState.Append(str(z))
             
     def _getChoiceSpecies(self):
+        """Get the currently selected species from the dropdown list.
+        :returns: Species name
+        """
         i = self.choiceSpecies.GetCurrentSelection()
         sp = self.settings.species[i]
         return sp
+    
     def _getChoiceChargeState(self):
+        """Get the currently selected charge from the dropdown list.
+        :returns: Charge state
+        """        
         sp = self._getChoiceSpecies()
         i = self.choiceChargeState.GetCurrentSelection()
         z = self.settings.speciesCharges[sp][i]
@@ -311,9 +357,15 @@ class SpectralAveragingGui(wx.Frame):
 
     
     def eventChoiceSpecies(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """When a selection is made in the species dropdown list,
+        fill the charge state dropdown.
+        """
         self._populateCharges()
         
     def eventChoiceChargeState(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """When a selection is made in the charge state dropdown list,
+        update the plotting area.
+        """
         sp = self._getChoiceSpecies()
         z = self._getChoiceChargeState()
         self.settings.setSpeciesAndCharge(sp,z)
@@ -322,6 +374,8 @@ class SpectralAveragingGui(wx.Frame):
         self.plotPanel.refresh_plot()
 
     def eventTextCtrlWidthL(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Set the left peak FWHM multiplier for extracting arrival times.
+        """        
         val = gf.checkIfNumberTextCtrl(self.textCtrlWidthL)
         if type(val).__name__ != 'str':
             self.settings.setWidthL(val)
@@ -331,6 +385,8 @@ class SpectralAveragingGui(wx.Frame):
             self.textCtrlWidthL.SetValue(str(self.settings.widthL)) 
 
     def eventTextCtrlWidthR(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Set the right peak FWHM multiplier for extracting arrival times.
+        """        
         val = gf.checkIfNumberTextCtrl(self.textCtrlWidthR)
         if type(val).__name__ != 'str':
             self.settings.setWidthR(val)
@@ -343,6 +399,9 @@ class SpectralAveragingGui(wx.Frame):
     #=====================================================================
 
     def eventButtonClearSelection(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Clear selected mass spectrum area used for arrival time
+        extraction.
+        """
         self.plotPanel.pickedValue = None
         self.plotPanel.releasedValue = None
         self.plotPanel.atroposLeft = None
@@ -350,7 +409,10 @@ class SpectralAveragingGui(wx.Frame):
         self.plotPanel.refresh_plot()
 
     def eventButtonExportIm(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
-
+        """Export Amphitrite data file of the averaged spectrum.
+        """
+        # TODO(gns) - This probably needs to be changed to the single Amphitrite file layout.
+        # TODO(gns) - This button should be disabled when in text file mode.
         dlg = wx.FileDialog(
             self, message="Save file as ...", 
             defaultDir=self.settings.defaultDirectory,
@@ -366,6 +428,8 @@ class SpectralAveragingGui(wx.Frame):
 
 
     def eventButtonExportTextFile(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Export a text file spectrum list of the averaged mass spectrum.
+        """
         if len(self.settings.massSpectra):
             dlg = wx.FileDialog(
                 self, message="Save file as ...", 
@@ -384,10 +448,16 @@ class SpectralAveragingGui(wx.Frame):
             gf.warningDialog(message)
 
     def eventCheckboxLegend(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Showing or hiding the figure legend showing the filenames
+        of each data file used.
+        """
         self.settings.showLegend = event.IsChecked()
         self.plotPanel.refresh_plot()
 
     def eventCheckboxDisplaySelection(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Display the region of mass spectrum which is to be used to
+        extract ion mobility data.
+        """
         print self.plotPanel.axes[0].get_xlim()
         print self.plotPanel.axes[0].get_xbound()
         xlims = self.plotPanel.axes[0].get_xbound()
@@ -397,6 +467,9 @@ class SpectralAveragingGui(wx.Frame):
         self.plotPanel.draw()
 
     def eventButtonClickAndDrag(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
+        """Activating and disabling click and drag to select region of
+        mass spectrum used to extract ion mobility data.
+        """
         self.plotPanel.toggleClickAndDrag(event.IsChecked(),self)
 
 # end of class SpectralAveragingGui

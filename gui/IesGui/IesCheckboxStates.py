@@ -1,3 +1,7 @@
+"""Class for processing the state of display checkboxes in IesGui."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 from AmphitriteEnums import *
 
 class IesCheckboxStates():
@@ -17,6 +21,8 @@ class IesCheckboxStates():
                                     IesPlotState.MASS_SPECTRA]
 
     def printStates(self):
+        """Print to console the states of each checkbox.
+        """
         print '================================'
         print '====== Check box states'
         print '%d - atds' %self.atds
@@ -26,6 +32,9 @@ class IesCheckboxStates():
         print '================================'
         
     def getEnum(self):
+        """Return the enum for the current state shown in checkboxes.
+        :parameter enum: Enum from AmphitriteEnums.py
+        """
         self.updateCheckboxList()
         # Mass Spectrum
         if self.massSpectra:
@@ -55,6 +64,10 @@ class IesCheckboxStates():
             return IesPlotState.CONTOUR_ATD_CONFORMATIONS
 
     def getPlotType(self):
+        """Return the plot type which should be displayed according to
+        checkbox states.
+        :returns: (int) 1: single plot are, 2: Double plot and 3: Triple plot
+        """
         self.updateCheckboxList()
         print self.checkBoxes
         # Mass Spectrum
@@ -75,6 +88,9 @@ class IesCheckboxStates():
         if sum(self.checkBoxes[:-1]) == 3:
             return 3
 
-    def updateCheckboxList(self):
-       self.checkBoxes = [self.atds,self.contourPlots,self.conformations,
-                       self.massSpectra]
+        def updateCheckboxList(self):
+            """Update the self.checkBoxes property after changing the state
+            of one of the checkboxes in this object.
+            """
+            self.checkBoxes = [self.atds,self.contourPlots,self.conformations,
+                               self.massSpectra]

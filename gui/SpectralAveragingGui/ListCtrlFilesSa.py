@@ -1,3 +1,7 @@
+"""Table containing files to be used in SpectralAveragingGui()."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import wx,os,re
 from gui.EditableListCtrl import EditableListCtrl
 from lib import utils
@@ -33,13 +37,23 @@ class ListCtrlFiles(wx.Panel):
     #====================
     # Adding other panel components
     def setSettings(self,settings):
+        """Set the Gui settings object.
+        :parameter settings: SaSettings() object
+        """
         self.settings = settings
+        
     def setPlotPanel(self,plotPanel):
+        """Set the plotting area object.
+        :parameter plotPanel: SaPlotPanel() object
+        """
         self.plotPanel = plotPanel
     #====================        
         
 
     def addFiles(self,l):
+        """Add Amphitrite data files ('.a') for spectral averaging.
+        :parameter l: List of paths
+        """
         lfixed = [self.fixMultiDirPath(f) for f in l]
         for f in lfixed:
             if gf.checkIfAmphiProject:
@@ -50,6 +64,9 @@ class ListCtrlFiles(wx.Panel):
         self.plotPanel.refresh_plot()
 
     def addTxtFiles(self,l):
+        """Add spectrum list text files. 
+        :parameter l: List of paths
+        """
         self.settings.setTxtFilenames(l)
         self.plotPanel.refresh_plot()
 
@@ -62,13 +79,23 @@ class ListCtrlFiles(wx.Panel):
 
         
     def _addFileToListCtrl(self,basename,column=0):
-        '''subfunction of self.addFiles'''
+        """Subfunction of self.addFiles.
+        :parameter basename: Filename without path
+        :parameter column: Column to add the file to
+        """
+        # TODO(gns) - pretty sure the column will always be 0, should remove the option and fix the comment.
         count = self.listCtrl.GetItemCount()
         self.listCtrl.InsertStringItem(count,"")
         self.listCtrl.SetStringItem(count,column,basename)
 
 
     def fixMultiDirPath(self,path):
+        """Soon to be removed...
+        """
+        # TODO(gns) - Get rid of this and switch to using Amphitrite pickled data.
+        # TODO(gns) - DANGER THIS NEEDS TO BE FIXED
+        # TODO(gns) - DANGER THIS NEEDS TO BE FIXED
+        # TODO(gns) - DANGER THIS NEEDS TO BE FIXED        
         path = re.sub("Home directory","/home/ganesh",path)
         path = re.sub("Macintosh HD","",path)
         if path[-1] == '/' or path[0] == '\\':

@@ -1,3 +1,7 @@
+"""Table for holding conformations used in conformation tracking in IesGui()."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import wx,os,re
 from gui.EditableListCtrl import EditableListCtrl
 from lib import utils
@@ -32,16 +36,30 @@ class ListCtrlConformations(wx.Panel):
         self.conformations = []
 
     def setSettings(self,settings):
+        """Set the Gui settings class.
+        :parameter settings: IesSettings() object
+        """
         self.settings = settings
+        
     def setPlotPanel(self,plotPanel):
+        """Add the Matplotlib plot panel object to this class.
+        :parameter plotPanel: IesPlotPanel() object
+        """
         self.plotPanel = plotPanel        
 
     def addConformation(self,ccs):
-        '''check if it is a number beforehand'''
+        """Add a conformation to the ListCtrl.
+        :parameter ccs: CCS value of the conformation
+        """
+        # TODO(gns) - Check for number first and use a warning dialog
         self.conformations.append(float(ccs))
         self.updateListCtrl()
 
     def removeConformation(self,ccs):
+        """Remove conformation from the ListCtrl and conformation tracking.
+        :parameter ccs: CCS value of the conformation
+        """
+        # TODO(gns) - Need to integrate this with the button on the GUI
         if ccs in self.conformations:
             self.conformations.remove(ccs)
         else:
@@ -49,6 +67,8 @@ class ListCtrlConformations(wx.Panel):
         self.updateListCtrl()
         
     def OnEndLabelEdit(self,event):
+        """Editing CCS value of a selected conformation entry in the ListCtrl.
+        """
         newVal = event.GetText()
         i = event.GetIndex()
 
@@ -67,6 +87,8 @@ class ListCtrlConformations(wx.Panel):
                 self.updateListCtrl()
 
     def updateListCtrl(self):
+        """Refresh the data in the ListCtrl.
+        """
         self.conformations = sorted(self.conformations)
         self.settings.conformations = self.conformations
         for i in xrange(self.listCtrl.GetItemCount()):

@@ -1,3 +1,8 @@
+"""Table for holding the data files, as well as associated values and units,
+for IesGui()."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import wx,os,re
 from gui.EditableListCtrl import EditableListCtrl
 from lib import utils
@@ -34,11 +39,21 @@ class ListCtrlFiles(wx.Panel):
 
 
     def setSettings(self,settings):
+        """Set the Gui settings class.
+        :parameter settings: IesSettings() object
+        """
         self.settings = settings
+        
     def setPlotPanel(self,plotPanel):
+        """Add the Matplotlib plot panel object to this class.
+        :parameter plotPanel: IesPlotPanel() object
+        """
         self.plotPanel = plotPanel
         
     def OnEndLabelEdit(self,event):
+        """Function for editing the value labels for each of the
+        data files.
+        """
         val = event.GetText()
         message = 'Only enter numerical values here'
         if len(val):
@@ -51,6 +66,8 @@ class ListCtrlFiles(wx.Panel):
                 event.Veto()
 
     def addFiles(self,l):
+        """Add data files to the ListCtrl.
+        """
         lfixed = [self.fixMultiDirPath(f) for f in l]
         for f in lfixed:
             if gf.checkIfAmphiProject:
@@ -63,6 +80,9 @@ class ListCtrlFiles(wx.Panel):
         self.updateUnitValues()
 
     def updateUnitValues(self):
+        """Update the values entered next to the filenames to the
+        IesSettings() object.
+        """
         self.unitValues = OrderedDict()
         for i,fn in enumerate(self.files.keys()):
             s = self.listCtrl.GetItem(i,0).GetText()
@@ -70,13 +90,19 @@ class ListCtrlFiles(wx.Panel):
         self.settings.setValues(self.unitValues.values())
 
     def _addFileToListCtrl(self,basename):
-        '''subfunction of self.addFiles'''
+        """Subfunction of self.addFiles
+        """
         count = self.listCtrl.GetItemCount()
         self.listCtrl.InsertStringItem(count,"")
         self.listCtrl.SetStringItem(count,1,basename)
 
 
     def fixMultiDirPath(self,path):
+        """Fix problems with the output from MultiDirDialog.
+        """
+        # TODO(gns) - DANGER THIS NEEDS TO BE FIXED
+        # TODO(gns) - DANGER THIS NEEDS TO BE FIXED
+        # TODO(gns) - DANGER THIS NEEDS TO BE FIXED
         path = re.sub("Home directory","/home/ganesh",path)
         path = re.sub("Macintosh HD","",path)
         if path[-1] == '/' or path[0] == '\\':

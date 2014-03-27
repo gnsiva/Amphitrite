@@ -1,3 +1,8 @@
+"""Class to hold functions and attributes for SpectralAveragingGui()."""
+# TODO(gns) - Interpolation here is confusing, not sure if it is actually working
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import wx,os,re,copy
 import cPickle as pickle
 from collections import OrderedDict
@@ -12,7 +17,6 @@ from AmphitriteEnums import *
 class SaSettings():
 
     def __init__(self):
-
         # Atropos stuff
         self.atrOb = None
         self.species = []
@@ -45,14 +49,24 @@ class SaSettings():
     #====================
     # Adding other panel components
     def setListCtrlFiles(self,listCtrl):
+        """Set the Gui settings object.
+        :parameter settings: SaSettings() object
+        """
         self.listCtrlFiles = listCtrl
 
     def setPlotPanel(self,plotPanel):
+        """Set the plotting area object.
+        :parameter plotPanel: SaPlotPanel() object
+        """
         self.plotPanel = plotPanel
 
     #====================
 
     def loadAtroposSpeciesAndCharges(self,path):
+        """Load amphitrite mass spectrum fit from file,
+        extract the species and charges.
+        :parameter path: Absolute path to pickled Atropos fit file
+        """
         self.atrOb = pickle.load(open(path,'rb'))
 
         # reset variables
@@ -69,10 +83,16 @@ class SaSettings():
         self.setImObsAtropos()
 
     def setImFilenames(self,filenames):
+        """Set Amphitrite data filenames and load them.
+        :parameter filenames: List of absolute paths
+        """
         self.imFilenames = filenames
         self.loadImData(filenames)
         
     def loadImData(self,filenames):
+        """Load Amphitrite data files from paths.
+        :parameter filenames: List of absolute paths
+        """
         # have already been checked by listctrl
         for fn in filenames:
             if not fn in self.loadedFiles.keys():
@@ -87,12 +107,19 @@ class SaSettings():
         self.setImObsAtropos()
 
     def setTxtFilenames(self,filenames):
+        """Load the data from text files, and set the names.
+        (This is done through self.loadTxtData()).
+        :parameter filenames: List of absolute paths
+        """
         # added to self.txtFilenames by the above function
         toRemove = self.loadTxtData(filenames)
 
     def loadTxtData(self,filenames):
+        """Load data from spectrum list data files and store the
+        valid filenames in self.txtFilenames.
+        :parameter filenames: List of absolute paths
+        """
         toRemove = []
-        print 'herhe'
         for fn in filenames:
             if not fn in self.loadedTxtFiles.keys():
                 try:
@@ -118,12 +145,19 @@ class SaSettings():
         return toRemove
 
     def setTxtFileAtropos(self):
+        """Set the mass spectrum fit for each item of loaded
+        text file based data.
+        """
         for fn in self.self.loadedTxtFiles.keys():
             if not self.msFitApplied[fn]:
                 self.setMsFit(fn)
                 
     def setMsFit(self,fn):
-        
+        """Get the data from currently open MassSpectrum() object,
+        load the fitted object (MassSpectrum()) and reapply the data.
+        :parameter fn: Filename of data (key for self.massSpectra dictionary)
+        """
+        # TODO(gns) - check if key is absolute path or basename (update comment)
         xvals = self.massSpectra[fn].xvals.copy()
         yvals = self.massSpectra[fn].yvals.copy()
         msOb = copy.deepcopy(self.atrOb)
@@ -134,21 +168,37 @@ class SaSettings():
         
         
     def setImObsAtropos(self):
+        """Set the MassSpectrum() fit objects for the ion mobility
+        data (imClasses.Im()).
+        """
         if self.atrOb:
             for fn,imOb in self.loadedFiles.items():
                 imOb.setMsFit(self.atrOb)
         
     def setWidthL(self,val):
+        """Set the left peak FWHM multiplier for extracting arrival times.
+        :parameter val: Multiplier value (e.g. 1 for default value)
+        """        
         self.widthL = val
         if self.showMsExtRange:
             self.plotPanel.refresh_plot()
     def setWidthR(self,val):
+        """Set the right peak FWHM multiplier for extracting arrival times.
+        :parameter val: Multiplier value (e.g. 1 for default value)
+        """        
         self.widthR = val
         if self.showMsExtRange:
             self.plotPanel.refresh_plot()
             
     def getMsXaxisYaxes(self):
-        ##################################################
+        """Interpolates provided xaxes, and returns a normalised xaxis
+        and the associated y axes.
+        :parameter xaxes: List of x axes to be interpolated
+        :parameter yaxes: List of y axes
+        :returns: Interpolated x axis, associated y axes
+        """
+        # TODO(gns) - shouldn't this be the same as the ATD function below
+        # TODO(gns) - ##################################################
         # THIS FUNCTION COULD BE OPTIMISED
         # Interpolation shouldn't happen everytime
         # Perhaps save the processed data back into the objects
@@ -161,7 +211,7 @@ class SaSettings():
             msOb.normalisationBpi()
             mzAxes.append(msOb.xvals)
             itsAxes.append(msOb.yvals)
-	# Interpolate axes if they don't match
+        # Interpolate axes if they don't match
         if len(mzAxes):
             lengths = [ len(axis) for axis in mzAxes ]
             if lengths.count(lengths[0]) != len(lengths):
@@ -184,6 +234,13 @@ class SaSettings():
             return [],[],fns
 
     def getAtdXaxisYaxes(self,xaxes,yaxes):
+        """Interpolates provided xaxes, and returns a normalised xaxis
+        and the associated y axes.
+        :parameter xaxes: List of x axes to be interpolated
+        :parameter yaxes: List of y axes
+        :returns: Interpolated x axis, associated y axes
+        """
+        # TODO(gns) - shouldn't this be the same as the mass spectrum version (above)
         ##################################################
         # SHOULD BE OPTIMISED (interp'd everytime)
         ##################################################
@@ -206,6 +263,10 @@ class SaSettings():
                 
         
     def setPlotType(self,radioSelection,showLines):
+        """Set current type for the plotting area.
+        :parameter radioSelection: Plotting radiobox selection (int)
+        :parameter showLines: Boolean
+        """
         s = SaPlotState
         state = -1
         if showLines == False:
@@ -230,6 +291,9 @@ class SaSettings():
     # Atropos Stuff
     #=====================================================================
     def loadAtroposSpeciesAndCharges(self,path):
+        """Open mass spectrum fit file species and charges for ion mobility data.
+        :parameter path: Absolute path to Atropos file
+        """
         self.atrOb = pickle.load(open(path,'rb'))
 
         # reset variables
@@ -242,6 +306,11 @@ class SaSettings():
         self.setImObsAtropos()
         
     def setSpeciesAndCharge(self,species,charge):
+        """Set the species and charge and update the current
+        m/z value limits.
+        :parameter species: Species name
+        :parameter charge: Charge state
+        """
         self.speciesSelected = species
         self.chargeSelected = charge
         lims = self._getMzLimits(species,charge)
@@ -249,8 +318,17 @@ class SaSettings():
         self.plotPanel.atroposRight = lims[1]
          
     def getSpeciesAndCharge(self):
+        """Get the current species and charge state
+        :returns: Species name, charge state
+        """
         return self.speciesSelected,self.chargeSelected
+
     def _getMzLimits(self,species,charge):
+        """Get the mass spectrum limits for a given species and charge.
+        :parameter species: Species name (string)
+        :parameter charge: Charge state (int)
+        :returns: limits as [lowerLimit,upperLimit]
+        """
         limits = self.atrOb.simulatedSpecies[species].getPeakLimits(
             charge,self.widthL,self.widthR)
         return limits
@@ -263,6 +341,9 @@ class SaSettings():
     # Exporting Functions
     #=====================================================================
     def exportMsTxtFile(self,fn):
+        """Write averaged spectrum as a spectrum list text file.
+        :parameter fn: Absolute path for output file
+        """
         xaxis, yaxes, fns = self.getMsXaxisYaxes()
         yaxis = np.average(yaxes,axis=0)
         yaxis = yaxis/yaxis.max()*100
@@ -270,7 +351,12 @@ class SaSettings():
         for x,y in zip(xaxis,yaxis):
             print>>fout, '%11.4f\t%8.4f' %(x,y)
         fout.close()
+
     def exportAmphiFile(self,fn):
+        """Export an averaged set of ion mobility data
+        as an amphitrite data file.
+        :parameter fn: Absolute path for output file
+        """
         # normalise and average the mobilities
         # get the appropriate x and y axes
         # pickle them all together in the new single file format
@@ -280,6 +366,8 @@ class SaSettings():
         utils.pickleAmphitriteProject(fn,imOb.xaxis,imOb.yaxis,matrixOut)
 
     def interpAxesMultiAmphiFiles(self,imObs):
+        """This functionality hasn't been added yet
+        """
         matrices = []
         xaxes = []
         yaxes = []
@@ -298,19 +386,16 @@ class SaSettings():
         yaxis = yaxes[0]
 
         return xaxis,yaxis,matrices
-
-    def interpolateGrid(self):
-        #http://docs.scipy.org/doc/scipy/reference/tutorial/interpolate.html#id1
-        from scipy.interpolate import Rbf
-        
         
     def _axesEqual(self,listOfAxes):
+        """Test if all the axes are equal (m/z axes usually)
+        :parameter listOfAxes: List of axes to be compared
+        """
         axes = [list(axis) for axis in listOfAxes]
         if axes.count(axes[0]) == len(axes):
             return True
         else:
             return False
-        
         
     # End Exporting Functions
     #=====================================================================

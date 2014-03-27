@@ -1,3 +1,7 @@
+"""Plotting area for SpectralAveragingGui()."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import matplotlib
 matplotlib.use('WXAgg')
 from matplotlib.figure import Figure
@@ -63,16 +67,29 @@ class SaPlotPanel():
     #====================
     # Adding other panel components        
     def setSettings(self,settings):
+        """Set the Gui settings object.
+        :parameter settings: SaSettings() object
+        """
         self.settings = settings
     def setGui(self,gui):
+        """Set the plotting area object.
+        :parameter plotPanel: SaPlotPanel() object
+        """
         self.gui = gui
     #====================
         
     def _preparePlottingSections(self,rows,columns):
+        """Clear currently plotted information and recreate the plot area.
+        :parameter rows: Rows of Matplotlib Axes instances
+        :parameter columns: Columns of Matplotlib Axes instances
+        """
         self.fig.clf(keep_observers=True)
         self.gs = gridspec.GridSpec(rows,columns)
 
     def getSingleAxis(self):
+        """Recreate plotting area with a single set of axes.
+        :returns: Matplotlib Axes instance
+        """
         self._preparePlottingSections(1,1)
         self.axes = [None]
         self.axes[0] = self.fig.add_subplot(self.gs[0,0])
@@ -80,6 +97,9 @@ class SaPlotPanel():
         return self.axes[0]
         
     def getDoubleColumnAxes(self):
+        """Recreate plotting area with a two sets of axes (in a column).
+        :returns: List of two Matplotlib Axes instances
+        """
         self._preparePlottingSections(1,2)
         self.axes = [None,None]
         self.axes[0] = self.fig.add_subplot(self.gs[0])
@@ -88,6 +108,9 @@ class SaPlotPanel():
         return self.axes[0],self.axes[1]
 
     def getDoubleRowAxes(self):
+        """Recreate plotting area with a two sets of axes (in a row).
+        :returns: List of two Matplotlib Axes instances
+        """
         self._preparePlottingSections(2,1)
         self.axes = [None,None]
         self.axes[0] = self.fig.add_subplot(self.gs[0])
@@ -96,6 +119,9 @@ class SaPlotPanel():
         return self.axes[0],self.axes[1]
 
     def getQuadAxes(self):
+        """Recreate plotting area with 4 sets of axes.
+        :returns: List of 4 Matplotlib Axes instances
+        """
         self._preparePlottingSections(2,3)
         self.axes = [None,None,None,None]
         self.axes[0] = self.fig.add_subplot(self.gs[0,:2]) # MS
@@ -107,6 +133,10 @@ class SaPlotPanel():
         
     
     def plotMassSpectra(self,ax):
+        """Plot mass spectra and the currently selected variability
+        representation.
+        :parameter ax: Matplotlib Axes instance
+        """
         xaxis,yaxes,fns = self.settings.getMsXaxisYaxes()
         self.plotAverageLine(ax,xaxis,yaxes,color='k',lw=0.5)
 
@@ -131,6 +161,9 @@ class SaPlotPanel():
 
 
     def plotMsLines(self,ax):
+        """Plot lines for each set of mass spectrum intensity axes values.
+        :parameter ax: Matplotlib Axes instance
+        """
         xaxis,yaxes,fns = self.settings.getMsXaxisYaxes()
         for i,yaxis in enumerate(yaxes):
             fn = os.path.basename(fns[i])
@@ -152,6 +185,10 @@ class SaPlotPanel():
     
     
     def plotClickAndDragSelection(self,ax):
+        """Draw shaded region for click and release regions (mass
+        spectrum use).
+        :parameter ax: Matplotlib Axes instance
+        """
         xpoints = [self.pickedValue,self.releasedValue]
         xpoints = sorted(xpoints)
         ylims = ax.get_ylim()
@@ -159,15 +196,33 @@ class SaPlotPanel():
                          color='red',alpha=0.2)
 
     def plotAverageLine(self,ax,xaxis,yaxes,**kwargs):
+        """Plot the mean of the instensity values.
+        :parameter ax: Matplotlib Axes instance
+        :parameter xaxis: X values
+        :parameter yaxes: Numpy array of Y axes values
+        :parameter \*\*kwargs: Matplotlib.pyplot.plot compatible arguments
+        """
         yaxis = np.average(yaxes,axis=0)
         ax.plot(xaxis,yaxis,**kwargs)
         
     def boundaryAlgorithmMinMax(self,ax,xaxis,yaxes):
+        """Calculate the minimum and maximum value for the set
+        of intensity values per m/z value.
+        :parameter ax: Matplotlib Axes instance
+        :parameter xaxis: Mass spectrum m/z axis
+        :parameter xaxis: Mass spectrum intensity axes
+        """
         ymin = np.min(yaxes,axis=0)
         ymax = np.max(yaxes,axis=0)
         ax.fill_between(xaxis,ymin,ymax,color='blue',alpha=0.2)
 
     def boundaryAlgorithmStd(self,ax,xaxis,yaxes):
+        """Calculate the standard deviation for the set of intensity
+        values per m/z value.
+        :parameter ax: Matplotlib Axes instance
+        :parameter xaxis: Mass spectrum m/z axis
+        :parameter xaxis: Mass spectrum intensity axes
+        """
         yaverage = np.average(yaxes,axis=0)
         ystd = np.std(yaxes,axis=0)
         ymin = yaverage-ystd
@@ -175,6 +230,11 @@ class SaPlotPanel():
         ax.fill_between(xaxis,ymin,ymax,color='green',alpha=0.2)
         
     def getAtdsFromMzLims(self,mzLow,mzHigh):
+        """Extract arrival times from mass spectrum limits.
+        :parameter mzLow: Lower limit for extraction
+        :parameter mzHigh: Upper limit for extraction
+        :returns: Dictionary of imClasses.Atd() objects (d[filename] = Atd())
+        """
         atds = OrderedDict()        
         for fn,imOb in self.settings.loadedFiles.items():
             mzLowIndex = utils.closest(
@@ -187,6 +247,9 @@ class SaPlotPanel():
         return atds
         
     def plotAtds(self,ax):
+        """Plot averaged arrival time distribution.
+        :parameter ax: Matplotlib Axes instance
+        """
         if self.pickedValue and self.releasedValue:
             print 'using picked values'
             mzLow = sorted([self.pickedValue,self.releasedValue])[0]
@@ -229,6 +292,12 @@ class SaPlotPanel():
 
     
     def plotAtdLines(self,ax,atds):
+        """Plot the arrival time distributions for each input
+        data file.
+        :parameter ax: Matplotlib Axes instance
+        :parameter atds: Dictionary of imClasses.Atd() objects
+        (d[filename] = Atd())
+        """
         if len(atds):
             for i,(fn,atd) in enumerate(atds.items()):
                 ax.plot(atd.xvals,atd.yvals,
@@ -242,6 +311,9 @@ class SaPlotPanel():
 
         
     def plotAtroposSelection(self,ax):
+        """Draw a shaded region on the mass spectrum for use
+        in extracting arrival time data.
+        """
         species,z = self.settings.getSpeciesAndCharge()
         limits = self.settings._getMzLimits(species,z)
         ylims = ax.get_ylim()
@@ -249,6 +321,8 @@ class SaPlotPanel():
                                    limits[1],color='red',alpha=0.2)
         
     def refresh_plot(self):
+        """Update the plot using the current settings of the Gui.
+        """
         ps = self.settings.plotState
         s = SaPlotState
         # MS main plot (axes[0])
@@ -281,6 +355,8 @@ class SaPlotPanel():
         self.draw()
             
     def draw(self):
+        """Update the plot panel.
+        """
         self.canvas.draw()
 
              
@@ -289,6 +365,11 @@ class SaPlotPanel():
     #===================================================================
  
     def toggleClickAndDrag(self,onoff,yourself):
+        """Turn on or off click and drag to select a region of the
+        mass spectrum (horizontally only).
+        :parameter onoff: Boolean for toggle position
+        :parameter yourself: SpectralAveragingGui() object
+        """
         self.yourself = yourself
         if onoff:
             # reset picking data
@@ -307,7 +388,9 @@ class SaPlotPanel():
             except: pass
 
     def _click(self,event):
-
+        """Check that the click is within the mass spectrum panel, and
+        register the mouse click release event (to get position).
+        """
         xlabel = event.inaxes.get_xlabel()
         import re
         if re.search('m/z', xlabel):
@@ -316,6 +399,7 @@ class SaPlotPanel():
             self.releaser = self.fig.canvas.mpl_connect(
                 'button_release_event',self._release)
         else:
+            # TODO(gns) - consider removing or changing to warning dialog
             print 'Wrong axis! \nOnly works on mass spectra'
 
     def _release(self,event):
@@ -333,14 +417,3 @@ class SaPlotPanel():
         self.refresh_plot()
 
 
-        
-
-
-
-        
-
-
-
-
-            
-            
