@@ -11,7 +11,12 @@ import os
 class Calibrant():
 
     def __init__(self,proteinName,folderName,peakFwhm=10):
-        """Enter -1 for folderName if you don't want to load a file"""
+        """
+        :parameter proteinName: Calibrant name (see self._setProteinName() for options)
+        :parameter folderName: Absolute path to amphitrite data file (or -1 to not load data)
+        :parameter peakFwhm: m/z peak width to use when extracting arrival time data
+        """
+        # TODO(gns) - folderName should be changed to amphiPath or something
         self.charges = []
         self.approxMass = collections.OrderedDict()
         self.publishedCcss = collections.OrderedDict()
@@ -38,11 +43,20 @@ class Calibrant():
     # Functions for init
     ###########################################################################
     def _loadDataAndCreateImObj(self,folderName):
+        """Set the amphitrite data file path, load the data and create an imClasses.Im()
+        object.
+        :parameter folderName: Absolute path to amphitrite data file
+        """
+        # TODO(gns) - rename folderName (keep consistent though, this occurs in other functions as well)
         self.folderName = folderName
         self.imObj = Im()
         self.imObj.loadFolderAuto(folderName)
 
     def _generateSpeciesObject(self,peakFwhm):
+        """Create a species object using preset charges and masses for the given
+        calibrant type.
+        :parameter peakFwhm: m/z width to use for extracting arrival time data
+        """
         self.speciesObj = Species(self.name)
         self.speciesObj.mass = self.approxMass
         self.speciesObj.peakFwhm = peakFwhm
@@ -51,8 +65,14 @@ class Calibrant():
     # Calibrant set up functions
     ###########################################################################
     def setPeakFwhm(self,fwhm):
+        """Set the m/z width to be used for extracting arrival time
+        information and update the extraction.
+        :parameter fwhm: Peak full width half maximum (m/z)
+        """
         self._updateSpecies(self.speciesObj, peakFwhm=fwhm,updateApex=0)
     def setPeakFwhmMultipliers(self,leftMultiplier,rightMultiplier):
+        """
+        """
         self._updateSpecies(self.speciesObj, self.peakFwhm, leftMultiplier, rightMultiplier,updateApex=0)
     def setCharges(self,charges):
         self.speciesObj.charges = charges
