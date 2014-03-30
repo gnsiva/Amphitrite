@@ -1,3 +1,7 @@
+"""Class for ion mobility protein calibrant data and analysis."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 import numpy as np
@@ -70,20 +74,36 @@ class Calibrant():
         :parameter fwhm: Peak full width half maximum (m/z)
         """
         self._updateSpecies(self.speciesObj, peakFwhm=fwhm,updateApex=0)
+        
     def setPeakFwhmMultipliers(self,leftMultiplier,rightMultiplier):
-        """
+        """Set values to multiply the m/z value peak width for the lower
+        and upper boundary for arrival time extraction. (Then update td data)
+        :parameter leftMultiplier: Multiply by the peak width lower than the mean
+        :parameter rightMultiplier: Multiply by the peak width above the mean
         """
         self._updateSpecies(self.speciesObj, self.peakFwhm, leftMultiplier, rightMultiplier,updateApex=0)
+        
     def setCharges(self,charges):
+        """Set the charges for the species. (Used for ATD extraction).
+        :parameter charges: List of charge states (int)
+        """
         self.speciesObj.charges = charges
         self.charges = charges
         self._updateSpecies(self.speciesObj,updateApex=0)
 
     def setTdValue(self,td,z):
+        """Set the arrival time value for a particular charge state.
+        :parameter td: Arrival time value for peak (usually apex)
+        :parameter z: Charge state
+        """
         self.tds[z] = td
         self._updateSpecies(self.speciesObj, self.peakFwhm, self.leftMultiplier, self.rightMultiplier, 0)
 
     def getChargeTdsDict(self):
+        """Get a dictionary for the arrival time values for each charge
+        state specified in self.charges.
+        :returns: Dictionary of form d[ChargeState] = arrival time
+        """
         # for the GUI (CalibrantGuiGrids)
         charges = sorted(self.charges)
         d = {z: self.tds[z] for z in charges}
@@ -91,28 +111,41 @@ class Calibrant():
         d = collections.OrderedDict(sorted(d.items(), key=operator.itemgetter(0)))
         return d
 
-    def setChargeTdsDict(self):
-        pass
-
     #===========================================================================
     # plotting functions
     #===========================================================================
     def plotMsAndExtractionLimits(self,ax,colourList=0,**kwargs):
-        # FIX - ONLY HERE TO AVOID AUTOMATION IPR BUG
-#        if len(self.imObj.massSpectrum.xvals) != len(self.imObj.massSpectrum.yvals):
-#            print len(self.imObj.massSpectrum.xvals), len(self.imObj.massSpectrum.yvals)
-#            self.imObj.massSpectrum.xvals = self.imObj.massSpectrum.xvals[:len(self.imObj.massSpectrum.yvals)]
-#            print 'x and y dimensions not equal (mass spectrum)'
-#        self.imObj.massSpectrum.xvals = self.imObj.massSpectrum.xvals[:len(self.imObj.massSpectrum.yvals)]
-        self.imObj.massSpectrum.plot(ax)
+        """Plot the calibrant's mass spectrum on the supplied axes and
+        shade in the areas which is to be used for extraction of arrival
+        time data.
+        :parameter ax: Matplotlib Axes instances
+        :parameter colourList: List of colours to use or 0/False to use defaults
+        :parameter \*\*kwargs: Matplotlib.pyplot compatible commands for mass spectrum
+        """
+        self.imObj.massSpectrum.plot(ax, **kwargs)
         self.imObj.plotMsExtractionLimits(ax, speciesName=self.name, colourList=colourList)
+        
     def plotChargeStateAtds(self,ax,lift=0,colourList=0,charges=0,smoothing=1,**kwargs):
+        """Plot the arrival time distributions for the charge states of
+        the calibrant.
+        :parameter ax: Matplotlib Axes instances
+        :parameter lift: Vertical spacing between traces
+        :parameter colourList: List of colours to use or 0/False to use defaults
+        :parameter charges: List of charges to display (or 0 to display all)
+        :parameter smoothing: Boolean; whether or not to smooth the ATDs
+        :parameter \*\*kwargs: Matplotlib.pyplot compatible commands for mass spectrum
+        """
         if not charges:
             charges = self.charges
         self.imObj.plotChargeStateAtds(ax, self.name, lift=lift, charges=charges,colourList=colourList, smoothing=smoothing)
         ax.legend(loc='upper right',prop=FontProperties(size=utils.legendFontSize))
 
     def plotCalibrantTdPeaks(self,ax,colourList=0):
+        """Plot the arrival time values which are to be used in calibration
+        (usually using the ATD apex as the time value).
+        :parameter ax: Matplotlib Axes instance
+        :parameter colourList: List of colours to use or 0/False to use defaults
+        """
         for i,z in enumerate(sorted(self.charges)):
             ax.axvline(self.tds[z],color='k',lw=0.5)
             if type(colourList).__name__ == 'int':
@@ -124,6 +157,11 @@ class Calibrant():
     # Generating Corrected Td and CCS values (called from Calibration() class)
     ###########################################################################
     def generateCorrectedTdsAndCcss(self,waveVelocity,gas='Nitrogen'):
+        """Calculate td prime and CCS prime, using the calibration equations
+        including the reduced mass equation.
+        :parameter waveVelocity: Velocity in m/s
+        :parameter gas: Mobililty gas used (default: 'Nitrogen')
+        """
         for i,charge in enumerate(self.charges):
             mz = utils.get_mz(self.approxMass, charge)
             # td
@@ -132,9 +170,17 @@ class Calibrant():
             #CCS
             reducedMass = utils._calculateReducedMass(mz, charge, gas)
             self.CcssPrime[charge] = utils._calculateOmegaPrime(self.publishedCcss[charge], charge, reducedMass)
+            
     def getTdsDoublePrime(self):
+        """Calculate td''.
+        :returns: List of td'' values
+        """
         return [self.tdsDoublePrime[z] for z in sorted(self.charges)]
+    
     def getCcssPrime(self):
+        """Calculate CCS''.
+        :returns: List of CCS'' values
+        """
         return [self.CcssPrime[z] for z in sorted(self.charges)]
 
 
@@ -142,6 +188,13 @@ class Calibrant():
     # Private functions
     ###########################################################################
     def _updateSpecies(self,speciesObj=0,peakFwhm=0,leftMultiplier=0,rightMultiplier=0,updateApex=1):
+        """Update the settings of the species object.
+        :parameter speciesObj: msClasses.Species() object (or 0 to use self.speciesObj)
+        :parameter peakFwhm: m/z width to use when extracting arrival time data
+        :parameter leftMultiplier: Multiply by the peak width lower than the mean
+        :parameter rightMultiplier: Multiply by the peak width above the mean
+        :parameter updateApex: If True, recalculate the td apex
+        """
         if peakFwhm:
             self.peakFwhm = peakFwhm
         if leftMultiplier:
@@ -177,31 +230,19 @@ class Calibrant():
                 self.tds[z] = td
 
     def _setProteinName(self,name):
-        '''Function code at the bottom
-        Choices; myoglobin, cytochrome c native,cytochrome c denatured, avidin,
-        bsa, adh, sap5, sap10, concanavalin a, pyruvate kinase, blac1, blac2'''
-
+        """Set the published CCS values, their associated charge states and
+        an approximate mass of the calibrant given the protein name.
+        :parameter name: Calibrant name, choices: myoglobin, cytochrome c
+        native,cytochrome c denatured, avidin, bsa, adh, sap5, sap10,
+        concanavalin a, pyruvate kinase, blac1, blac2 and bk.
+        """
         name = name.lower()
         self.name = name
         self._privatePublishedCcs = collections.OrderedDict()
+        # TODO(gns) - check to make sure the myoglobin values are the helium ones
         self._privatePublishedCcs['myoglobin'] = {11:2942.,12:3044.,13:3136.,14:3143.,15:3230.,16:3313.,17:3384.,18:3489.}
 
-        # Native proteins Bush2010 - nitrogen
-        # self._privatePublishedCcs['cytochrome c native'] = {6:1490.,7:1590.}
-        # self._privatePublishedCcs['blac1'] = {7:1950.,8:2030.}
-        # self._privatePublishedCcs['blac2'] = {11:3230.,12:3310.,13:3430.}
-        # self._privatePublishedCcs['transthyretin'] = {14:3840.,15:3850.,16:3880.}
-        # self._privatePublishedCcs['avidin'] = {15:4150.,16:4150.,17:4160.}
-        # self._privatePublishedCcs['bsa'] = {14:4490.,15:4490.,16:4470.,17:4490.}
-        # self._privatePublishedCcs['concanavalin a'] = {19:6060.,20:6080.,21:6090.,22:6050.}
-        # self._privatePublishedCcs['adh'] = {23:7420.,24:7450.,25:7440.,26:7500.}
-        # self._privatePublishedCcs['sap5'] = {22:7630.,23:7600.,24:7460.,25:7310.,26:7820.}
-        # self._privatePublishedCcs['sap10'] = {31:11100.,32:11200.,33:11200.,34:11100.}
-        # self._privatePublishedCcs['pyruvate kinase'] = {31:11100.,32:11100.,33:11000.,34:11000.}
-        #self._privatePublishedCcs['groel'] = {65:21800.,66:22000.,67:22000.,68:21900.,69:21900.,70:21800.,71:21900.}
-
-
-        # Native proteins Bush2010 - helium
+        # Native proteins Bush2010 - analysed using helium as mobility gas
         self._privatePublishedCcs['cytochrome c native'] = {6:1240.,7:1280.}
         self._privatePublishedCcs['blac1'] = {7:1660.,8:1690.,9:1780.}
         self._privatePublishedCcs['blac2'] = {11:2850,12:2900.,13:2960}

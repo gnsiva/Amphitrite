@@ -311,16 +311,16 @@ Need to redo them all in the Sphinx format
 **** TODO MassSpectrum.py
 **** TODO Species.py
 **** TODO TwoDdata.py
-*** TODO imClasses
+*** DONE imClasses
 **** DONE Atd.py
-**** TODO Calibrant.py
-**** TODO Calibration.py
+**** DONE Calibrant.py
+**** DONE Calibration.py
 **** DONE CcsD.py
 **** DONE CeRamp.py
 **** DONE CeRampComparison.py
 **** DONE ChargeStatePeak.py
 **** DONE DataSlice.py
-**** TODO Im.py
+**** DONE Im.py
 **** DONE ImData.py
 **** DONE LeastsqAtds.py
 **** DONE MsMsCalibrant.py
@@ -371,9 +371,8 @@ Need to redo them all in the Sphinx format
 **** TODO RawFileProcessor.py
 **** TODO RawFileProcessor_v2.py
 **** TODO fast_driftscope_image.py
-**** TODO paths.py
-**** TODO SG.py
-**** TODO AmphitriteProcessCppAppOutput.py
+**** DONE SG.py
+**** DONE AmphitriteProcessCppAppOutput.py
 **** TODO ProcessImRawFiles.py
 ** Issues
 *** TODO rename fast_driftscope_image.py to camelCase
@@ -405,6 +404,12 @@ Need to redo them all in the Sphinx format
   + Atd() needs to be updated for it
   + CcsD() as well
   + Probably MassSpectrum() too
+**** TODO Im()
++ Change how you deal with opening files
+  + Ideally make a separate class for it
+  + You should be using RawFileProcessor2 not the original
+  + Text file input is there so updating that will be useful
+    + (for redistribution)
 *** TODO gui
 **** TODO (Atropos) - Display radiobox needs a popout to pick charge states
 **** TODO (Atropos) - Move EditableListCtrl.py up a level
@@ -413,6 +418,8 @@ Need to redo them all in the Sphinx format
   + Assigning species determined masses
   + Optimised masses
   + Operator defined mass
+**** TODO (Atropos) - Make sure pickling the fit is done sensibly 
+***** Make sure the ms data isn't stored
 **** TODO (IesGui) - MultiDirDialog gives bullshit paths, you haven't fixed the problem
 ***** Look for "# TODO(gns) - DANGER THIS NEEDS TO BE FIXED"
 ***** Bright light! This is using the old amphitrite format with directories instead of files.
@@ -420,4 +427,4 @@ Need to redo them all in the Sphinx format
 ***** Look for "# TODO(gns) - DANGER THIS NEEDS TO BE FIXED"
 ***** Bright light! This is using the old amphitrite format with directories instead of files.
 **** TODO (SpectralAveraging) - Change to use amphitrite files
-
+**** TODO (ImProcessorGui) - Make it start making the previews again

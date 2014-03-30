@@ -1,3 +1,9 @@
+"""Savitzky-Golay smoothing, copied directly from:
+http://wiki.scipy.org/Cookbook/SavitzkyGolay
+"""
+
+__author__ = "Thomas Haslwanter"
+
 import numpy as np
 
 def sg(y, window_size, order, deriv=0):

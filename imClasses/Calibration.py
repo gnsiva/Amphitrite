@@ -1,3 +1,8 @@
+"""Class for calculating travelling wave ion mobility calibration curves
+for converting arrival time into collision cross section."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 import numpy as np
