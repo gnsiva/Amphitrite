@@ -21,7 +21,7 @@ class SpecialFigures():
 
         :parameter ax: matplotlib Axes instance
         :parameter imObj: imClasses.Im() object
-        :parameter calibrationObj: imclasses.Calibration() object (IM calibration)
+        :parameter calibrationObj: imClasses.Calibration() object (IM calibration)
         :parameter spName: Name of molecular species to use from imObj
         :parameter ccsInterval: Spacing of CCS values in Angstrom**2
         :parameter colourList: List of matplotlib compatible colours to use

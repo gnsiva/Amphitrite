@@ -3,7 +3,7 @@
 __author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
 
 import wx,os,re
-from gui.EditableListCtrl import EditableListCtrl
+from EditableListCtrl import EditableListCtrl
 from lib import utils
 from collections import OrderedDict
 import gui.guiFunctions as gf
@@ -14,7 +14,6 @@ class ListCtrlFiles(wx.Panel):
     
     def __init__(self,parent):
         wx.Panel.__init__(self,parent,-1)
-        
         self.listCtrl = EditableListCtrl(self)
         self.listCtrl.setColumnToIgnore(0)
         

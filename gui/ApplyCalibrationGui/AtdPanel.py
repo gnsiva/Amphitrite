@@ -2,7 +2,7 @@
 
 __author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
 
-from gui import PlotPanel
+import PlotPanel
 from imClasses import Atd
 import ApplyCalibrationGuiSettings
 

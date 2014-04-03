@@ -248,7 +248,7 @@ class ContourGui(wx.Frame):
         """Open amphitrite data file ('.a'), using path form textCtrl.
         :parameter textCtrl: Data file textCtrl, usually self.textCtrlFile1
         """
-            dlg = wx.FileDialog(
+        dlg = wx.FileDialog(
             self,message = 'Select Amphitrite Data File',
             defaultFile = self.settings.defaultDirectory,
             wildcard = 'Amphitrite data file (*.a)|*.a',

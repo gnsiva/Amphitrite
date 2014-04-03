@@ -8,7 +8,7 @@ import cPickle as pickle
 from collections import OrderedDict
 import numpy as np
 
-from classes import MassSpectrum
+from msClasses import MassSpectrum
 from imClasses import Im
 import gui.guiFunctions as gf
 from lib import utils

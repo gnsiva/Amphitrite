@@ -5,7 +5,7 @@ __author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
 import wx,os,re
 import cPickle as pickle
 from collections import OrderedDict
-from classes import MassSpectrum
+from msClasses import MassSpectrum
 from imClasses import Im
 import gui.guiFunctions as gf
 import IesCheckboxStates

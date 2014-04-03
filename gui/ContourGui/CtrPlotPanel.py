@@ -12,7 +12,7 @@ from matplotlib.backends.backend_wxagg import \
 import matplotlib.pyplot as plt
 import numpy as np
 import wx,os
-import classes.MassSpectrum as MassSpectrum
+import msClasses.MassSpectrum as MassSpectrum
 from lib import utils
 matplotlib.rc('xtick', labelsize=8) 
 matplotlib.rc('ytick', labelsize=8) 

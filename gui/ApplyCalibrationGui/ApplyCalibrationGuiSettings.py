@@ -16,7 +16,7 @@ class ApplyCalibrationGuiSettings():
         self.ccs = ''
         self.tds = ''
         
-        self.calibration = Calibration.Calibration()
+        self.calibration = Calibration()
         self.panelCcsCalculator = ''# CcsCalculatorListCtrl.CcsCalculatorListCtrl()
         self.panelPlottingOptions = ''#PlottingOptionsListCtrl.PlottingOptionsListCtrl()
         self.atdPanel = '' #AtdPanel.AtdPanel()

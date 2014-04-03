@@ -28,7 +28,7 @@ class CalibrationGui(wx.Frame):
         os.chdir('..')
         self.calibrants = collections.OrderedDict()
         self.calibrantCharges = collections.OrderedDict()
-        self.calibration = Calibration.Calibration()
+        self.calibration = Calibration()
         self.settings = CalibrationGuiSettings.CalibrationGuiSettings()
         
         # begin wxGlade: CalibrationGui.__init__

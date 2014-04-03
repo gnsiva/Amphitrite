@@ -91,7 +91,7 @@ class DataSlice(ImData.ImData):
         :parameter smoothes: Number of rounds of Savitzky-Golay smoothing 
         :parameter window_len: Savitzky-Golay smoothing window size (size used is window_len*2 + 1)
         :parameter mz: m/z value to use for CCS conversion
-        :parameter calibrationObj: imclasses.Calibration() object
+        :parameter calibrationObj: imClasses.Calibration() object
         :parameter limit: Percentage of base peak under which to ignore peaks found
         :returns: ccsPeaks (list of CCS values)
         """
@@ -104,7 +104,7 @@ class DataSlice(ImData.ImData):
         """Convert the matrix into CCS, sum it and return the intensity
         values for the CCS distribution.
 
-        :parameter calibrationObj: imclasses.Calibration() object
+        :parameter calibrationObj: imClasses.Calibration() object
         :returns: ccsLine (CCS distribution y axis values)
         """
         # TODO(gns) - test first but replace the code in this function with
