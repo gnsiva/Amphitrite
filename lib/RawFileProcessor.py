@@ -1,3 +1,10 @@
+"""File for running cppapplication.exe to create Amphitrite
+data files from MassLynx raw files.
+Deprecated - Use RawFileProcessor_v2.py
+"""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import os
 import shutil
 import re

@@ -1,3 +1,7 @@
+"""Program for processing raw files. Still uses old RawFileProcessor."""
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import RawFileProcessor
 import paths as p
 import os,sys

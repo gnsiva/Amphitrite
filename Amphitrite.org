@@ -368,12 +368,13 @@ Need to redo them all in the Sphinx format
 **** DONE SpectralAveragingGui/ListCtrlFilesSa.py
 *** TODO lib
 **** TODO utils.py
-**** TODO RawFileProcessor.py
-**** TODO RawFileProcessor_v2.py
-**** TODO fast_driftscope_image.py
+**** DONE RawFileProcessor.py
+**** DONE RawFileProcessor_v2.py
+**** DONE fast_driftscope_image.py
+**** DONE DriftscopeImage.py
 **** DONE SG.py
 **** DONE AmphitriteProcessCppAppOutput.py
-**** TODO ProcessImRawFiles.py
+**** DONE ProcessImRawFiles.py
 ** Issues
 *** TODO rename fast_driftscope_image.py to camelCase
 *** TODO msClasses
@@ -428,3 +429,15 @@ Need to redo them all in the Sphinx format
 ***** Bright light! This is using the old amphitrite format with directories instead of files.
 **** TODO (SpectralAveraging) - Change to use amphitrite files
 **** TODO (ImProcessorGui) - Make it start making the previews again
+*** TODO lib
+**** TODO Write a script to process raw files.
+Similar to these two files
+1) ProcessImRawFiles.py
+2) AmphitriteProcessCppAppOutput.py
+**** DONE Update draw driftscope script
+**** TODO (RawFile..2) improve processFolder() function
++ print cppapplication error to log file
++ Show a warning dialog (at the end?)
++ Stop this stupid waiting running thing
+**** TODO (RawFile..2) update the makePreview() function
++ Use the new shiny DriftscopeImage() class

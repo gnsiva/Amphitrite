@@ -1,4 +1,4 @@
-
+"""Utility functions for handling data."""
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -141,34 +141,16 @@ def _calculateOmegaPrime(omega,charge,reducedMass):
 
 
 #####################################
-# Housekeeping functions
-#####################################
-def serialise(obj,filename,location='default'):
-    if location == 'default':
-        location = '../pickles/'
-    ofile = open(location+filename,'w')
-    pickle.dump(obj,ofile)
-    ofile.close()
-
-def deSerialise(filename,location='default'):
-    if location == 'default':
-        location = '../pickles/'
-    ifile = open(location+filename,'r')
-    obj = pickle.load(ifile)
-    ifile.close()
-    return obj
-
-def printContents(obj):
-    for s in dir(obj):
-        print s
-#####################################
 # Matplotlib functions
 #####################################
 
 def isMplColour(colour):
-    '''Doesn't include gray scale (color='0.74')
-    or HTML colours.
-    '''
+    """Test if colour is one of the matplotlib full name
+    colors or single letter code.
+    
+    :parameter colour: Colour string to test
+    :returns: Boolean
+    """
     words = ["blue","green","red","cyan","magenta","yellow","black","brown","purple","gray","orange"]
     codes = ['b','g','r','c','m','y','k']
 
@@ -183,14 +165,26 @@ def isMplColour(colour):
     return mplColour
 
 def findFirstNonZeroXvalue(x,y,zero=0):
-    '''Numpy arrays only, finds first y value
-    above zero and returns the corresponding x value'''
+    """Numpy arrays only, finds first y value
+    above zero and returns the corresponding x value
+    
+    :parameter x: x axis values
+    :parameter y: y axis values
+    :parameter zero: Use this to change the highest allowed value.
+    e.g. zero=1, would return the first y value above 1.
+    """
     nonZeroX = x[y>zero]
     return nonZeroX.min()
 
-def findLastNonZeroXvalue(x,y):
-    '''Numpy arrays only, finds last y value
-    above zero and returns the corresponding x value'''
+def findLastNonZeroXvalue(x,y,zero=0):
+    """Numpy arrays only, finds last y value
+    above zero and returns the corresponding x value
+
+    :parameter x: x axis values
+    :parameter y: y axis values
+    :parameter zero: Use this to change the highest allowed value.
+    e.g. zero=1, would return the first y value above 1.
+    """
     nonZeroX = x[y>0]
     return nonZeroX.max()
 
@@ -246,6 +240,12 @@ def isInDir(folder,fileNames):
     return allFound
 
 def getHyphenCommaList(s):
+    """Convert complicated number strings which can include
+    commas and hyphens e.g. '1,2,5-7' == [1,2,5,6,7].
+    
+    :parameter s: String to test
+    :returns: False if there is a problem, or an list of converted ints
+    """
     output = []
     s.rstrip(',')
     import re
@@ -271,14 +271,26 @@ def getHyphenCommaList(s):
 # Amphitrite data files
 ######################################################################
 def pickleAmphitriteProject(filename,xAxis,yAxis,mobility):
-        npObj = np.zeros(3,dtype=np.object)
-        npObj[0] = xAxis
-        npObj[1] = yAxis
-        npObj[2] = mobility
-        print filename
-        npObj.dump(filename)
+    """Create an Amphitrite data file.
+    
+    :parameter filename: Absolute path and filename for data file
+    :parameter xAxis: m/z axis
+    :parameter yAxis: Arrival time axis
+    :parameter mobility: Intensity matrix
+    """
+    npObj = np.zeros(3,dtype=np.object)
+    npObj[0] = xAxis
+    npObj[1] = yAxis
+    npObj[2] = mobility
+    npObj.dump(filename)
 
 def unPickleAmphitriteProject(filename):
+    """Open an Amphitrite data file, and check that the format
+    is correct.
+    
+    :parameter filename: Absolute path to data file
+    :returns: mzAxis, arrival time axis and intensity matrix as a list
+    """
     try:
         dataList = np.load(filename)
         # xaxis, yaxis, matrix
@@ -293,6 +305,15 @@ def unPickleAmphitriteProject(filename):
 ######################################################################
 
 def label1dPlots(ax,lift,values,units,alignment='right'):
+    """Label stacked plots, usually mass spectra or arrival time
+    distributions.
+
+    :parameter ax: Matplotlib Axes instance
+    :parameter lift: The vertical spacing between traces
+    :parameter values: List of values to label the traces with
+    :parameter units: Unit to display next to values (string)
+    :parameter alignment: Where to place the labels ('left', 'right' or 'center')
+    """
     # get y positions
     yheights = [i*lift + (lift*0.1) for i in xrange(len(values))]
     # get x position
@@ -320,8 +341,11 @@ def label1dPlots(ax,lift,values,units,alignment='right'):
 def checkAx(ax):
     """Check if ax is a matplotlib axis object
     If it is, just return it back
-    If it isn't create one and return it"""
+    If it isn't create one and return it
 
+    :parameter ax: Unknown object (usually False or Matplotlib Axes instance)
+    :returns: Matplotlib Axes instance
+    """
     if type(ax).__name__ == 'AxesSubplot':
         return ax
     else:

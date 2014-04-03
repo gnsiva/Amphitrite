@@ -1,3 +1,12 @@
+"""Driftscope image class:
+Draws a simple driftscope style contour plot with the
+mass spectrum below it.
+Deprecated, replaced by DriftscopeImage.py.
+"""
+# TODO(gns) - rename file to DriftscopeImage, class as well
+
+__author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,6 +25,9 @@ class Driftscope_image():
     # For single full amphitrite data files (as opposed to using folders
     ############################################################################
     def load_file(self,filename):
+        """Load an amphitrite data file ('.a').
+        :parameter filename: Absolute path to file
+        """
         # load data
         npObj = np.load(filename)
         self.mzs_orig = npObj[0]
