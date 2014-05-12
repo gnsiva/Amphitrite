@@ -1,5 +1,3 @@
-# TODO(gns) - You shouldn't import paths.py in the class file as its only relevant to you
-import paths as p
 import imClasses.Im as Im
 import matplotlib.pyplot as plt
 import numpy as np
