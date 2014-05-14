@@ -232,6 +232,7 @@ def isNumber(s):
         return False
 
 def isInDir(folder,fileNames):
+    # TODO(gns) - get rid of this, it's terrible. Use isfile() or exists()
     import os
     allFound = True
     for f in fileNames:
