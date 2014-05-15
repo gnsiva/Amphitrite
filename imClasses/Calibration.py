@@ -96,7 +96,8 @@ class Calibration():
         # TODO(gns) - why would you want to use an array for mzs with a scalar for tds,
         # TODO(gns) - I think the mzs variable should be renamed mz
         data = self._calculateOmega(tds,mzs, charge, self.gas)
-        data[np.isnan(data)] = 0
+        if type(data).__name__ == 'ndarray':
+            data[np.isnan(data)] = 0
         return data
 
     def getCcsAxisGrid(self,mzs,tds,charge):
