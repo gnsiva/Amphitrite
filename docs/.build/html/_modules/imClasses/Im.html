@@ -1,0 +1,692 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imClasses.Im &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for imClasses.Im</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Class for holding full ion mobility data files, containing data for</span>
+<span class="sd">multiple charge states.&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Ganesh N. Sivalingam &lt;g.n.sivalingam@gmail.com&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ImData</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.font_manager</span> <span class="kn">import</span> <span class="n">FontProperties</span>
+<span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">lib.utils</span> <span class="kn">import</span> <span class="n">localMaxima</span>
+<span class="kn">from</span> <span class="nn">imClasses</span> <span class="kn">import</span> <span class="n">DataSlice</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">lib.RawFileProcessor</span> <span class="kn">as</span> <span class="nn">RawFileProcessor</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<div class="viewcode-block" id="Im"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im">[docs]</a><span class="k">class</span> <span class="nc">Im</span><span class="p">(</span><span class="n">ImData</span><span class="o">.</span><span class="n">ImData</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ImData</span><span class="o">.</span><span class="n">ImData</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">species</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">minCCS</span> <span class="o">=</span> <span class="mf">10000.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxCCS</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c">###############################################################</span>
+    <span class="c"># Data loading functions</span>
+    <span class="c">###############################################################</span>
+<div class="viewcode-block" id="Im.loadFolderAuto"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.loadFolderAuto">[docs]</a>    <span class="k">def</span> <span class="nf">loadFolderAuto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">folderName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Automatically carries out the processing depending on what is input.</span>
+<span class="sd">        If the folder is MassLynx raw data file, it will detect and process that</span>
+<span class="sd">        (windows only), if the folder contains correctly named text files it will</span>
+<span class="sd">        do the same. Finally if the folderName points to an Amphitrite data file</span>
+<span class="sd">        (&#39;.a&#39;) it will detect this and process accordingly.</span>
+<span class="sd">        :parameter folderName: Absolute path to data folder or file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&#39;&#39;&#39;Automatically checks the type of data in the folder</span>
+<span class="sd">        and processes it to load the ImObj&#39;&#39;&#39;</span>
+
+        <span class="n">processedFilenames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;MassMobilityXaxis&#39;</span><span class="p">,</span><span class="s">&#39;MassMobilityYaxis&#39;</span><span class="p">,</span><span class="s">&#39;MassMobility&#39;</span><span class="p">]</span>
+        <span class="n">textFilenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="s">&#39;.txt&#39;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">processedFilenames</span><span class="p">]</span>
+        <span class="n">amphiFilenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="s">&#39;.amphi&#39;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">processedFilenames</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">folderName</span><span class="p">):</span>
+            <span class="n">allFound</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="n">processed</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="c"># text files</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">processed</span><span class="p">:</span>
+                <span class="n">allFound</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkForFiles</span><span class="p">(</span><span class="n">folderName</span><span class="p">,</span> <span class="n">textFilenames</span><span class="p">):</span>
+                    <span class="k">print</span> <span class="s">&#39;Processing as textfiles&#39;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">loadFolder</span><span class="p">(</span><span class="n">folderName</span><span class="p">)</span>
+                    <span class="n">processed</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="c"># raw file process</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">processed</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;Processing from raw files&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">loadRawFolder</span><span class="p">(</span><span class="n">folderName</span><span class="p">)</span>
+                <span class="n">processed</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c"># single amphitrite data file (.a file)</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">folderName</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loadAmphiFile</span><span class="p">(</span><span class="n">folderName</span><span class="p">)</span>
+            <span class="n">processed</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;folder not found&#39;</span><span class="p">,</span> <span class="n">folderName</span>
+            <span class="n">processed</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">processed</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;Not processed, disaster&#39;</span><span class="p">,</span> <span class="n">folderName</span>
+
+</div>
+<div class="viewcode-block" id="Im.loadAmphiFile"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.loadAmphiFile">[docs]</a>    <span class="k">def</span> <span class="nf">loadAmphiFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load data from amphitrite data file (&#39;.a&#39;).</span>
+<span class="sd">        :parameter filename: Absolute path to data file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dataList</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">unPickleAmphitriteProject</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dataList</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setDataFromAmphiExtract</span><span class="p">(</span><span class="n">dataList</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Im.setDataFromAmphiExtract"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.setDataFromAmphiExtract">[docs]</a>    <span class="k">def</span> <span class="nf">setDataFromAmphiExtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dataList</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the m/z and arrival time axis as well as the</span>
+<span class="sd">        intensity matrix from a list of those arrays.</span>
+<span class="sd">        :parameter dataList: List of form [xaxis,yaxis,intensityArray]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAxisX</span><span class="p">(</span><span class="n">dataList</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAxisY</span><span class="p">(</span><span class="n">dataList</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMatrix</span><span class="p">(</span><span class="n">dataList</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xaxisUnaltered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yaxisUnaltered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_checkForFiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">folder</span><span class="p">,</span><span class="n">fileNames</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the required text files (correctly named)</span>
+<span class="sd">        are in the given folder.</span>
+<span class="sd">        :parameter folder: Absolute path to directory containing data</span>
+<span class="sd">        :parameter fileNames: List of filenames to check for in the directory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allFound</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c"># TODO(gns) - this is nonsense, its probably supposed to be:</span>
+        <span class="c"># TODO(gns) - len(fileNames) == 0:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fileNames</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;int&#39;</span><span class="p">:</span>
+            <span class="n">fileNames</span> <span class="o">=</span> <span class="p">[</span><span class="n">fileNames</span><span class="p">]</span>
+            
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fileNames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+                <span class="n">allFound</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="n">allFound</span>
+
+    <span class="k">def</span> <span class="nf">_loadX</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load m/z axis from text file.</span>
+<span class="sd">        :parameter filename: Absolute path to data file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xaxis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAxisX</span><span class="p">(</span><span class="n">xaxis</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>  <span class="c"># NO IDEA WHERE THE -2 CAME FROM</span>
+        
+    <span class="k">def</span> <span class="nf">_loadY</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load arrival time axis from text file.</span>
+<span class="sd">        :parameter filename: Absolute path to data file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tds_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">tds_orig</span><span class="p">)</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;Y axis conversion probably failed&#39;</span>
+            <span class="k">print</span> <span class="s">&#39;</span><span class="si">%d</span><span class="s"> bins detected&#39;</span> <span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tds_orig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAxisY</span><span class="p">(</span><span class="n">tds_orig</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        
+    <span class="k">def</span> <span class="nf">_loadMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load intensity matrix from text file.</span>
+<span class="sd">        :parameter filename: Absolute path to data file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span><span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMatrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span>
+        
+<div class="viewcode-block" id="Im.loadFolder"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.loadFolder">[docs]</a>    <span class="k">def</span> <span class="nf">loadFolder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">folderPath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load data from text files. Files should be named &#39;MassMobilityXaxis.txt&#39;</span>
+<span class="sd">        for the m/z axis, &#39;MassMobilityYaxis.txt&#39; for arrival time axis and</span>
+<span class="sd">        &#39;MassMobility.txt&#39; for the matrix of intensities.</span>
+<span class="sd">        :parameter folderPath: Absolute path to directory containing text files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loadX</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folderPath</span><span class="p">,</span><span class="s">&#39;MassMobilityXaxis.txt&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loadY</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folderPath</span><span class="p">,</span><span class="s">&#39;MassMobilityYaxis.txt&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loadMatrix</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folderPath</span><span class="p">,</span><span class="s">&#39;MassMobility.txt&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xaxisUnaltered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yaxisUnaltered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Im.loadRawFolder"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.loadRawFolder">[docs]</a>    <span class="k">def</span> <span class="nf">loadRawFolder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rawPath</span><span class="p">,</span><span class="n">grain</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load data from MassLynx raw data set.</span>
+<span class="sd">        :parameter rawPath: Path to raw data directory</span>
+<span class="sd">        :parameter grain: m/z spacing for extracting the data</span>
+<span class="sd">        (minimum 0.5).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">RawFileProcessor</span><span class="o">.</span><span class="n">RawFileProcessor</span><span class="p">(</span><span class="n">rawPath</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">processFolder</span><span class="p">(</span><span class="n">grain</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_getDataFromRawProcessor</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span><span class="n">rawPath</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_getDataFromRawProcessor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">raw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sub function of self.loadRawFolder(). Used for processing</span>
+<span class="sd">        MassLynx raw files.</span>
+<span class="sd">        :parameter raw: RawFileProcessor object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAxisX</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">getAxisX</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAxisY</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">getAxisY</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xaxisUnaltered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yaxisUnaltered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMatrix</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">getMassMobility</span><span class="p">())</span>
+
+    <span class="c">###############################################################</span>
+    <span class="c"># Preparing species</span>
+    <span class="c">###############################################################</span>
+<div class="viewcode-block" id="Im.setSpecies"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.setSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">setSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">species</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a species object to the self.species dictionary.</span>
+<span class="sd">        :parameter species: msClasses.Species() object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">species</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">species</span>
+        </div>
+    <span class="k">def</span> <span class="nf">_generateSlice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xtremes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a data slice (sliced in td dimension), given</span>
+<span class="sd">        the m/z limits.</span>
+<span class="sd">        :parameter xtremes: m/z limits in the form [lower,upper]</span>
+<span class="sd">        :returns: imClasses.DataSlice() object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dataSlice</span> <span class="o">=</span> <span class="n">DataSlice</span><span class="p">()</span>
+        <span class="n">dataSlice</span><span class="o">.</span><span class="n">setAxisY</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yaxisUnaltered</span><span class="p">)</span>
+        <span class="n">dataSlice</span><span class="o">.</span><span class="n">setAxisX</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxisUnaltered</span><span class="p">[</span><span class="n">xtremes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">xtremes</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">dataSlice</span><span class="o">.</span><span class="n">setMatrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matrixUnaltered</span><span class="p">[:,</span><span class="n">xtremes</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">xtremes</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">dataSlice</span>
+
+<div class="viewcode-block" id="Im.generateSpeciesSlicesFwhm"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.generateSpeciesSlicesFwhm">[docs]</a>    <span class="k">def</span> <span class="nf">generateSpeciesSlicesFwhm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">speciesName</span><span class="p">,</span><span class="n">leftMultiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">rightMultiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create data slices using peak width from mass spectrum fit</span>
+<span class="sd">        for a specific species.</span>
+<span class="sd">        :parameter speciesName: Name of molecular species</span>
+<span class="sd">        :parameter leftMultiplier: Value to multiply the peak fwhm below the mean</span>
+<span class="sd">        :parameter rightMultiplier: Value to multiply the peak fwhm above the mean</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generateMassSpectrum</span><span class="p">()</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">leftMultiplier</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">speciesName</span><span class="p">]</span><span class="o">.</span><span class="n">peakFwhm</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">rightMultiplier</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">speciesName</span><span class="p">]</span><span class="o">.</span><span class="n">peakFwhm</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
+        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">speciesName</span><span class="p">]</span><span class="o">.</span><span class="n">charges</span><span class="p">:</span>
+            <span class="n">mz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">speciesName</span><span class="p">]</span><span class="o">.</span><span class="n">getMz</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+            <span class="n">mzIndex</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">closest</span><span class="p">(</span><span class="n">mz</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="p">)</span>
+            <span class="n">mzIndex</span> <span class="o">=</span> <span class="n">localMaxima</span><span class="p">(</span><span class="n">mzIndex</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">yvals</span><span class="p">,</span> <span class="n">scan_range</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">leftI</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">closest</span><span class="p">(</span><span class="n">mz</span><span class="o">-</span><span class="n">left</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="p">)</span>
+            <span class="n">rightI</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">closest</span><span class="p">(</span><span class="n">mz</span><span class="o">+</span><span class="n">right</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generateSlice</span><span class="p">([</span><span class="n">leftI</span><span class="p">,</span><span class="n">rightI</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">generateAtd</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">z</span>
+</div>
+<div class="viewcode-block" id="Im.generateSpeciesSlicesExplicit"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.generateSpeciesSlicesExplicit">[docs]</a>    <span class="k">def</span> <span class="nf">generateSpeciesSlicesExplicit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">limitDic</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create data slices using explicit m/z limits for arrival</span>
+<span class="sd">        time data extraction, for all supplied species and charge states.</span>
+<span class="sd">        :parameter limitDic: d[species][z] = [lowerLimit,upperLimit]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        limitDic generated by ChargeStatePeak.py</span>
+<span class="sd">        Has actual absolute mz values for the limits</span>
+<span class="sd">        Does all species at the same time unlike self.generateSpeciesSlicesFwhm()</span>
+<span class="sd">        which does them all together</span>
+<span class="sd">        limitDic structure is species&gt;z&gt;[lowerMz,upperMz]</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generateMassSpectrum</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">speciesName</span><span class="p">,</span><span class="n">subD</span> <span class="ow">in</span> <span class="n">limitDic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">z</span><span class="p">,</span><span class="n">limit</span> <span class="ow">in</span> <span class="n">subD</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">leftI</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">closest</span><span class="p">(</span><span class="n">limit</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="p">)</span>
+                <span class="n">rightI</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">closest</span><span class="p">(</span><span class="n">limit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generateSlice</span><span class="p">([</span><span class="n">leftI</span><span class="p">,</span><span class="n">rightI</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">generateAtd</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">z</span>
+
+
+
+    <span class="c">###############################################################</span>
+    <span class="c"># Save and load Atropos fits</span>
+    <span class="c">###############################################################</span>
+    <span class="c"># TODO(gns) - There should be a better way of doing this (don&#39;t need to pickle the whole thing, definitely don&#39;t need to do the data).</span>
+    <span class="c"># def saveMsFit(self,filename):</span>
+    <span class="c">#     &quot;&quot;&quot;Save the current state of self.massSpectrum as a pickle.</span>
+    <span class="c">#     :parameter filename: Absolute path for mass spectrum fit file</span>
+    <span class="c">#     &quot;&quot;&quot;</span>
+    <span class="c">#     import cPickle as pickle</span>
+    <span class="c">#     ofile = open(filename, &#39;wb&#39;)</span>
+    <span class="c">#     pickle.dump(self.massSpectrum,ofile)</span>
+    <span class="c">#     ofile.close()</span>
+</div>
+<div class="viewcode-block" id="Im.loadMsFit"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.loadMsFit">[docs]</a>    <span class="k">def</span> <span class="nf">loadMsFit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load and set the Amphitrite mass spectrum fit from</span>
+<span class="sd">        file. (Erases currently set mass spectrum data).</span>
+<span class="sd">        :parameter filename: Absolute path to pickled</span>
+<span class="sd">        msClasses.MassSpectrum() object (&#39;.afit&#39; file).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) - this functions execution seems inconsistent with setMsFit()</span>
+        <span class="c"># TODO(gns) - If you change this, update documentation as well (bit in brackets)</span>
+        <span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+        <span class="n">ifile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ifile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">xvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">species</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">species</span>
+        <span class="n">ifile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Im.setMsFit"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.setMsFit">[docs]</a>    <span class="k">def</span> <span class="nf">setMsFit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">msOb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the Amphitrite mass spectrum fit, and as a by product,</span>
+<span class="sd">        the species objects.</span>
+<span class="sd">        :parameter msOb: msClasses.MassSpectrum() object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">xvals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">yvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span> <span class="o">=</span> <span class="n">msOb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">species</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">simulatedSpecies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpecies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">simulatedSpecies</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">xvals</span> <span class="o">=</span> <span class="n">xvals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="n">yvals</span>
+
+    <span class="c">###############################################################</span>
+    <span class="c"># Cross section calculations</span>
+    <span class="c">###############################################################</span></div>
+<div class="viewcode-block" id="Im.generateCcsAxesAndGrids"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.generateCcsAxesAndGrids">[docs]</a>    <span class="k">def</span> <span class="nf">generateCcsAxesAndGrids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">calibrationObj</span><span class="p">,</span><span class="n">ccsInterval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calibrate the ion mobility data by calculating CCS equivalents</span>
+<span class="sd">        of the arrival time data.</span>
+<span class="sd">        :parameter calibrationObj: imClasses.Calibration() object</span>
+<span class="sd">        :parameter ccsInterval: Interval in Angstrom**2 to use for interpolation</span>
+<span class="sd">        of the calibrated arrival time axes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span><span class="n">spSlices</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span> <span class="ow">in</span> <span class="n">spSlices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">dataSlice</span><span class="o">.</span><span class="n">generateCcsAxisAndGrid</span><span class="p">(</span><span class="n">calibrationObj</span><span class="p">,</span><span class="n">ccsInterval</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Im.plotAtdSlicesHeatMap"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.plotAtdSlicesHeatMap">[docs]</a>    <span class="k">def</span> <span class="nf">plotAtdSlicesHeatMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw 3D contour plots showing each dataslice.</span>
+<span class="sd">        :parameter ax: Matplotlib Axes instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) - should sort/reverse-sort the charges for reproducibility</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span><span class="n">spSlices</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span> <span class="ow">in</span> <span class="n">spSlices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">matrix</span> <span class="o">=</span>  <span class="n">dataSlice</span><span class="o">.</span><span class="n">matrix</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataSlice</span><span class="o">.</span><span class="n">xaxis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">dataSlice</span><span class="o">.</span><span class="n">xaxis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataSlice</span><span class="o">.</span><span class="n">yaxis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">dataSlice</span><span class="o">.</span><span class="n">yaxis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dataSlice</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span><span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span><span class="n">origin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">autoscale</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">getDataSlice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sp</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the data for a given species charge state.</span>
+<span class="sd">        :parameter sp: Species name</span>
+<span class="sd">        :parameter z: Charge state</span>
+<span class="sd">        :returns: imClasses.DataSlice() object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) - would be nice if this generated the ds if it didn&#39;t exist yet</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">sp</span><span class="p">][</span><span class="n">z</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ds</span>
+
+
+    <span class="c">###############################################################</span>
+    <span class="c"># Plotting functions</span>
+    <span class="c">###############################################################</span>
+
+<div class="viewcode-block" id="Im.plotChargeStateAtds"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.plotChargeStateAtds">[docs]</a>    <span class="k">def</span> <span class="nf">plotChargeStateAtds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">speciesName</span><span class="p">,</span><span class="n">charges</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">colourList</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">smoothing</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">window_len</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">smoothes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">poly_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw the arrival time distribution of all (or given) charge states of</span>
+<span class="sd">        a species.</span>
+<span class="sd">        :parameter ax: matplotlib.axes.Axes() object</span>
+<span class="sd">        :parameter speciesName: Name of species</span>
+<span class="sd">        :parameter charges: List of charges to use (or 0/False to use all charges)</span>
+<span class="sd">        :parameter colour: Matplotlib.pyplot compatible colour</span>
+<span class="sd">        :parameter lift: Absolute value to separate ATDs vertically</span>
+<span class="sd">        :parameter smoothing: Boolean for Savitzky Golay smoothing</span>
+<span class="sd">        :parameter window_len: Window size for smoothing</span>
+<span class="sd">        :parameter poly_order: Polynormial to use for smoothing</span>
+<span class="sd">        :parameter \*\*kwargs: matplotlib.pyplot.plot() arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">colourList</span><span class="p">:</span>
+            <span class="n">colourList</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">colourList</span>
+        <span class="n">colourList</span> <span class="o">=</span> <span class="n">colourList</span> <span class="o">*</span> <span class="mi">50</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">charges</span><span class="p">:</span>
+            <span class="n">charges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">speciesName</span><span class="p">]</span><span class="o">.</span><span class="n">charges</span>
+        <span class="k">if</span> <span class="n">lift</span><span class="p">:</span>
+            <span class="n">maxHeights</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">charges</span><span class="p">:</span>
+                <span class="n">maxHeights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+            <span class="n">lift</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxHeights</span><span class="p">)</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">lift</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">charges</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">smoothing</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">smoothingSG</span><span class="p">(</span><span class="n">window_len</span><span class="o">=</span><span class="n">window_len</span><span class="p">,</span> <span class="n">smoothes</span><span class="o">=</span><span class="n">smoothes</span><span class="p">,</span> <span class="n">poly_order</span><span class="o">=</span><span class="n">poly_order</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">xvals</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">yvals</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="n">lift</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;+&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">z</span><span class="p">),</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s">&#39;upper right&#39;</span><span class="p">,</span><span class="n">prop</span><span class="o">=</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">legendFontSize</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;t$_d$&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+</div>
+<div class="viewcode-block" id="Im.plotChargeStateAtd"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.plotChargeStateAtd">[docs]</a>    <span class="k">def</span> <span class="nf">plotChargeStateAtd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">speciesName</span><span class="p">,</span><span class="n">charge</span><span class="p">,</span><span class="n">colour</span><span class="o">=</span><span class="s">&#39;gray&#39;</span><span class="p">,</span><span class="n">normalise</span><span class="o">=</span><span class="s">&#39;bpi&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">smoothing</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">window_len</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">smoothes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">poly_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw the arrival time distribution of a particular charge state of</span>
+<span class="sd">        a species.</span>
+<span class="sd">        :parameter ax: matplotlib.axes.Axes() object</span>
+<span class="sd">        :parameter speciesName: Name of species</span>
+<span class="sd">        :parameter charge: Charge state</span>
+<span class="sd">        :parameter colour: Matplotlib.pyplot compatible colour</span>
+<span class="sd">        :parameter normalise: Normalisation method; base peak intensity (&#39;bpi&#39;) or</span>
+<span class="sd">        per area (&#39;area&#39;).</span>
+<span class="sd">        :parameter label: Label to be used in legend</span>
+<span class="sd">        :parameter lift: Absolute value to lift the trace vertically (used for stacking</span>
+<span class="sd">        multiple ATDs</span>
+<span class="sd">        :parameter smoothing: Boolean for Savitzky Golay smoothing</span>
+<span class="sd">        :parameter window_len: Window size for smoothing</span>
+<span class="sd">        :parameter poly_order: Polynormial to use for smoothing</span>
+<span class="sd">        :parameter \*\*kwargs: matplotlib.pyplot.plot() arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">smoothing</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">charge</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">smoothingSG</span><span class="p">(</span><span class="n">window_len</span><span class="o">=</span><span class="n">window_len</span><span class="p">,</span> <span class="n">smoothes</span><span class="o">=</span><span class="n">smoothes</span><span class="p">,</span> <span class="n">poly_order</span><span class="o">=</span><span class="n">poly_order</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">charge</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">xvals</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">charge</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">yvals</span>
+
+        <span class="k">if</span> <span class="n">normalise</span> <span class="o">==</span> <span class="s">&#39;bpi&#39;</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">/</span><span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="k">if</span> <span class="n">normalise</span> <span class="o">==</span> <span class="s">&#39;area&#39;</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">y</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="n">lift</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colour</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">),</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c"># return max point</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="n">av</span><span class="p">,</span><span class="n">sum_of_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">weights</span><span class="o">=</span><span class="n">y</span><span class="p">,</span><span class="n">returned</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="c"># calculate weighted stdev for return</span>
+        <span class="n">average</span><span class="p">,</span><span class="n">stdev</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">weightedAverageAndStd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">],</span><span class="n">av</span><span class="p">,</span><span class="n">sum_of_weights</span><span class="p">,</span><span class="n">stdev</span>
+
+</div>
+<div class="viewcode-block" id="Im.plotMsExtractionLimits"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.plotMsExtractionLimits">[docs]</a>    <span class="k">def</span> <span class="nf">plotMsExtractionLimits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">speciesName</span><span class="p">,</span><span class="n">colourList</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fill in the area between the max and min limits of FWHM around the</span>
+<span class="sd">        peak mean.</span>
+<span class="sd">        :parameter ax: Matplotlib Axes instance</span>
+<span class="sd">        :parameter speciesName: Species name</span>
+<span class="sd">        :parameter colourList: List of matplotlib colours to use. If False default colours are used</span>
+<span class="sd">        :parameter \*\*kwargs: matplotlib.pyplot.plot() arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) - Replaced this with MassSpectrum.plotPeakWidthLimits()</span>
+        <span class="c"># TODO(gns) - Check before deleting as something might still use this</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">colourList</span><span class="p">:</span>
+            <span class="n">colourList</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">colourList</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;alpha&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;alpha&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">speciesName</span><span class="p">]</span><span class="o">.</span><span class="n">charges</span><span class="p">)):</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">z</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">height</span><span class="p">],</span> <span class="n">x1</span><span class="o">=</span><span class="n">left</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="n">right</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">height</span><span class="p">])</span>
+
+    <span class="c">################</span></div>
+<div class="viewcode-block" id="Im.getDataSlices"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.getDataSlices">[docs]</a>    <span class="k">def</span> <span class="nf">getDataSlices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all available data slices.</span>
+<span class="sd">        :returns: Dictionary of imClasses.DataSlice() objects in the form</span>
+<span class="sd">        d[speciesName][chargeState] = DataSlice()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span>
+
+    <span class="c">####</span></div>
+<div class="viewcode-block" id="Im.plotCcsHeatMap"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.plotCcsHeatMap">[docs]</a>    <span class="k">def</span> <span class="nf">plotCcsHeatMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw a 3D m/z against CCS contour plot.</span>
+<span class="sd">        :parameter ax: Matplotlib Axes instance</span>
+<span class="sd">        :parameter calibrationOb: imClasses.Calibration() object</span>
+<span class="sd">        :parameter \*\*kwargs: Matplotlib imshow compatible arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dataSlices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataSlices</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotCcsHeatMapFromDataSlices</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">dataSlices</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Im.plotCcsHeatMapFromDataSlices"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.plotCcsHeatMapFromDataSlices">[docs]</a>    <span class="k">def</span> <span class="nf">plotCcsHeatMapFromDataSlices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">dataSlices</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw a 3D m/z against CCS contour plot given dataSlices. (Used</span>
+<span class="sd">        when you don&#39;t want to plot all dataSlices available).</span>
+<span class="sd">        :parameter ax: Matplotlib Axes instance</span>
+<span class="sd">        :parameter calibrationOb: imClasses.Calibration() object</span>
+<span class="sd">        :parameter dataSlices: Dictionary of imClasses.DataSlice() objects</span>
+<span class="sd">        (d[chargeState] = dataSlice)</span>
+<span class="sd">        :parameter \*\*kwargs: Matplotlib imshow compatible arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&#39;&#39;&#39;subfunction of plotCcsHeatMap().</span>
+<span class="sd">        Allows for the gui to manipulate the data (e.g. by scaling) b4 plotting&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span><span class="n">spSlices</span> <span class="ow">in</span> <span class="n">dataSlices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span> <span class="ow">in</span> <span class="n">spSlices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">ccsMatrix</span><span class="p">,</span><span class="n">mzs</span><span class="p">,</span><span class="n">ccsAxis</span> <span class="o">=</span> <span class="n">dataSlice</span><span class="o">.</span><span class="n">getCcsMatrix</span><span class="p">(</span><span class="n">calibrationOb</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ccsMatrix</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">mzs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">mzs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">ccsAxis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ccsAxis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span><span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span><span class="n">origin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">autoscale</span><span class="p">()</span>
+    <span class="c">####</span>
+</div>
+<div class="viewcode-block" id="Im.plotChargeStateContourPlots"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.plotChargeStateContourPlots">[docs]</a>    <span class="k">def</span> <span class="nf">plotChargeStateContourPlots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">species</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw 3D Clemmer-style contour plots given species name.</span>
+<span class="sd">        :parameter ax: Matplotlib Axes instance</span>
+<span class="sd">        :parameter calibrationOb: imClasses.Calibration() object</span>
+<span class="sd">        :parameter species: Species name</span>
+<span class="sd">        :parameter \*\*kwargs: Matplotlib imshow compatible arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dataSlices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataSlices</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotChargeStateContourPlotsFromDataSlices</span><span class="p">(</span>
+            <span class="n">ax</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">dataSlices</span><span class="p">,</span><span class="n">species</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="Im.plotChargeStateContourPlotsFromDataSlices"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.plotChargeStateContourPlotsFromDataSlices">[docs]</a>    <span class="k">def</span> <span class="nf">plotChargeStateContourPlotsFromDataSlices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">dataSlices</span><span class="p">,</span><span class="n">species</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw 3D Clemmer-style contour plots from provided dataSlices.</span>
+<span class="sd">        :parameter ax: Matplotlib Axes instance</span>
+<span class="sd">        :parameter calibrationOb: imClasses.Calibration() object</span>
+<span class="sd">        :parameter dataSlices: Dictionary of imClasses.DataSlice() objects</span>
+<span class="sd">        (d[chargeState] = dataSlice)</span>
+<span class="sd">        :parameter species: The molecular species the dataSlices are from</span>
+<span class="sd">        :parameter \*\*kwargs: Matplotlib imshow compatible arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">spSlices</span> <span class="o">=</span> <span class="n">dataSlices</span><span class="p">[</span><span class="n">species</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span> <span class="ow">in</span> <span class="n">spSlices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ccsMatrix</span><span class="p">,</span><span class="n">mzs</span><span class="p">,</span><span class="n">ccsAxis</span> <span class="o">=</span> <span class="n">dataSlice</span><span class="o">.</span><span class="n">getCcsMatrix</span><span class="p">(</span><span class="n">calibrationOb</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ccsMatrix</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">ccsAxis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ccsAxis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+                      <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span><span class="n">origin</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="mi">2</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">autoscale</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelChargeStateContourPlots</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">species</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Im.labelChargeStateContourPlots"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.labelChargeStateContourPlots">[docs]</a>    <span class="k">def</span> <span class="nf">labelChargeStateContourPlots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">species</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Annotate 3D Clemmer-style contour plots with charge</span>
+<span class="sd">        state numbering.</span>
+<span class="sd">        :parameter ax: Matplotlib Axes instance</span>
+<span class="sd">        :parameter species: The molecular species to be labelled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&#39;&#39;&#39;Compatible with ATDs and CCSs&#39;&#39;&#39;</span>
+        <span class="n">ylims</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="mf">0.03</span><span class="o">*</span><span class="p">(</span><span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">ylims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">ylims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">spSlices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">species</span><span class="p">]</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span> <span class="ow">in</span> <span class="n">spSlices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="mi">2</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s">&quot;+</span><span class="si">%d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">charge</span><span class="p">,[</span><span class="n">x</span><span class="p">,</span><span class="n">height</span><span class="p">],</span><span class="n">horizontalalignment</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
+
+</div>
+<div class="viewcode-block" id="Im.plotChargeStateContourPeaktops"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.plotChargeStateContourPeaktops">[docs]</a>    <span class="k">def</span> <span class="nf">plotChargeStateContourPeaktops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">species</span><span class="p">,</span><span class="n">smths</span><span class="p">,</span><span class="n">wlen</span><span class="p">,</span>
+                                       <span class="n">colour</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">dataType</span><span class="o">=</span><span class="s">&#39;ccs&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;For contour plots in Clemmer-style charge state mode;</span>
+<span class="sd">        plots the peak tops as found using derivative.</span>
+<span class="sd">        :parameter ax: Matplotlib Axes instance</span>
+<span class="sd">        :parameter calibrationOb: imClasses.Calibration() object</span>
+<span class="sd">        :parameter species: Name of molecular species to use</span>
+<span class="sd">        :parameter smths: Rounds of smoothing to do before picking peaks</span>
+<span class="sd">        :parameter wlen: Window length for smoothing (Savitzky Golay)</span>
+<span class="sd">        :parameter colour: Colour for peak top markers</span>
+<span class="sd">        :parameter dataType: Either CCS (&#39;ccs&#39;) or arrival time (&#39;std&#39;)</span>
+<span class="sd">        :parameter \*\*kwargs: Matplotlib scatter compatible arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">spSlices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">species</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span> <span class="ow">in</span> <span class="n">spSlices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c"># Get the xvalue for where to draw the peaktop marker</span>
+            <span class="n">perc</span> <span class="o">=</span> <span class="n">dataSlice</span><span class="o">.</span><span class="n">getMsApexProportion</span><span class="p">()</span>
+            <span class="n">xval</span> <span class="o">=</span> <span class="n">perc</span><span class="o">*</span><span class="mf">2.</span> <span class="o">+</span> <span class="n">x</span>
+            <span class="n">mz</span> <span class="o">=</span> <span class="n">dataSlice</span><span class="o">.</span><span class="n">getMsApex</span><span class="p">()</span>
+
+            <span class="c"># generate peaks</span>
+            <span class="k">if</span> <span class="n">dataType</span> <span class="o">==</span> <span class="s">&#39;ccs&#39;</span><span class="p">:</span>
+                <span class="n">peaks</span> <span class="o">=</span> <span class="n">dataSlice</span><span class="o">.</span><span class="n">getCcsPeaks</span><span class="p">(</span><span class="n">smths</span><span class="p">,</span><span class="n">wlen</span><span class="p">,</span><span class="n">mz</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">limit</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">dataType</span> <span class="o">==</span> <span class="s">&#39;atd&#39;</span><span class="p">:</span>
+                <span class="n">peaks</span> <span class="o">=</span> <span class="n">dataSlice</span><span class="o">.</span><span class="n">getAtqdPeaks</span><span class="p">(</span><span class="n">smths</span><span class="p">,</span><span class="n">wlen</span><span class="p">,</span><span class="n">limit</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;invalid datatype in plotChargeStateContourPeaktops()&#39;</span>
+
+            <span class="c"># plot the peaks</span>
+            <span class="c"># TODO(gns) - I haven&#39;t tested the kwargs option here yet</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">xval</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">),</span><span class="n">peaks</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s">&#39;o&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colour</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="mi">2</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+
+
+    <span class="c">#================================================================</span>
+    <span class="c"># CeRamp related functions</span>
+</div>
+<div class="viewcode-block" id="Im.calculateAtdStatistics"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.calculateAtdStatistics">[docs]</a>    <span class="k">def</span> <span class="nf">calculateAtdStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">speciesName</span><span class="p">,</span><span class="n">charge</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the weighted mean and standard deviation for an arrival</span>
+<span class="sd">        time distribution.</span>
+<span class="sd">        :parameter speciesName: Name of molecular species</span>
+<span class="sd">        :parameter charge: Charge state to use</span>
+<span class="sd">        :returns: average, standard deviation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">average</span><span class="p">,</span><span class="n">stdev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculateStatistics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">charge</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">average</span><span class="p">,</span><span class="n">stdev</span>
+</div>
+<div class="viewcode-block" id="Im.calculateCcsdStatistics"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.calculateCcsdStatistics">[docs]</a>    <span class="k">def</span> <span class="nf">calculateCcsdStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">speciesName</span><span class="p">,</span><span class="n">charge</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the weighted mean and standard deviation for a CCS</span>
+<span class="sd">        distribution.</span>
+<span class="sd">        :parameter speciesName: Name of molecular species</span>
+<span class="sd">        :parameter charge: Charge state to use</span>
+<span class="sd">        :returns: average, standard deviation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">average</span><span class="p">,</span><span class="n">stdev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculateStatistics</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">charge</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">average</span><span class="p">,</span><span class="n">stdev</span>
+
+</div>
+<div class="viewcode-block" id="Im.calculateStatistics"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.calculateStatistics">[docs]</a>    <span class="k">def</span> <span class="nf">calculateStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">twoDdata</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the weighted mean and standard deviation</span>
+<span class="sd">        :parameter twoDdata: An object which inherits from msClasses.TwoDdata()</span>
+<span class="sd">        (e.g. MassSpectrum() or Atd()).</span>
+<span class="sd">        :returns: average, standard deviation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># works on ccsds and atds</span>
+        <span class="n">average</span><span class="p">,</span><span class="n">stdev</span> <span class="o">=</span> <span class="n">twoDdata</span><span class="o">.</span><span class="n">calculateWeightedMeanStandardDeviation</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">average</span><span class="p">,</span><span class="n">stdev</span>
+
+
+</div>
+<div class="viewcode-block" id="Im.getAtd"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.getAtd">[docs]</a>    <span class="k">def</span> <span class="nf">getAtd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">speciesName</span><span class="p">,</span><span class="n">charge</span><span class="p">,</span><span class="n">normalised</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the arrival time distribution for the specific</span>
+<span class="sd">        charge state of a species.</span>
+<span class="sd">        :parameter speciesName: Name of molecular species</span>
+<span class="sd">        :parameter charge: Charge state to use</span>
+<span class="sd">        :parameter normalised: Boolean for whether to normalise data to</span>
+<span class="sd">        base peak intensity</span>
+<span class="sd">        :returns: imClasses.Atd() object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">charge</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">normalisationBpi</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">charge</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span>
+</div>
+<div class="viewcode-block" id="Im.getDataSlice"><a class="viewcode-back" href="../../imClasses.html#imClasses.Im.Im.getDataSlice">[docs]</a>    <span class="k">def</span> <span class="nf">getDataSlice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">speciesName</span><span class="p">,</span><span class="n">charge</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the section of the data related to this charge state</span>
+<span class="sd">        of this species.</span>
+<span class="sd">        :parameter speciesName: Name of molecular species</span>
+<span class="sd">        :parameter charge: Charge state to use</span>
+<span class="sd">        :returns: imClasses.DataSlice() object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">speciesName</span><span class="p">][</span><span class="n">charge</span><span class="p">]</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

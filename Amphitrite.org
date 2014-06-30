@@ -441,3 +441,4 @@ Similar to these two files
 + Stop this stupid waiting running thing
 **** TODO (RawFile..2) update the makePreview() function
 + Use the new shiny DriftscopeImage() class
+

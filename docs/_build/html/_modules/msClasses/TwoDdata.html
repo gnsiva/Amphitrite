@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>msClasses.TwoDdata &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for msClasses.TwoDdata</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">import</span> <span class="nn">lib.SG</span> <span class="kn">as</span> <span class="nn">SG</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<div class="viewcode-block" id="TwoDdata"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata">[docs]</a><span class="k">class</span> <span class="nc">TwoDdata</span><span class="p">():</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawyvals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalisationType</span> <span class="o">=</span> <span class="s">&#39;none&#39;</span>
+
+    <span class="c">#===========================================================================</span>
+    <span class="c"># Data manipulation</span>
+    <span class="c">#===========================================================================</span>
+<div class="viewcode-block" id="TwoDdata.readFile"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.readFile">[docs]</a>    <span class="k">def</span> <span class="nf">readFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">,</span><span class="n">x_range</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">grain</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Reads in x y coordinate pairs from text file</span>
+<span class="sd">        &#39; &#39; separator as in copy spectrum list in MassLynx</span>
+
+<span class="sd">        x_range - allows you to select lower and upper bounds</span>
+<span class="sd">        in the format of [lower,upper]</span>
+
+<span class="sd">        grain - allows the missing of data to speed up processing</span>
+<span class="sd">        a grain of 2 means that every second value will be used&#39;&#39;&#39;</span>
+        <span class="n">raw_data</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="n">grain</span><span class="p">:</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\n</span><span class="s">&#39;</span><span class="p">)</span>
+                <span class="n">vals</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">temp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">x_range</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">x_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">)</span>
+
+        <span class="c"># so that it isn&#39;t overwritten by smoothing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawyvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalisePreset</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="TwoDdata.normalisationBpi"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.normalisationBpi">[docs]</a>    <span class="k">def</span> <span class="nf">normalisationBpi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Normalise to base peak intensity (0-100)&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setNormalisationType</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;bpi&#39;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="TwoDdata.normalisationArea"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.normalisationArea">[docs]</a>    <span class="k">def</span> <span class="nf">normalisationArea</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setNormalisationType</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&#39;area&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TwoDdata.setNormalisationType"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.setNormalisationType">[docs]</a>    <span class="k">def</span> <span class="nf">setNormalisationType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">type</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalisationType</span> <span class="o">=</span> <span class="nb">type</span>
+</div>
+<div class="viewcode-block" id="TwoDdata.smoothingSG"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.smoothingSG">[docs]</a>    <span class="k">def</span> <span class="nf">smoothingSG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">window_len</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">smoothes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">poly_order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Should only really be used on equally spaced data</span>
+<span class="sd">        Actual window length used is 2*window_len+1 to avoid breakage&#39;&#39;&#39;</span>
+        <span class="n">window_len</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">window_len</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restoreRawYvals</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">smoothes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="n">SG</span><span class="o">.</span><span class="n">sg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">,</span><span class="n">window_size</span><span class="o">=</span><span class="n">window_len</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">poly_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalisePreset</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_normalisePreset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalisationType</span> <span class="o">==</span> <span class="s">&#39;bpi&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">normalisationBpi</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalisationType</span> <span class="o">==</span> <span class="s">&#39;area&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">normalisationArea</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalisationType</span> <span class="o">==</span> <span class="s">&#39;none&#39;</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+<div class="viewcode-block" id="TwoDdata.restoreRawYvals"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.restoreRawYvals">[docs]</a>    <span class="k">def</span> <span class="nf">restoreRawYvals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawyvals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normalisePreset</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="TwoDdata.getAxesWithoutNans"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.getAxesWithoutNans">[docs]</a>    <span class="k">def</span> <span class="nf">getAxesWithoutNans</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The CCS calibration can cause some xvals</span>
+<span class="sd">        to become NaNs, this function returns x and yvals</span>
+<span class="sd">        truncated to remove the NaNs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">))]</span>
+        <span class="n">yvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">xvals</span><span class="p">,</span><span class="n">yvals</span>
+
+    <span class="c">#===========================================================================</span>
+    <span class="c"># Calculations</span>
+    <span class="c">#===========================================================================</span></div>
+<div class="viewcode-block" id="TwoDdata.calculateWeightedMeanStandardDeviation"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.calculateWeightedMeanStandardDeviation">[docs]</a>    <span class="k">def</span> <span class="nf">calculateWeightedMeanStandardDeviation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">yvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="n">average</span><span class="p">,</span><span class="n">stdev</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">weightedAverageAndStd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span><span class="n">yvals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">average</span><span class="p">,</span><span class="n">stdev</span></div>
+<div class="viewcode-block" id="TwoDdata.calculateAreaUnderCurve"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.calculateAreaUnderCurve">[docs]</a>    <span class="k">def</span> <span class="nf">calculateAreaUnderCurve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Integrates data using trapezium method&quot;&quot;&quot;</span>
+        <span class="n">xvals</span><span class="p">,</span><span class="n">yvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAxesWithoutNans</span><span class="p">()</span>
+        <span class="n">yvals</span> <span class="o">=</span> <span class="n">yvals</span><span class="o">/</span><span class="n">yvals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">yvals</span><span class="p">,</span><span class="n">xvals</span><span class="p">)</span>
+
+    <span class="c">#===========================================================================</span>
+    <span class="c"># Peak finding</span>
+    <span class="c">#===========================================================================</span>
+</div>
+    <span class="k">def</span> <span class="nf">_calculateGradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;when reconstructing the data, make data[0] the start value,</span>
+<span class="sd">        skip the first gradient value then append on</span>
+<span class="sd">        gradient[i] * (ys[i+1] - ys[i]) (actually gradient[i+1] ...)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">+</span><span class="mi">2</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">gr</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span><span class="o">/</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">print</span> <span class="s">&#39;Gradient calculation: divide by 0 replaced by 0.000001&#39;</span>
+                    <span class="n">gr</span> <span class="o">=</span> <span class="mf">0.000001</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TwoDdata.findPeaks"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.findPeaks">[docs]</a>    <span class="k">def</span> <span class="nf">findPeaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;limit allows you to ignore slow peaks (remove noise)</span>
+<span class="sd">        percentage of BPI e.g. 5 % cutoff should be 5&quot;&quot;&quot;</span>
+
+        <span class="c"># get gradient for peak picking</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculateGradient</span><span class="p">()</span>
+
+        <span class="n">gPeaks</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">gPeaks</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="n">gPeaks</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                        <span class="n">gPeaks</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
+            <span class="n">gPeaks_out</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="n">lim</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">gPeaks</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gPeaks</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gPeaks</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">lim</span><span class="p">:</span>
+                    <span class="n">gPeaks_out</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">gPeaks_out</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gPeaks</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">gPeaks_out</span><span class="p">[</span><span class="n">count</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gPeaks</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span> <span class="o">=</span> <span class="n">gPeaks_out</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span> <span class="o">=</span> <span class="n">gPeaks</span>
+</div>
+<div class="viewcode-block" id="TwoDdata.addPeak"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.addPeak">[docs]</a>    <span class="k">def</span> <span class="nf">addPeak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mz</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function allows you to add additional peaks not found using the</span>
+<span class="sd">        findPeaks method&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="n">keys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[],[]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mz</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">closest</span><span class="p">(</span><span class="n">mz</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="c">#===========================================================================</span>
+    <span class="c"># Plotting</span>
+    <span class="c">#===========================================================================</span></div>
+<div class="viewcode-block" id="TwoDdata.plot"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot 2D data (e.g. MS and ATDs)</span>
+<span class="sd">        Can take matplotlib axes object, as well as any standard</span>
+<span class="sd">        inputs for matplotlib.pyplot.plot().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">checkAx</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;black&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;lw&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;lw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;$m/z$&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TwoDdata.plotgPeaks"><a class="viewcode-back" href="../../msClasses.html#msClasses.TwoDdata.TwoDdata.plotgPeaks">[docs]</a>    <span class="k">def</span> <span class="nf">plotgPeaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">labels</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;if labels=0 then only peak id&#39;s are displayed</span>
+<span class="sd">        otherwise x-values are shown as well</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;gray&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;alpha&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;alpha&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">):</span>
+            <span class="c">#print k</span>
+            <span class="c">#print self.gPeaks.keys()</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">labels</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">label</span><span class="p">,[</span><span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]])</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

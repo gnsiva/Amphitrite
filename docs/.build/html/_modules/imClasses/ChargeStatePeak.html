@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imClasses.ChargeStatePeak &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for imClasses.ChargeStatePeak</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Class for calculating the point mid-way between a charge state peak and charge</span>
+<span class="sd">states above and below.</span>
+
+<span class="sd">This means you can extract arrival time information from large regions of the</span>
+<span class="sd">mass spectrum without overlapping the extraction ranges.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Ganesh N. Sivalingam &lt;g.n.sivalingam@gmail.com&gt;&quot;</span>
+
+<span class="c"># Used by ContourGui/CtrPlotPanel.py</span>
+
+<span class="c"># TODO(gns) - This is a complete mess, fix it</span>
+<span class="c"># It is only used in one function and it is not implemented (or even named) well</span>
+
+<span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="ChargeStatePeak"><a class="viewcode-back" href="../../imClasses.html#imClasses.ChargeStatePeak.ChargeStatePeak">[docs]</a><span class="k">class</span> <span class="nc">ChargeStatePeak</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :parameter mass: Mass associated with this peak (float)</span>
+<span class="sd">    :parameter charge: Charge of peak (int)</span>
+<span class="sd">    :parameter species: Species name</span>
+<span class="sd">    :parameter speciesAllCharges: List of all the charges this molecular species is detected with</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mass</span><span class="p">,</span><span class="n">charge</span><span class="p">,</span><span class="n">speciesAllCharges</span><span class="p">):</span>
+        <span class="c"># self.mass = None</span>
+        <span class="c"># self.charge = None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">charge</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">speciesAllCharges</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">speciesAllCharges</span><span class="p">,</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_mz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">limits</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ChargeStatePeak.calcLimits"><a class="viewcode-back" href="../../imClasses.html#imClasses.ChargeStatePeak.ChargeStatePeak.calcLimits">[docs]</a>    <span class="k">def</span> <span class="nf">calcLimits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">allMzs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate m/z limits for peak and set to self.limits</span>
+
+<span class="sd">        :parameter allMzs: list of m/z values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allMzs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">allMzs</span><span class="p">)</span>
+        <span class="n">allMzs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">allMzs</span><span class="p">)</span>
+
+        <span class="n">diffs</span> <span class="o">=</span> <span class="n">allMzs</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span>
+        <span class="n">zeroDiffIs</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">diffs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="p">]</span>
+        <span class="n">lowerMz</span><span class="p">,</span><span class="n">upperMz</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+        
+        <span class="c"># down</span>
+        <span class="k">if</span> <span class="n">zeroDiffIs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">downI</span> <span class="o">=</span> <span class="n">zeroDiffIs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">lowerMz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">-</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">-</span> <span class="n">allMzs</span><span class="p">[</span><span class="n">downI</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            
+        <span class="c"># up</span>
+        <span class="k">if</span> <span class="n">zeroDiffIs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">allMzs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">upI</span> <span class="o">=</span> <span class="n">zeroDiffIs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">upperMz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">+</span> <span class="p">((</span><span class="n">allMzs</span><span class="p">[</span><span class="n">upI</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c"># correct end charges</span>
+        <span class="n">lowerMz</span><span class="p">,</span><span class="n">upperMz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correctForFirstLastCharge</span><span class="p">(</span><span class="n">lowerMz</span><span class="p">,</span><span class="n">upperMz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limits</span> <span class="o">=</span> <span class="p">[</span><span class="n">lowerMz</span><span class="p">,</span><span class="n">upperMz</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="ChargeStatePeak.getLimits"><a class="viewcode-back" href="../../imClasses.html#imClasses.ChargeStatePeak.ChargeStatePeak.getLimits">[docs]</a>    <span class="k">def</span> <span class="nf">getLimits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">allMzs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate m/z limits for peak and return list in the form [lower,upper]</span>
+
+<span class="sd">        :parameter allMzs: list of m/z values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Called by CtrPlotPanel.getAutoPeakLimits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calcLimits</span><span class="p">(</span><span class="n">allMzs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">limits</span>
+
+    </div>
+<div class="viewcode-block" id="ChargeStatePeak.correctForFirstLastCharge"><a class="viewcode-back" href="../../imClasses.html#imClasses.ChargeStatePeak.ChargeStatePeak.correctForFirstLastCharge">[docs]</a>    <span class="k">def</span> <span class="nf">correctForFirstLastCharge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">lowerMz</span><span class="p">,</span><span class="n">upperMz</span><span class="p">):</span>
+    
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speciesAllCharges</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c"># fix for leftmost charge</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">speciesAllCharges</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">diff</span> <span class="o">=</span> <span class="n">upperMz</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span>
+                <span class="n">lowerMz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">-</span> <span class="n">diff</span>
+            <span class="c"># fix for right</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">speciesAllCharges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">-</span> <span class="n">lowerMz</span>
+                <span class="n">upperMz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">+</span> <span class="n">diff</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># NEED BUG WARNING</span>
+            <span class="c"># I am fudging it here and giving arbitary width</span>
+            <span class="c"># (corner case -&gt; only one charge for the species)</span>
+            <span class="n">lowerMz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">-</span> <span class="mi">20</span>
+            <span class="n">upperMz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">+</span> <span class="mi">20</span>
+        <span class="k">return</span> <span class="n">lowerMz</span><span class="p">,</span><span class="n">upperMz</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

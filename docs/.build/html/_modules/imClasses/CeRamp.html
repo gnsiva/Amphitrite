@@ -1,0 +1,752 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imClasses.CeRamp &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for imClasses.CeRamp</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">imClasses.Im</span> <span class="kn">as</span> <span class="nn">Im</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">msClasses</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">import</span> <span class="nn">lib.SG</span> <span class="kn">as</span> <span class="nn">sg</span>
+
+<span class="n">legendFontSize</span> <span class="o">=</span> <span class="mi">12</span>
+
+<div class="viewcode-block" id="CeRamp"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp">[docs]</a><span class="k">class</span> <span class="nc">CeRamp</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">proteinName</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proteinName</span> <span class="o">=</span> <span class="n">proteinName</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fnRoot</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">afit</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">speciesName</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imOb</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">leftMultiplier</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rightMultiplier</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrationOb</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="c">#________________</span>
+        <span class="c"># Outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># Run self.calculateStatistics() to fill in these values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meansAtds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdevsAtds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deltasAtds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variancesAtds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aucsAtds</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">meansCcsds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdevsCcsds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deltasCcsds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variancesCcsds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aucsCcsds</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="c">#================================================================</span>
+    <span class="c"># Setup (auto)</span>
+<div class="viewcode-block" id="CeRamp.setupProteinRamp"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.setupProteinRamp">[docs]</a>    <span class="k">def</span> <span class="nf">setupProteinRamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dire</span><span class="p">,</span><span class="n">fnRoot</span><span class="p">,</span><span class="n">noOfFiles</span><span class="p">,</span><span class="n">startNo</span><span class="p">,</span>
+                           <span class="n">afit</span><span class="p">,</span><span class="n">sp</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">lm</span><span class="p">,</span><span class="n">rm</span><span class="p">,</span>
+                           <span class="n">vStart</span><span class="p">,</span><span class="n">vEnd</span><span class="p">,</span><span class="n">vStep</span><span class="p">,</span><span class="n">cal</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileNameGenerator</span><span class="p">(</span><span class="n">dire</span><span class="o">+</span><span class="n">fnRoot</span><span class="p">,</span><span class="n">noOfFiles</span><span class="p">,</span><span class="n">startNo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAtroposSettings</span><span class="p">(</span><span class="n">afit</span><span class="p">,</span><span class="n">sp</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltagesGenerator</span><span class="p">(</span><span class="n">vStart</span><span class="p">,</span><span class="n">vEnd</span><span class="p">,</span><span class="n">vStep</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMultiplers</span><span class="p">(</span><span class="n">lm</span><span class="p">,</span><span class="n">rm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extractDataFromFiles</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">cal</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setCalibration</span><span class="p">(</span><span class="n">cal</span><span class="p">)</span>
+        <span class="c">#self.calculateStatistics()</span>
+
+    <span class="c">#================================================================</span>
+    <span class="c"># Filenames and voltages</span></div>
+<div class="viewcode-block" id="CeRamp.fileNameGenerator"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.fileNameGenerator">[docs]</a>    <span class="k">def</span> <span class="nf">fileNameGenerator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rootName</span><span class="p">,</span><span class="n">noOfFiles</span><span class="p">,</span><span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fnRoot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rootName</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">noOfFiles</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">noOfFiles</span><span class="o">+</span><span class="n">start</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s%03d</span><span class="s">.a&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">rootName</span><span class="p">,</span><span class="n">number</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="CeRamp.setFilenames"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.setFilenames">[docs]</a>    <span class="k">def</span> <span class="nf">setFilenames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filenames</span><span class="p">,</span><span class="n">rootName</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="n">filenames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fnRoot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rootName</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CeRamp.getFilenames"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.getFilenames">[docs]</a>    <span class="k">def</span> <span class="nf">getFilenames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filenames</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span>
+</div>
+<div class="viewcode-block" id="CeRamp.voltagesGenerator"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.voltagesGenerator">[docs]</a>    <span class="k">def</span> <span class="nf">voltagesGenerator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">start</span><span class="p">,</span><span class="n">stop</span><span class="p">,</span><span class="n">step</span><span class="p">,</span><span class="n">autocrop</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">stop</span><span class="o">+</span><span class="mf">0.001</span><span class="p">,</span><span class="n">step</span><span class="p">)</span>
+        <span class="c"># If an error points here its probably because you</span>
+        <span class="c"># havent set self.charge yet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eVs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge</span>
+        <span class="k">if</span> <span class="n">autocrop</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eVs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eVs</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)]</span>
+</div>
+<div class="viewcode-block" id="CeRamp.setVoltages"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.setVoltages">[docs]</a>    <span class="k">def</span> <span class="nf">setVoltages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">voltages</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span> <span class="o">=</span> <span class="n">voltages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eVs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eVs</span>
+</div>
+<div class="viewcode-block" id="CeRamp.getVoltages"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.getVoltages">[docs]</a>    <span class="k">def</span> <span class="nf">getVoltages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span></div>
+<div class="viewcode-block" id="CeRamp.getEvs"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.getEvs">[docs]</a>    <span class="k">def</span> <span class="nf">getEvs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eVs</span>
+    <span class="c">#================================================================</span>
+    <span class="c"># aFits, Calibrations and Multipliers</span></div>
+<div class="viewcode-block" id="CeRamp.setAtroposSettings"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.setAtroposSettings">[docs]</a>    <span class="k">def</span> <span class="nf">setAtroposSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">afit</span><span class="p">,</span><span class="n">speciesName</span><span class="p">,</span><span class="n">charge</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">afit</span> <span class="o">=</span> <span class="n">afit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imOb</span> <span class="o">=</span> <span class="n">Im</span><span class="o">.</span><span class="n">Im</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imOb</span><span class="o">.</span><span class="n">loadMsFit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">afit</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">speciesName</span> <span class="o">=</span> <span class="n">speciesName</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">charge</span>
+</div>
+<div class="viewcode-block" id="CeRamp.setMultiplers"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.setMultiplers">[docs]</a>    <span class="k">def</span> <span class="nf">setMultiplers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">leftMultiplier</span><span class="p">,</span><span class="n">rightMultiplier</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">leftMultiplier</span> <span class="o">=</span> <span class="n">leftMultiplier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rightMultiplier</span> <span class="o">=</span> <span class="n">rightMultiplier</span>
+</div>
+<div class="viewcode-block" id="CeRamp.setCalibration"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.setCalibration">[docs]</a>    <span class="k">def</span> <span class="nf">setCalibration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">calibration</span><span class="p">,</span><span class="n">changeToCcsDs</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Takes filename for calibration&#39;&#39;&#39;</span>
+        <span class="n">calibrationOb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">calibration</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrationOb</span> <span class="o">=</span> <span class="n">calibrationOb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generateCcsDistributions</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">changeToCcsDs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">useCcsDs</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">updateAxes</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CeRamp.generateCcsDistributions"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.generateCcsDistributions">[docs]</a>    <span class="k">def</span> <span class="nf">generateCcsDistributions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">generateCcsDistribution</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calibrationOb</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CeRamp.useAtds"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.useAtds">[docs]</a>    <span class="k">def</span> <span class="nf">useAtds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">updateAxes</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span> <span class="o">=</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="CeRamp.useCcsDs"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.useCcsDs">[docs]</a>    <span class="k">def</span> <span class="nf">useCcsDs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrationOb</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">updateAxes</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;No calibration object found!&#39;</span>
+
+    <span class="c">#================================================================</span>
+    <span class="c"># Processing</span></div>
+<div class="viewcode-block" id="CeRamp.extractDataFromFiles"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.extractDataFromFiles">[docs]</a>    <span class="k">def</span> <span class="nf">extractDataFromFiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">means</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">stdevs</span> <span class="o">=</span> <span class="p">[],[]</span>
+        <span class="c">#self.atds = []</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imOb</span><span class="o">.</span><span class="n">loadAmphiFile</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imOb</span><span class="o">.</span><span class="n">generateSpeciesSlicesFwhm</span><span class="p">(</span><span class="n">speciesName</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">speciesName</span><span class="p">,</span>
+                                                <span class="n">leftMultiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">leftMultiplier</span><span class="p">,</span>
+                                                <span class="n">rightMultiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rightMultiplier</span><span class="p">)</span>
+            <span class="n">dataSlice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imOb</span><span class="o">.</span><span class="n">getDataSlice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">speciesName</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span>
+
+            <span class="c"># Storage</span>
+            <span class="n">dataSlice</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">normalisationBpi</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataSlice</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">updateAxes</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CeRamp.updateAxes"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.updateAxes">[docs]</a>    <span class="k">def</span> <span class="nf">updateAxes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span> <span class="o">=</span> <span class="p">[],[]</span>
+
+        <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ccsd</span><span class="o">.</span><span class="n">xvals</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ccsd</span><span class="o">.</span><span class="n">yvals</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">xvals</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">yvals</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CeRamp.removeNans"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.removeNans">[docs]</a>    <span class="k">def</span> <span class="nf">removeNans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">):</span>
+        <span class="n">out_x</span> <span class="o">=</span> <span class="n">xaxis</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xaxis</span><span class="p">))]</span>
+        <span class="n">out_y</span> <span class="o">=</span> <span class="n">yaxis</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xaxis</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">out_x</span><span class="p">,</span><span class="n">out_y</span>
+
+
+    <span class="c">#================================================================</span>
+    <span class="c"># Calculating statistics</span></div>
+<div class="viewcode-block" id="CeRamp.calculateStatistics"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.calculateStatistics">[docs]</a>    <span class="k">def</span> <span class="nf">calculateStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># For CCSs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrationOb</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ccsd</span><span class="p">:</span>
+                <span class="n">dataSlices</span> <span class="o">=</span> <span class="p">[</span><span class="n">ob</span><span class="o">.</span><span class="n">ccsd</span> <span class="k">for</span> <span class="n">ob</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_calculateCcsdsStatistics</span><span class="p">(</span><span class="n">dataSlices</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;No CcsD is found in dataSlice&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;No calibration object found&#39;</span>
+        <span class="c"># For Atds</span>
+        <span class="n">dataSlices</span> <span class="o">=</span> <span class="p">[</span><span class="n">ob</span><span class="o">.</span><span class="n">atd</span> <span class="k">for</span> <span class="n">ob</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculateAtdsStatistics</span><span class="p">(</span><span class="n">dataSlices</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_calculateCcsdsStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dataSlices</span><span class="p">):</span>
+        <span class="n">avs</span><span class="p">,</span><span class="n">stdevs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statisticsCalcAvStd</span><span class="p">(</span><span class="n">dataSlices</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meansCcsds</span> <span class="o">=</span> <span class="n">avs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdevsCcsds</span> <span class="o">=</span> <span class="n">stdevs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deltasCcsds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statisticsCalcDelta</span><span class="p">(</span><span class="n">avs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variancesCcsds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statisticsCalcVariance</span><span class="p">(</span><span class="n">stdevs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aucsCcsds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statisticsCalcAuc</span><span class="p">(</span><span class="n">dataSlices</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_calculateAtdsStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dataSlices</span><span class="p">):</span>
+        <span class="n">avs</span><span class="p">,</span><span class="n">stdevs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statisticsCalcAvStd</span><span class="p">(</span><span class="n">dataSlices</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meansAtds</span> <span class="o">=</span> <span class="n">avs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdevsAtds</span> <span class="o">=</span> <span class="n">stdevs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deltasAtds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statisticsCalcDelta</span><span class="p">(</span><span class="n">avs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variancesAtds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statisticsCalcVariance</span><span class="p">(</span><span class="n">stdevs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aucsAtds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_statisticsCalcAuc</span><span class="p">(</span><span class="n">dataSlices</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_statisticsCalcAvStd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">twoDdataList</span><span class="p">):</span>
+        <span class="n">avs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">twoDdataList</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;float&#39;</span><span class="p">)</span>
+        <span class="n">stdevs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">twoDdataList</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;float&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">tD</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">twoDdataList</span><span class="p">):</span>
+            <span class="n">av</span><span class="p">,</span><span class="n">stdev</span> <span class="o">=</span> <span class="n">tD</span><span class="o">.</span><span class="n">calculateWeightedMeanStandardDeviation</span><span class="p">()</span>
+            <span class="n">avs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">av</span>
+            <span class="n">stdevs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">stdev</span>
+        <span class="k">return</span> <span class="n">avs</span><span class="p">,</span><span class="n">stdevs</span>
+    <span class="k">def</span> <span class="nf">_statisticsCalcDelta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">avs</span><span class="p">):</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">avs</span> <span class="o">-</span> <span class="n">avs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">deltas</span>
+    <span class="k">def</span> <span class="nf">_statisticsCalcVariance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">stdevs</span><span class="p">):</span>
+        <span class="n">variances</span> <span class="o">=</span> <span class="n">stdevs</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">variances</span>
+    <span class="k">def</span> <span class="nf">_statisticsCalcAuc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">twoDdataList</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function for calculating the area under the curve</span>
+<span class="sd">        Intended for use on Atds and CCSDs</span>
+<span class="sd">        Second variable is asking for xaxis</span>
+<span class="sd">        Either self.eVs or self.voltages</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">aucs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">twoDdataList</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;float&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">dist</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">twoDdataList</span><span class="p">):</span>
+            <span class="n">aucs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">calculateAreaUnderCurve</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">aucs</span>
+
+
+<div class="viewcode-block" id="CeRamp.getAtdStatistics"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.getAtdStatistics">[docs]</a>    <span class="k">def</span> <span class="nf">getAtdStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meansAtds</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">stdevsAtds</span></div>
+<div class="viewcode-block" id="CeRamp.getCcsStatistics"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.getCcsStatistics">[docs]</a>    <span class="k">def</span> <span class="nf">getCcsStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meansCcsds</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">stdevsCcsds</span>
+</div>
+<div class="viewcode-block" id="CeRamp.getStatistics"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.getStatistics">[docs]</a>    <span class="k">def</span> <span class="nf">getStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;returns stats of currently being used form (e.g. atd or ccs)</span>
+<span class="sd">        final return is boolean for if calibrated results are sent&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meansCcsds</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">stdevsCcsds</span><span class="p">,</span><span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meansAtds</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">stdevsAtds</span><span class="p">,</span><span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meansCcsds</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">stdevsCcsds</span>
+
+
+    <span class="c">#================================================================</span>
+    <span class="c"># Smoothing distributions</span></div>
+<div class="viewcode-block" id="CeRamp.smoothDistributions"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.smoothDistributions">[docs]</a>    <span class="k">def</span> <span class="nf">smoothDistributions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">window_len</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">smoothes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">poly_order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrationOb</span><span class="p">:</span>
+                <span class="n">ds</span><span class="o">.</span><span class="n">ccsd</span><span class="o">.</span><span class="n">smoothingSG</span><span class="p">(</span><span class="n">window_len</span><span class="p">,</span><span class="n">smoothes</span><span class="p">,</span><span class="n">poly_order</span><span class="p">)</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">smoothingSG</span><span class="p">(</span><span class="n">window_len</span><span class="p">,</span><span class="n">smoothes</span><span class="p">,</span><span class="n">poly_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updateAxes</span><span class="p">()</span>
+
+
+    <span class="c">#================================================================</span>
+    <span class="c"># Plotting</span></div>
+<div class="viewcode-block" id="CeRamp.plotAllDistributions"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotAllDistributions">[docs]</a>    <span class="k">def</span> <span class="nf">plotAllDistributions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">colour</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="c"># TODO - fix this</span>
+        <span class="c"># this has basically been rewritten in CeRampComparison.py</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span><span class="p">)):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="n">lift</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colour</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">label1dPlots</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">lift</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span><span class="s">&#39;V&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelDistributionAxes</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="CeRamp.plotSingleUnfoldingCurve"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotSingleUnfoldingCurve">[docs]</a>    <span class="k">def</span> <span class="nf">plotSingleUnfoldingCurve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">colour</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s">&#39;.&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">meansCcsds</span><span class="p">,</span><span class="s">&#39;-&#39;</span><span class="o">+</span><span class="n">colour</span><span class="o">+</span><span class="n">marker</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;CCS ($\AA^2$)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">meansAtds</span><span class="p">,</span><span class="s">&#39;-&#39;</span><span class="o">+</span><span class="n">colour</span><span class="o">+</span><span class="n">marker</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Arrival Time (ms)&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;Trap Voltage&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="CeRamp.plotSingleStdevCurve"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotSingleStdevCurve">[docs]</a>    <span class="k">def</span> <span class="nf">plotSingleStdevCurve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">colour</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s">&#39;.&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">stdevsCcsds</span><span class="p">,</span><span class="s">&#39;-&#39;</span><span class="o">+</span><span class="n">colour</span><span class="o">+</span><span class="n">marker</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Standard Deviation&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">stdevsAtds</span><span class="p">,</span><span class="s">&#39;-&#39;</span><span class="o">+</span><span class="n">colour</span><span class="o">+</span><span class="n">marker</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Standard Deviation&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;Trap Voltage&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CeRamp.drawTriplePlot"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.drawTriplePlot">[docs]</a>    <span class="k">def</span> <span class="nf">drawTriplePlot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="c"># setting up figure</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">figsize</span><span class="p">:</span>
+            <span class="n">figsize</span> <span class="o">=</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="kn">as</span> <span class="nn">mpl</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c"># plotting atds</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotAllDistributions</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="n">lift</span><span class="p">)</span>
+        <span class="c"># plotting unfolding</span>
+        <span class="n">ax2</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotSingleUnfoldingCurve</span><span class="p">(</span><span class="n">ax2</span><span class="p">)</span>
+        <span class="c"># plotting stdevs</span>
+        <span class="n">ax3</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotSingleStdevCurve</span><span class="p">(</span><span class="n">ax3</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+    <span class="c">#================================================================</span>
+    <span class="c"># Fitting</span>
+</div>
+<div class="viewcode-block" id="CeRamp.leastSquaresStaticMeans"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.leastSquaresStaticMeans">[docs]</a>    <span class="k">def</span> <span class="nf">leastSquaresStaticMeans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">amp</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+        <span class="n">fwhm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStartingWidth</span><span class="p">()</span>
+        <span class="n">amp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">mean</span> <span class="ow">in</span> <span class="n">peakTops</span><span class="p">:</span>
+            <span class="n">p0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span>
+            <span class="n">p0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fwhm</span><span class="p">)</span>
+
+        <span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">removeNans</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">)</span>
+
+        <span class="c"># Running fitting</span>
+        <span class="kn">import</span> <span class="nn">time</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+        <span class="n">startTime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">p1</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitFuncStaticMeans</span><span class="p">,</span><span class="n">p0</span><span class="p">[:],</span>
+                                       <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">))</span><span class="c">#,maxfev=100000)</span>
+        <span class="k">print</span> <span class="s">&quot;Optimisation took:&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">startTime</span><span class="p">,</span> <span class="s">&quot;s&quot;</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+        <span class="n">sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributionFromP</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xaxis</span><span class="p">,</span><span class="n">sim</span><span class="p">,</span><span class="n">p1</span>
+</div>
+<div class="viewcode-block" id="CeRamp.fitFuncStaticMeans"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.fitFuncStaticMeans">[docs]</a>    <span class="k">def</span> <span class="nf">fitFuncStaticMeans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">simulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributionFromP</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">yaxis</span> <span class="o">-</span> <span class="n">simulation</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="CeRamp.distributionFromP"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.distributionFromP">[docs]</a>    <span class="k">def</span> <span class="nf">distributionFromP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;returns simulated distribution&#39;&#39;&#39;</span>
+        <span class="n">simulation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xaxis</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">gGen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussParameterGeneratorStaticMeans</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mean</span> <span class="ow">in</span> <span class="n">peakTops</span><span class="p">:</span>
+            <span class="n">gP</span> <span class="o">=</span> <span class="n">gGen</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">simulation</span> <span class="o">+=</span> <span class="n">utils</span><span class="o">.</span><span class="n">gaussian</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">gP</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">gP</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">gP</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">simulation</span>
+</div>
+<div class="viewcode-block" id="CeRamp.gaussParameterGeneratorStaticMeans"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.gaussParameterGeneratorStaticMeans">[docs]</a>    <span class="k">def</span> <span class="nf">gaussParameterGeneratorStaticMeans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">peakTops</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;return the 3 gauss parameters from a distributions&#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">mean</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">peakTops</span><span class="p">):</span>
+            <span class="n">gaussP</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+            <span class="n">gaussP</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">peakTops</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>         <span class="c"># mean</span>
+            <span class="n">gaussP</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">]</span>      <span class="c"># amp</span>
+            <span class="n">gaussP</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>    <span class="c"># fwhm</span>
+            <span class="k">yield</span> <span class="n">gaussP</span>
+</div>
+<div class="viewcode-block" id="CeRamp.getStartingWidth"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.getStartingWidth">[docs]</a>    <span class="k">def</span> <span class="nf">getStartingWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">factor</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;returns a quarter of the width of the xaxis&#39;&#39;&#39;</span>
+        <span class="n">xaxis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">xaxis</span> <span class="o">=</span> <span class="n">xaxis</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xaxis</span><span class="p">))]</span>  <span class="c"># remove nans</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">xaxis</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">-</span><span class="n">xaxis</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">/</span><span class="n">factor</span>
+
+    <span class="c">#================================</span>
+    <span class="c"># plotting (fitting only)</span></div>
+<div class="viewcode-block" id="CeRamp.fitAndPlotAll"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.fitAndPlotAll">[docs]</a>    <span class="k">def</span> <span class="nf">fitAndPlotAll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotAllDistributions</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="n">lift</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="p">)):</span>
+
+            <span class="n">xaxis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">yaxis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="n">sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leastSquaresStaticMeans</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+
+            <span class="n">liftInd</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">lift</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plotStaticMeansGaussians</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">sim</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">liftInd</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plotStaticMeansSimulation</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">sim</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">liftInd</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CeRamp.plotStaticMeansGaussians"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotStaticMeansGaussians">[docs]</a>    <span class="k">def</span> <span class="nf">plotStaticMeansGaussians</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">lift</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;plots the individual gaussians determined by the fit&#39;&#39;&#39;</span>
+        <span class="n">gGen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussParameterGeneratorStaticMeans</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">mean</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">peakTops</span><span class="p">):</span>
+            <span class="n">gP</span> <span class="o">=</span> <span class="n">gGen</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">gaussian</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">gP</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">gP</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">gP</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="n">lift</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">colourList</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelDistributionAxes</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CeRamp.plotStaticMeansSimulation"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotStaticMeansSimulation">[docs]</a>    <span class="k">def</span> <span class="nf">plotStaticMeansSimulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">lift</span><span class="p">):</span>
+        <span class="n">ySim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributionFromP</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">ySim</span><span class="o">+</span><span class="n">lift</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelDistributionAxes</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="CeRamp.labelDistributionAxes"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.labelDistributionAxes">[docs]</a>    <span class="k">def</span> <span class="nf">labelDistributionAxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrateDistributions</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;CCS ($\AA^2$)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;Arrival Time (ms)&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+
+    <span class="c">#================================================================</span>
+    <span class="c"># Genetic algorthim fitting</span></div>
+<div class="viewcode-block" id="CeRamp.geneticAlgorithmStaticMeans"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.geneticAlgorithmStaticMeans">[docs]</a>    <span class="k">def</span> <span class="nf">geneticAlgorithmStaticMeans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">maxFwhm</span><span class="p">,</span><span class="n">popsize</span><span class="p">,</span>
+                                    <span class="n">generations</span><span class="p">,</span><span class="n">elitism</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">mutationRate</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;i is the index for the voltage you want to fit for</span>
+<span class="sd">        peakTops are the means of the gaussians you want to fit</span>
+<span class="sd">        if not False elitism should be set to a number</span>
+<span class="sd">        if not False mutationRate should be set to a number (0-&gt;1)&#39;&#39;&#39;</span>
+
+        <span class="kn">import</span> <span class="nn">StaticMeansChromosome</span> <span class="kn">as</span> <span class="nn">Smc</span>
+        <span class="kn">from</span> <span class="nn">pyevolve</span> <span class="kn">import</span> <span class="n">G1DList</span><span class="p">,</span> <span class="n">GSimpleGA</span><span class="p">,</span> <span class="n">Selectors</span><span class="p">,</span> <span class="n">Scaling</span><span class="p">,</span> <span class="n">Crossovers</span>
+        <span class="kn">from</span> <span class="nn">pyevolve</span> <span class="kn">import</span> <span class="n">Initializators</span><span class="p">,</span> <span class="n">Mutators</span><span class="p">,</span> <span class="n">Consts</span><span class="p">,</span> <span class="n">DBAdapters</span>
+
+        <span class="n">chromosome</span> <span class="o">=</span> <span class="n">Smc</span><span class="o">.</span><span class="n">StaticMeansChromosome</span><span class="p">(</span><span class="n">peakTops</span><span class="p">,</span><span class="n">maxFwhm</span><span class="p">)</span>
+        <span class="n">cLen</span> <span class="o">=</span> <span class="n">chromosome</span><span class="o">.</span><span class="n">getChromosomeLength</span><span class="p">()</span>
+        <span class="n">cLimits</span> <span class="o">=</span> <span class="n">chromosome</span><span class="o">.</span><span class="n">getChromosomeLimits</span><span class="p">()</span>
+
+        <span class="c">#================</span>
+        <span class="c"># Genome initialisation</span>
+        <span class="n">genome</span> <span class="o">=</span> <span class="n">G1DList</span><span class="o">.</span><span class="n">G1DList</span><span class="p">(</span><span class="n">cLen</span><span class="p">)</span>
+        <span class="n">genome</span><span class="o">.</span><span class="n">mutator</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">Mutators</span><span class="o">.</span><span class="n">G1DListMutatorGish</span><span class="p">)</span>
+        <span class="n">genome</span><span class="o">.</span><span class="n">initializator</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">Initializators</span><span class="o">.</span><span class="n">G1DListInitializatorGish</span><span class="p">)</span>
+        <span class="n">genome</span><span class="o">.</span><span class="n">evaluator</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitFuncStaticMeansGeneticAlgorithm</span><span class="p">)</span>
+        <span class="c">#================</span>
+        <span class="c"># Passing parameters</span>
+        <span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">removeNans</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;xaxis&#39;</span><span class="p">:</span><span class="n">xaxis</span><span class="p">,</span><span class="s">&#39;yaxis&#39;</span><span class="p">:</span><span class="n">yaxis</span><span class="p">,</span><span class="s">&#39;peakTops&#39;</span><span class="p">:</span><span class="n">peakTops</span><span class="p">}</span>
+        <span class="n">genome</span><span class="o">.</span><span class="n">setParams</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="c">#================</span>
+        <span class="c"># Genetic algorithm initialisation</span>
+        <span class="n">ga</span> <span class="o">=</span> <span class="n">GSimpleGA</span><span class="o">.</span><span class="n">GSimpleGA</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span>
+        <span class="n">ga</span><span class="o">.</span><span class="n">setPopulationSize</span><span class="p">(</span><span class="n">popsize</span><span class="p">)</span>
+
+        <span class="n">ga</span><span class="o">.</span><span class="n">setParams</span><span class="p">(</span><span class="n">limits</span><span class="o">=</span><span class="n">cLimits</span><span class="p">)</span>
+        <span class="n">ga</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">Selectors</span><span class="o">.</span><span class="n">GRouletteWheel</span><span class="p">)</span>
+
+        <span class="n">pop</span> <span class="o">=</span> <span class="n">ga</span><span class="o">.</span><span class="n">getPopulation</span><span class="p">()</span>
+        <span class="n">pop</span><span class="o">.</span><span class="n">scaleMethod</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">Scaling</span><span class="o">.</span><span class="n">SigmaTruncScaling</span><span class="p">)</span>
+
+        <span class="n">ga</span><span class="o">.</span><span class="n">setGenerations</span><span class="p">(</span><span class="n">generations</span><span class="p">)</span>
+        <span class="n">ga</span><span class="o">.</span><span class="n">minimax</span> <span class="o">=</span> <span class="n">Consts</span><span class="o">.</span><span class="n">minimaxType</span><span class="p">[</span><span class="s">&quot;minimize&quot;</span><span class="p">]</span>
+        <span class="c">#ga.setMultiProcessing(True)</span>
+        <span class="c">#================</span>
+        <span class="c"># Elitism</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">elitism</span><span class="p">:</span>
+            <span class="n">ga</span><span class="o">.</span><span class="n">setElitism</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ga</span><span class="o">.</span><span class="n">setElitism</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">ga</span><span class="o">.</span><span class="n">setElitismReplacement</span><span class="p">(</span><span class="n">elitism</span><span class="p">)</span>
+        <span class="c">#================</span>
+        <span class="c"># Mutation rate</span>
+        <span class="k">if</span> <span class="n">mutationRate</span><span class="p">:</span>
+            <span class="n">ga</span><span class="o">.</span><span class="n">setMutationRate</span><span class="p">(</span><span class="n">mutationRate</span><span class="p">)</span>
+        <span class="c">#================</span>
+        <span class="c"># Crossover</span>
+        <span class="c"># NOT DONE YET (SEE 130226_GA_dummy_data_tests_2.0.4_cm_testing.py)</span>
+
+        <span class="c">#================</span>
+        <span class="c"># Run it</span>
+        <span class="n">ga</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span><span class="n">freq_stats</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">limits</span><span class="o">=</span><span class="n">cLimits</span><span class="p">)</span>
+
+        <span class="c">#================</span>
+        <span class="c"># Return output</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="n">ga</span><span class="o">.</span><span class="n">bestIndividual</span><span class="p">()</span>
+        <span class="k">print</span> <span class="n">best</span>
+        <span class="n">simulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributionFromC</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">best</span><span class="p">),</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xaxis</span><span class="p">,</span><span class="n">simulation</span><span class="p">,</span><span class="nb">list</span><span class="p">(</span><span class="n">best</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CeRamp.fitFuncStaticMeansGeneticAlgorithm"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.fitFuncStaticMeansGeneticAlgorithm">[docs]</a>    <span class="k">def</span> <span class="nf">fitFuncStaticMeansGeneticAlgorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">chromosome</span><span class="p">):</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">xaxis</span> <span class="o">=</span> <span class="n">chromosome</span><span class="o">.</span><span class="n">getParam</span><span class="p">(</span><span class="s">&#39;xaxis&#39;</span><span class="p">)</span>
+        <span class="n">yaxis</span> <span class="o">=</span> <span class="n">chromosome</span><span class="o">.</span><span class="n">getParam</span><span class="p">(</span><span class="s">&#39;yaxis&#39;</span><span class="p">)</span>
+        <span class="n">peakTops</span> <span class="o">=</span> <span class="n">chromosome</span><span class="o">.</span><span class="n">getParam</span><span class="p">(</span><span class="s">&#39;peakTops&#39;</span><span class="p">)</span>
+
+        <span class="n">simulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributionFromC</span><span class="p">(</span><span class="n">chromosome</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">yaxis</span><span class="o">-</span><span class="n">simulation</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">error</span>
+</div>
+<div class="viewcode-block" id="CeRamp.splitChromosomeToGaussians"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.splitChromosomeToGaussians">[docs]</a>    <span class="k">def</span> <span class="nf">splitChromosomeToGaussians</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">chromosome</span><span class="p">,</span><span class="n">peakTops</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;this function shouldnt really be here</span>
+<span class="sd">        it already exists in StaticMeansChromosome.</span>
+<span class="sd">        (only does one distribution at a time)</span>
+<span class="sd">        per gaussian [mu,amp,fwhm]&#39;&#39;&#39;</span>
+        <span class="n">cGaussians</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">peakTops</span><span class="p">]</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">peakTop</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">peakTops</span><span class="p">):</span>
+            <span class="n">cGaussians</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peakTop</span><span class="p">)</span>
+            <span class="n">cGaussians</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chromosome</span><span class="p">[</span><span class="n">counter</span><span class="p">])</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">cGaussians</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chromosome</span><span class="p">[</span><span class="n">counter</span><span class="p">])</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">cGaussians</span>
+</div>
+<div class="viewcode-block" id="CeRamp.distributionFromC"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.distributionFromC">[docs]</a>    <span class="k">def</span> <span class="nf">distributionFromC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">chromosome</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;chromosome output from a static means genetic algorithm&#39;&#39;&#39;</span>
+        <span class="n">simulation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xaxis</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">cGaussians</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">splitChromosomeToGaussians</span><span class="p">(</span><span class="n">chromosome</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">gC</span> <span class="ow">in</span> <span class="n">cGaussians</span><span class="p">:</span>
+            <span class="n">simulation</span> <span class="o">+=</span> <span class="n">utils</span><span class="o">.</span><span class="n">gaussian</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">gC</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">gC</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">gC</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">simulation</span>
+
+    <span class="c">#================================</span>
+    <span class="c"># Plotting for genetic algorthim fitting</span></div>
+<div class="viewcode-block" id="CeRamp.plotStaticMeansGeneticAlgorithm"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotStaticMeansGeneticAlgorithm">[docs]</a>    <span class="k">def</span> <span class="nf">plotStaticMeansGeneticAlgorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">chromosome</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">simulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distributionFromC</span><span class="p">(</span><span class="n">chromosome</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="n">xaxis</span><span class="p">,</span><span class="n">simulation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">removeNans</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">simulation</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">simulation</span><span class="o">+</span><span class="n">lift</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelDistributionAxes</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CeRamp.plotStaticMeansGaGaussians"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotStaticMeansGaGaussians">[docs]</a>    <span class="k">def</span> <span class="nf">plotStaticMeansGaGaussians</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">chromosome</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">cGaussians</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">splitChromosomeToGaussians</span><span class="p">(</span><span class="n">chromosome</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">gC</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cGaussians</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">gaussian</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">gC</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">gC</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">gC</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="n">lift</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="CeRamp.plotStaticMeanConformationTracking"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotStaticMeanConformationTracking">[docs]</a>    <span class="k">def</span> <span class="nf">plotStaticMeanConformationTracking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">bests</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">xaxes</span><span class="p">,</span><span class="n">absolute</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">stackOfDistributions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">best</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bests</span><span class="p">):</span>
+            <span class="n">conformations</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">cGaussians</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">splitChromosomeToGaussians</span><span class="p">(</span><span class="n">best</span><span class="p">,</span><span class="n">peakTops</span><span class="p">)</span>
+            <span class="c"># [mu,amp,fwhm]</span>
+            <span class="n">xaxis</span> <span class="o">=</span> <span class="n">xaxes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xaxes</span><span class="p">[</span><span class="n">i</span><span class="p">]))]</span>
+
+            <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">g</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cGaussians</span><span class="p">):</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">gaussian</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">g</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">integral</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="n">xaxis</span><span class="p">)</span>
+                <span class="n">conformations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">integral</span><span class="p">)</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="n">integral</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">absolute</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conformations</span><span class="p">)):</span>
+                    <span class="n">conformations</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">conformations</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">total</span><span class="o">*</span><span class="mi">100</span>
+
+            <span class="n">stackOfDistributions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conformations</span><span class="p">)</span>
+        <span class="n">stackOfDistributions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stackOfDistributions</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">stackOfDistributions</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span><span class="n">stackOfDistributions</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">peakTops</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s">&#39; $\AA^2$&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span><span class="n">stackOfDistributions</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="c">#ax.legend(loc=&#39;upper right&#39;,prop={&#39;size&#39;:legendFontSize})</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;Voltage&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">absolute</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Conformational Area (%)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Conformational Area&#39;</span><span class="p">)</span>
+
+        <span class="c"># stop the y axis going well negative for no reason</span>
+        <span class="n">ylims</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="p">(</span><span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mf">0.01</span><span class="p">)</span><span class="o">*-</span><span class="mi">1</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span><span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+</div>
+    <span class="k">def</span> <span class="nf">_convertAbsoluteConformationAbundanceToPerc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">conformations</span><span class="p">):</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">conformations</span><span class="p">)</span>
+        <span class="n">conformations_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">con</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;float&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conformations</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+            <span class="c"># going round the voltages</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conformations</span><span class="p">)):</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="n">conformations</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="n">abundances</span> <span class="o">=</span> <span class="p">[</span><span class="n">conformations</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">total</span><span class="o">*</span><span class="mi">100</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conformations</span><span class="p">))]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">conformations</span><span class="p">)):</span>
+                <span class="n">conformations_out</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">abundances</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">conformations_out</span>
+
+<div class="viewcode-block" id="CeRamp.plotPeakHeightConformationTracking"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotPeakHeightConformationTracking">[docs]</a>    <span class="k">def</span> <span class="nf">plotPeakHeightConformationTracking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">absolute</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Absolute flag gives absolution intensities whereas</span>
+<span class="sd">        False gives percentage of total&#39;&#39;&#39;</span>
+        <span class="n">conformations</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">peakTops</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">peakTop</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">peakTops</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span><span class="p">):</span>
+                <span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">removeNans</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">)</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">closest</span><span class="p">(</span><span class="n">peakTop</span><span class="p">,</span><span class="n">xaxis</span><span class="p">)</span>
+                <span class="n">conformations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yaxis</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">absolute</span><span class="p">:</span>
+            <span class="n">conformations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convertAbsoluteConformationAbundanceToPerc</span><span class="p">(</span><span class="n">conformations</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">conformation</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">conformations</span><span class="p">):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span><span class="n">conformation</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">peakTops</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s">&#39; $\AA^2$&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voltages</span><span class="p">,</span><span class="n">conformation</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">absolute</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Peak Height Abundance (%)&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Peak Height&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;Voltage&#39;</span><span class="p">)</span>
+
+        <span class="c"># stop the y axis going well negative for no reason</span>
+        <span class="n">ylims</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="p">(</span><span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mf">0.01</span><span class="p">)</span><span class="o">*-</span><span class="mi">1</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span><span class="n">ylims</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c">#ax.legend(loc=&#39;best&#39;,prop={&#39;size&#39;:legendFontSize})</span>
+</div>
+<div class="viewcode-block" id="CeRamp.plotPeakTopPositions"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotPeakTopPositions">[docs]</a>    <span class="k">def</span> <span class="nf">plotPeakTopPositions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">peakTops</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span><span class="p">)):</span>
+            <span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">removeNans</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="o">+</span><span class="n">lift</span><span class="o">*</span><span class="n">i</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">j</span><span class="p">,(</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">peakTop</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">peakTops</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">peakTop</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                                <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">peakTops</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s">&#39; $\AA^2$&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">peakTop</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;CCS $\AA^2$&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s">&#39;upper left&#39;</span><span class="p">,</span><span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;size&#39;</span><span class="p">:</span><span class="n">legendFontSize</span><span class="p">})</span>
+</div>
+<div class="viewcode-block" id="CeRamp.plotCiuContourPlot"><a class="viewcode-back" href="../../imClasses.html#imClasses.CeRamp.CeRamp.plotCiuContourPlot">[docs]</a>    <span class="k">def</span> <span class="nf">plotCiuContourPlot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c"># TODO make a function for this</span>
+        <span class="c"># encapsulate it out and add it everywhere else</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
+        <span class="c"># Get rid of the NaNs</span>
+        <span class="n">yaxes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xaxes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaxes</span><span class="p">:</span>
+            <span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">removeNans</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">yaxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yaxis</span><span class="p">)</span>
+
+        <span class="c"># Need to interpolate the damn Xaxis</span>
+        <span class="n">new_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">xaxis</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="n">xaxis</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;float&#39;</span><span class="p">)</span>
+
+        <span class="n">yaxes2</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">yaxis</span> <span class="ow">in</span> <span class="n">yaxes</span><span class="p">:</span>
+            <span class="n">yaxes2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">new_x</span><span class="p">,</span><span class="n">xaxis</span><span class="p">,</span><span class="n">yaxis</span><span class="p">))</span>
+
+        <span class="n">ccsAxis</span> <span class="o">=</span> <span class="n">new_x</span>
+
+        <span class="c"># Make the matrix and get the orientation right</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">yaxes2</span><span class="p">)</span>
+
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+
+        <span class="n">vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltages</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span><span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">vs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">vs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">ccsAxis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ccsAxis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;Voltage&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;CCS ($\AA^2$)&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

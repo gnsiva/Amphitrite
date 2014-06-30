@@ -1,0 +1,447 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>lib.utils &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for lib.utils</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Utility functions for handling data.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+
+<div class="viewcode-block" id="weightedAverageAndStd"><a class="viewcode-back" href="../../lib.html#lib.utils.weightedAverageAndStd">[docs]</a><span class="k">def</span> <span class="nf">weightedAverageAndStd</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="n">weights</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the weighted average and the weighted standard deviation.</span>
+
+<span class="sd">    :parameter values: x axis usually</span>
+<span class="sd">    :parameter weights: y axis values</span>
+<span class="sd">    :returns: average, standard deviation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># dealing with nan&#39;s</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="c"># make sure you don&#39;t alter original arrays</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c"># remove indices with nan&#39;s</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">values</span><span class="p">)]</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">values</span><span class="p">)]</span>
+    <span class="n">average</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+    <span class="n">variance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="p">(</span><span class="n">values</span><span class="o">-</span><span class="n">average</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">weights</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">average</span><span class="p">,</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="closest"><a class="viewcode-back" href="../../lib.html#lib.utils.closest">[docs]</a><span class="k">def</span> <span class="nf">closest</span><span class="p">(</span><span class="n">target</span><span class="p">,</span><span class="n">xs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the index of the value closest to the target in an array</span>
+
+<span class="sd">    :parameter target: Value you want the index for</span>
+<span class="sd">    :parameter xs: The array to find the target in</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">xs</span><span class="o">-</span><span class="n">target</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="gaussian"><a class="viewcode-back" href="../../lib.html#lib.utils.gaussian">[docs]</a><span class="k">def</span> <span class="nf">gaussian</span><span class="p">(</span><span class="n">mzs</span><span class="p">,</span><span class="n">amp</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">fwhh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate a three parameter Gaussian distribution.</span>
+
+<span class="sd">    :parameter mzs: x axis (numpy array or float)</span>
+<span class="sd">    :parameter amp: Amplitude of distribution</span>
+<span class="sd">    :parameter mu: Mean/centre of the distribution</span>
+<span class="sd">    :parameter fwhm: Width of distribution (full width half maximum)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">amp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="o">-</span><span class="p">(</span><span class="n">mzs</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">fwhh</span><span class="o">/</span><span class="mf">2.3548200450309493</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="lorentzian"><a class="viewcode-back" href="../../lib.html#lib.utils.lorentzian">[docs]</a><span class="k">def</span> <span class="nf">lorentzian</span><span class="p">(</span><span class="n">mzs</span><span class="p">,</span><span class="n">amp</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">fwhh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate a three parameter Lorentzian (Cauchy) distribution.</span>
+
+<span class="sd">    :parameter mzs: x axis (numpy array or float)</span>
+<span class="sd">    :parameter amp: Amplitude of distribution</span>
+<span class="sd">    :parameter mu: Mean/centre of the distribution</span>
+<span class="sd">    :parameter fwhm: Width of distribution (full width half maximum)</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="k">return</span> <span class="n">amp</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">((</span><span class="n">mu</span><span class="o">-</span><span class="n">mzs</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">fwhh</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="hybrid"><a class="viewcode-back" href="../../lib.html#lib.utils.hybrid">[docs]</a><span class="k">def</span> <span class="nf">hybrid</span><span class="p">(</span><span class="n">mzs</span><span class="p">,</span><span class="n">amp</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">fwhh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate a three parameter hybrid distribution. Distribution is</span>
+<span class="sd">    Gaussian at values less than the mean and Lorentzian above it.</span>
+
+<span class="sd">    :parameter mzs: x axis (numpy array or float)</span>
+<span class="sd">    :parameter amp: Amplitude of distribution</span>
+<span class="sd">    :parameter mu: Mean/centre of the distribution</span>
+<span class="sd">    :parameter fwhm: Width of distribution (full width half maximum)</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">ys</span> <span class="o">=</span> <span class="n">mzs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">ys</span><span class="p">[</span><span class="n">mzs</span><span class="o">&lt;=</span><span class="n">mu</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="o">-</span><span class="p">(</span><span class="n">mzs</span><span class="p">[</span><span class="n">mzs</span><span class="o">&lt;=</span><span class="n">mu</span><span class="p">]</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">fwhh</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">))))</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">ys</span><span class="p">[</span><span class="n">mzs</span><span class="o">&gt;</span><span class="n">mu</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">((</span><span class="n">mu</span><span class="o">-</span><span class="n">mzs</span><span class="p">[</span><span class="n">mzs</span><span class="o">&gt;</span><span class="n">mu</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">fwhh</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">ys</span>
+</div>
+<span class="n">draw_peaks</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;gaussian&#39;</span><span class="p">:</span><span class="n">gaussian</span><span class="p">,</span>
+              <span class="s">&#39;lorentzian&#39;</span><span class="p">:</span><span class="n">lorentzian</span><span class="p">,</span>
+              <span class="s">&#39;hybrid&#39;</span><span class="p">:</span><span class="n">hybrid</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="get_mz"><a class="viewcode-back" href="../../lib.html#lib.utils.get_mz">[docs]</a><span class="k">def</span> <span class="nf">get_mz</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the m/z value given the mass and charge.</span>
+
+<span class="sd">    :parameter mass: Mass of protein/molecule</span>
+<span class="sd">    :parameter n: Charge state</span>
+<span class="sd">    :returns: m/z value (Th)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">mass</span><span class="p">)</span><span class="o">/</span><span class="n">n</span> <span class="o">+</span> <span class="mf">1.008</span></div>
+<div class="viewcode-block" id="get_mass"><a class="viewcode-back" href="../../lib.html#lib.utils.get_mass">[docs]</a><span class="k">def</span> <span class="nf">get_mass</span><span class="p">(</span><span class="n">mz</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the mass given m/z value and charge state.</span>
+
+<span class="sd">    :parameter mz: m/z ratio (Th)</span>
+<span class="sd">    :parameter n: Charge state</span>
+<span class="sd">    :returns: mass (Da)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">n</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">mz</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="mf">1.008</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="localMaxima"><a class="viewcode-back" href="../../lib.html#lib.utils.localMaxima">[docs]</a><span class="k">def</span> <span class="nf">localMaxima</span><span class="p">(</span><span class="n">start_index</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">scan_range</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Scan range to look for maximum.</span>
+<span class="sd">    If int - value to look to the right (index). </span>
+<span class="sd">    If list [0] is to left, [1] is to right.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">scan_range</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;int&#39;</span><span class="p">:</span>
+        <span class="n">end_index</span> <span class="o">=</span> <span class="n">start_index</span><span class="o">+</span><span class="n">scan_range</span>
+        <span class="n">truncated_max_i</span> <span class="o">=</span> <span class="n">ys</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="n">max_i</span> <span class="o">=</span> <span class="n">truncated_max_i</span> <span class="o">+</span> <span class="n">start_index</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">left_index</span> <span class="o">=</span> <span class="n">start_index</span> <span class="o">-</span> <span class="n">scan_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">end_index</span> <span class="o">=</span> <span class="n">start_index</span><span class="o">+</span><span class="n">scan_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">truncated_max_i</span> <span class="o">=</span> <span class="n">ys</span><span class="p">[</span><span class="n">left_index</span><span class="p">:</span><span class="n">end_index</span><span class="p">]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="n">max_i</span> <span class="o">=</span> <span class="n">truncated_max_i</span> <span class="o">+</span> <span class="n">left_index</span>
+
+    <span class="k">return</span> <span class="n">max_i</span>
+
+
+</div>
+<span class="n">colourList</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;gray&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="s">&#39;purple&#39;</span><span class="p">,</span><span class="s">&#39;g&#39;</span><span class="p">,</span><span class="s">&#39;brown&#39;</span><span class="p">,</span><span class="s">&#39;m&#39;</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">20</span>
+<span class="n">colourList2</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;r&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="s">&#39;g&#39;</span><span class="p">,</span><span class="s">&#39;gray&#39;</span><span class="p">,</span><span class="s">&#39;purple&#39;</span><span class="p">,</span><span class="s">&#39;brown&#39;</span><span class="p">,</span><span class="s">&#39;m&#39;</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">20</span>
+
+<span class="n">protonMass</span> <span class="o">=</span> <span class="mf">1.0078</span>
+<span class="n">legendFontSize</span> <span class="o">=</span> <span class="s">&#39;small&#39;</span>
+
+<span class="c">#####################################</span>
+<span class="c"># IM calibration functions</span>
+<span class="c">#####################################</span>
+<span class="c"># correcting td values</span>
+<span class="k">def</span> <span class="nf">_calculateTdPrime</span><span class="p">(</span><span class="n">td</span><span class="p">,</span><span class="n">waveVelocity</span><span class="p">):</span>
+    <span class="n">tIndependent</span> <span class="o">=</span> <span class="p">(</span><span class="mi">61</span><span class="o">+</span><span class="mf">31.</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">0.010</span><span class="o">*</span><span class="p">(</span><span class="mf">300.</span><span class="o">/</span><span class="n">waveVelocity</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">td</span> <span class="o">-</span> <span class="n">tIndependent</span>
+<span class="k">def</span> <span class="nf">_calculateTdDoublePrime</span><span class="p">(</span><span class="n">tdPrime</span><span class="p">,</span><span class="n">mz</span><span class="p">):</span>
+    <span class="n">tDependent</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mz</span><span class="o">/</span><span class="mf">1000.</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mf">0.044</span><span class="o">+</span><span class="mf">0.041</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">tdPrime</span> <span class="o">-</span> <span class="n">tDependent</span>
+
+<span class="c"># correcting CCS values</span>
+<span class="k">def</span> <span class="nf">_calculateReducedMass</span><span class="p">(</span><span class="n">mz</span><span class="p">,</span><span class="n">charge</span><span class="p">,</span><span class="n">gas</span><span class="o">=</span><span class="s">&#39;Nitrogen&#39;</span><span class="p">):</span>
+    <span class="n">mIon</span> <span class="o">=</span> <span class="n">charge</span><span class="o">*</span><span class="p">(</span><span class="n">mz</span><span class="o">-</span><span class="n">protonMass</span><span class="p">)</span>
+    <span class="n">gas</span> <span class="o">=</span> <span class="n">gas</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">gas</span> <span class="o">==</span> <span class="s">&#39;nitrogen&#39;</span><span class="p">:</span>
+        <span class="n">mGas</span> <span class="o">=</span> <span class="mf">28.0134</span>
+    <span class="k">elif</span> <span class="n">gas</span> <span class="o">==</span> <span class="s">&#39;helium&#39;</span><span class="p">:</span>
+        <span class="n">mGas</span> <span class="o">=</span> <span class="mf">4.002</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Unknown gas&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">mIon</span><span class="o">*</span><span class="n">mGas</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">mIon</span><span class="o">+</span><span class="n">mGas</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_calculateOmegaPrime</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span><span class="n">charge</span><span class="p">,</span><span class="n">reducedMass</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">omega</span><span class="o">/</span><span class="p">(</span><span class="n">charge</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">reducedMass</span><span class="p">))</span>
+
+
+<span class="c">#####################################</span>
+<span class="c"># Matplotlib functions</span>
+<span class="c">#####################################</span>
+
+<div class="viewcode-block" id="isMplColour"><a class="viewcode-back" href="../../lib.html#lib.utils.isMplColour">[docs]</a><span class="k">def</span> <span class="nf">isMplColour</span><span class="p">(</span><span class="n">colour</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test if colour is one of the matplotlib full name</span>
+<span class="sd">    colors or single letter code.</span>
+<span class="sd">    </span>
+<span class="sd">    :parameter colour: Colour string to test</span>
+<span class="sd">    :returns: Boolean</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;blue&quot;</span><span class="p">,</span><span class="s">&quot;green&quot;</span><span class="p">,</span><span class="s">&quot;red&quot;</span><span class="p">,</span><span class="s">&quot;cyan&quot;</span><span class="p">,</span><span class="s">&quot;magenta&quot;</span><span class="p">,</span><span class="s">&quot;yellow&quot;</span><span class="p">,</span><span class="s">&quot;black&quot;</span><span class="p">,</span><span class="s">&quot;brown&quot;</span><span class="p">,</span><span class="s">&quot;purple&quot;</span><span class="p">,</span><span class="s">&quot;gray&quot;</span><span class="p">,</span><span class="s">&quot;orange&quot;</span><span class="p">]</span>
+    <span class="n">codes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="s">&#39;g&#39;</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">,</span><span class="s">&#39;m&#39;</span><span class="p">,</span><span class="s">&#39;y&#39;</span><span class="p">,</span><span class="s">&#39;k&#39;</span><span class="p">]</span>
+
+    <span class="n">colour</span> <span class="o">=</span> <span class="n">colour</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">mplColour</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">if</span> <span class="n">colour</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+        <span class="n">mplColour</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">elif</span> <span class="n">colour</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
+        <span class="n">mplColour</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">return</span> <span class="n">mplColour</span>
+</div>
+<div class="viewcode-block" id="findFirstNonZeroXvalue"><a class="viewcode-back" href="../../lib.html#lib.utils.findFirstNonZeroXvalue">[docs]</a><span class="k">def</span> <span class="nf">findFirstNonZeroXvalue</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">zero</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Numpy arrays only, finds first y value</span>
+<span class="sd">    above zero and returns the corresponding x value</span>
+<span class="sd">    </span>
+<span class="sd">    :parameter x: x axis values</span>
+<span class="sd">    :parameter y: y axis values</span>
+<span class="sd">    :parameter zero: Use this to change the highest allowed value.</span>
+<span class="sd">    e.g. zero=1, would return the first y value above 1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nonZeroX</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">y</span><span class="o">&gt;</span><span class="n">zero</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">nonZeroX</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="findLastNonZeroXvalue"><a class="viewcode-back" href="../../lib.html#lib.utils.findLastNonZeroXvalue">[docs]</a><span class="k">def</span> <span class="nf">findLastNonZeroXvalue</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">zero</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Numpy arrays only, finds last y value</span>
+<span class="sd">    above zero and returns the corresponding x value</span>
+
+<span class="sd">    :parameter x: x axis values</span>
+<span class="sd">    :parameter y: y axis values</span>
+<span class="sd">    :parameter zero: Use this to change the highest allowed value.</span>
+<span class="sd">    e.g. zero=1, would return the first y value above 1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nonZeroX</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">y</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">nonZeroX</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+
+<span class="c">#####################################</span>
+<span class="c"># Value checking and converting functions</span>
+<span class="c">#####################################</span>
+</div>
+<div class="viewcode-block" id="commaNumber"><a class="viewcode-back" href="../../lib.html#lib.utils.commaNumber">[docs]</a><span class="k">def</span> <span class="nf">commaNumber</span><span class="p">(</span><span class="n">intOrFloat</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&quot;{:,}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">intOrFloat</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="isBinaryResponse"><a class="viewcode-back" href="../../lib.html#lib.utils.isBinaryResponse">[docs]</a><span class="k">def</span> <span class="nf">isBinaryResponse</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">positive</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;True&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">,</span><span class="s">&#39;yes&#39;</span><span class="p">,</span><span class="bp">True</span><span class="p">]</span>
+    <span class="n">negative</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;False&#39;</span><span class="p">,</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;no&#39;</span><span class="p">,</span><span class="bp">False</span><span class="p">]</span>
+
+    <span class="n">isBinary</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">positive</span><span class="p">:</span>
+        <span class="n">isBinary</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">negative</span><span class="p">:</span>
+        <span class="n">isBinary</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">isBinary</span> <span class="o">=</span> <span class="s">&#39;Error&#39;</span>
+
+    <span class="k">return</span> <span class="n">isBinary</span>
+</div>
+<div class="viewcode-block" id="getBinaryReponse"><a class="viewcode-back" href="../../lib.html#lib.utils.getBinaryReponse">[docs]</a><span class="k">def</span> <span class="nf">getBinaryReponse</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">positive</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;true&#39;</span><span class="p">,</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;yes&#39;</span><span class="p">,</span><span class="bp">True</span><span class="p">]</span>
+    <span class="n">negative</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;false&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">,</span><span class="s">&#39;no&#39;</span><span class="p">,</span><span class="bp">False</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">positive</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">negative</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;Error&#39;</span>
+        <span class="k">print</span> <span class="n">s</span>
+
+    <span class="k">return</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="isNumber"><a class="viewcode-back" href="../../lib.html#lib.utils.isNumber">[docs]</a><span class="k">def</span> <span class="nf">isNumber</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="isInDir"><a class="viewcode-back" href="../../lib.html#lib.utils.isInDir">[docs]</a><span class="k">def</span> <span class="nf">isInDir</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span><span class="n">fileNames</span><span class="p">):</span>
+    <span class="c"># TODO(gns) - get rid of this, it&#39;s terrible. Use isfile() or exists()</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="n">allFound</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fileNames</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+            <span class="n">allFound</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="n">allFound</span>
+</div>
+<div class="viewcode-block" id="getHyphenCommaList"><a class="viewcode-back" href="../../lib.html#lib.utils.getHyphenCommaList">[docs]</a><span class="k">def</span> <span class="nf">getHyphenCommaList</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert complicated number strings which can include</span>
+<span class="sd">    commas and hyphens e.g. &#39;1,2,5-7&#39; == [1,2,5,6,7].</span>
+<span class="sd">    </span>
+<span class="sd">    :parameter s: String to test</span>
+<span class="sd">    :returns: False if there is a problem, or an list of converted ints</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">re</span>
+    <span class="c"># check for bs characters</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;[^ 0-9,-]&#39;</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">):</span>
+            <span class="n">elem</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c"># a number</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">elem</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span> <span class="c"># a range inclusive</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">elem</span><span class="p">)</span>
+                <span class="n">extremes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">start</span><span class="p">,</span><span class="n">end</span><span class="p">])</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">extremes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extremes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span> <span class="c"># more than one hyphen</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="n">output</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+<span class="c">######################################################################</span>
+<span class="c"># Amphitrite data files</span>
+<span class="c">######################################################################</span></div>
+<div class="viewcode-block" id="pickleAmphitriteProject"><a class="viewcode-back" href="../../lib.html#lib.utils.pickleAmphitriteProject">[docs]</a><span class="k">def</span> <span class="nf">pickleAmphitriteProject</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">xAxis</span><span class="p">,</span><span class="n">yAxis</span><span class="p">,</span><span class="n">mobility</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create an Amphitrite data file.</span>
+<span class="sd">    </span>
+<span class="sd">    :parameter filename: Absolute path and filename for data file</span>
+<span class="sd">    :parameter xAxis: m/z axis</span>
+<span class="sd">    :parameter yAxis: Arrival time axis</span>
+<span class="sd">    :parameter mobility: Intensity matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">npObj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">object</span><span class="p">)</span>
+    <span class="n">npObj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">xAxis</span>
+    <span class="n">npObj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">yAxis</span>
+    <span class="n">npObj</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">mobility</span>
+    <span class="n">npObj</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="unPickleAmphitriteProject"><a class="viewcode-back" href="../../lib.html#lib.utils.unPickleAmphitriteProject">[docs]</a><span class="k">def</span> <span class="nf">unPickleAmphitriteProject</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Open an Amphitrite data file, and check that the format</span>
+<span class="sd">    is correct.</span>
+<span class="sd">    </span>
+<span class="sd">    :parameter filename: Absolute path to data file</span>
+<span class="sd">    :returns: mzAxis, arrival time axis and intensity matrix as a list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dataList</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="c"># xaxis, yaxis, matrix</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">dataList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">dataList</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">dataList</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Opening amphitrite file failed: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span><span class="n">filename</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+
+<span class="c">######################################################################</span>
+<span class="c"># Plotting functions</span>
+<span class="c">######################################################################</span>
+</div>
+<div class="viewcode-block" id="label1dPlots"><a class="viewcode-back" href="../../lib.html#lib.utils.label1dPlots">[docs]</a><span class="k">def</span> <span class="nf">label1dPlots</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">lift</span><span class="p">,</span><span class="n">values</span><span class="p">,</span><span class="n">units</span><span class="p">,</span><span class="n">alignment</span><span class="o">=</span><span class="s">&#39;right&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Label stacked plots, usually mass spectra or arrival time</span>
+<span class="sd">    distributions.</span>
+
+<span class="sd">    :parameter ax: Matplotlib Axes instance</span>
+<span class="sd">    :parameter lift: The vertical spacing between traces</span>
+<span class="sd">    :parameter values: List of values to label the traces with</span>
+<span class="sd">    :parameter units: Unit to display next to values (string)</span>
+<span class="sd">    :parameter alignment: Where to place the labels (&#39;left&#39;, &#39;right&#39; or &#39;center&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># get y positions</span>
+    <span class="n">yheights</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">lift</span> <span class="o">+</span> <span class="p">(</span><span class="n">lift</span><span class="o">*</span><span class="mf">0.1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">))]</span>
+    <span class="c"># get x position</span>
+    <span class="n">xlims</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+    <span class="n">x_range</span> <span class="o">=</span> <span class="n">xlims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">xlims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">xposition</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_range</span><span class="o">*</span><span class="mf">0.95</span><span class="p">)</span> <span class="o">+</span> <span class="n">xlims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c"># check if the values are all integers</span>
+    <span class="n">ints</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">%</span><span class="mi">1</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ints</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="c"># draw the labels</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ints</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%.0f</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="n">units</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="n">units</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">xposition</span><span class="p">,</span><span class="n">yheights</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                        <span class="n">horizontalalignment</span><span class="o">=</span><span class="n">alignment</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="checkAx"><a class="viewcode-back" href="../../lib.html#lib.utils.checkAx">[docs]</a><span class="k">def</span> <span class="nf">checkAx</span><span class="p">(</span><span class="n">ax</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if ax is a matplotlib axis object</span>
+<span class="sd">    If it is, just return it back</span>
+<span class="sd">    If it isn&#39;t create one and return it</span>
+
+<span class="sd">    :parameter ax: Unknown object (usually False or Matplotlib Axes instance)</span>
+<span class="sd">    :returns: Matplotlib Axes instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;AxesSubplot&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ax</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,783 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>lib package &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="msClasses package" href="msClasses.html" />
+    <link rel="prev" title="imClasses package" href="imClasses.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="msClasses.html" title="msClasses package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="imClasses.html" title="imClasses package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="lib-package">
+<h1>lib package<a class="headerlink" href="#lib-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="lib-amphitriteprocesscppappoutput-module">
+<h2>lib.AmphitriteProcessCppAppOutput module<a class="headerlink" href="#lib-amphitriteprocesscppappoutput-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-lib.DriftscopeImage">
+<span id="lib-driftscopeimage-module"></span><h2>lib.DriftscopeImage module<a class="headerlink" href="#module-lib.DriftscopeImage" title="Permalink to this headline">¶</a></h2>
+<p>Driftscope image class:
+Draws a simple driftscope style contour plot with the
+mass spectrum below it.</p>
+<dl class="class">
+<dt id="lib.DriftscopeImage.DriftscopeImage">
+<em class="property">class </em><tt class="descclassname">lib.DriftscopeImage.</tt><tt class="descname">DriftscopeImage</tt><big>(</big><em>filename=False</em><big>)</big><a class="reference internal" href="_modules/lib/DriftscopeImage.html#DriftscopeImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.DriftscopeImage.DriftscopeImage" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="lib.DriftscopeImage.DriftscopeImage.drawFigure">
+<tt class="descname">drawFigure</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/lib/DriftscopeImage.html#DriftscopeImage.drawFigure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.DriftscopeImage.DriftscopeImage.drawFigure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the program. Open Amphitrite data file, draw a
+driftscope-like diagram and save the figure in the same
+directory as the data file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.DriftscopeImage.DriftscopeImage.driftscope">
+<tt class="descname">driftscope</tt><big>(</big><em>mz_range=0</em>, <em>a_range=0</em><big>)</big><a class="reference internal" href="_modules/lib/DriftscopeImage.html#DriftscopeImage.driftscope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.DriftscopeImage.DriftscopeImage.driftscope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the driftscope image. Top region is the contour
+plot, bottom section is mass spectrum.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.DriftscopeImage.DriftscopeImage.loadFile">
+<tt class="descname">loadFile</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/lib/DriftscopeImage.html#DriftscopeImage.loadFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.DriftscopeImage.DriftscopeImage.loadFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load an amphitrite data file (&#8216;.a&#8217;).
+:parameter filename: Absolute path to file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.DriftscopeImage.DriftscopeImage.normaliseMobility">
+<tt class="descname">normaliseMobility</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/DriftscopeImage.html#DriftscopeImage.normaliseMobility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.DriftscopeImage.DriftscopeImage.normaliseMobility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalise the intensity of the intensity matrix
+to its highest point. (Necessary for proper colouring of
+heatmap).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="lib-processimrawfiles-module">
+<h2>lib.ProcessImRawFiles module<a class="headerlink" href="#lib-processimrawfiles-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-lib.RawFileProcessor">
+<span id="lib-rawfileprocessor-module"></span><h2>lib.RawFileProcessor module<a class="headerlink" href="#module-lib.RawFileProcessor" title="Permalink to this headline">¶</a></h2>
+<p>File for running cppapplication.exe to create Amphitrite
+data files from MassLynx raw files.
+Deprecated - Use RawFileProcessor_v2.py</p>
+<dl class="class">
+<dt id="lib.RawFileProcessor.RawFileProcessor">
+<em class="property">class </em><tt class="descclassname">lib.RawFileProcessor.</tt><tt class="descname">RawFileProcessor</tt><big>(</big><em>rawPath</em><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor.html#RawFileProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor.RawFileProcessor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="lib.RawFileProcessor.RawFileProcessor.getAxisX">
+<tt class="descname">getAxisX</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor.html#RawFileProcessor.getAxisX"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor.RawFileProcessor.getAxisX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.RawFileProcessor.RawFileProcessor.getAxisY">
+<tt class="descname">getAxisY</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor.html#RawFileProcessor.getAxisY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor.RawFileProcessor.getAxisY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.RawFileProcessor.RawFileProcessor.getMassMobility">
+<tt class="descname">getMassMobility</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor.html#RawFileProcessor.getMassMobility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor.RawFileProcessor.getMassMobility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.RawFileProcessor.RawFileProcessor.makePreview">
+<tt class="descname">makePreview</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor.html#RawFileProcessor.makePreview"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor.RawFileProcessor.makePreview" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.RawFileProcessor.RawFileProcessor.processFolder">
+<tt class="descname">processFolder</tt><big>(</big><em>grain=2</em><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor.html#RawFileProcessor.processFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor.RawFileProcessor.processFolder" title="Permalink to this definition">¶</a></dt>
+<dd><ol class="arabic simple">
+<li>Copy raw file to working directory</li>
+<li>Run CppApplication</li>
+<li>Read text files and make imObj</li>
+<li>Delete text files, remove raw file</li>
+<li>Make new folder for processed data</li>
+<li>Dump pickles there</li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.RawFileProcessor.RawFileProcessor.setOutputFolder">
+<tt class="descname">setOutputFolder</tt><big>(</big><em>outputFolderPath</em><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor.html#RawFileProcessor.setOutputFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor.RawFileProcessor.setOutputFolder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="lib-rawfileprocessor-basic-test-module">
+<h2>lib.RawFileProcessor_basic_test module<a class="headerlink" href="#lib-rawfileprocessor-basic-test-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-lib.RawFileProcessor_v2">
+<span id="lib-rawfileprocessor-v2-module"></span><h2>lib.RawFileProcessor_v2 module<a class="headerlink" href="#module-lib.RawFileProcessor_v2" title="Permalink to this headline">¶</a></h2>
+<p>File for running cppapplication.exe to create Amphitrite
+data files from MassLynx raw files.</p>
+<dl class="class">
+<dt id="lib.RawFileProcessor_v2.RawFileProcessor">
+<em class="property">class </em><tt class="descclassname">lib.RawFileProcessor_v2.</tt><tt class="descname">RawFileProcessor</tt><big>(</big><em>rawFilePath</em><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor_v2.html#RawFileProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor_v2.RawFileProcessor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="lib.RawFileProcessor_v2.RawFileProcessor.makePreview">
+<tt class="descname">makePreview</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor_v2.html#RawFileProcessor.makePreview"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor_v2.RawFileProcessor.makePreview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated. May still work, but new version is being constructed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.RawFileProcessor_v2.RawFileProcessor.pickleAmphitriteProject">
+<tt class="descname">pickleAmphitriteProject</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor_v2.html#RawFileProcessor.pickleAmphitriteProject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor_v2.RawFileProcessor.pickleAmphitriteProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an Amphitrite data file using the data held
+in this object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.RawFileProcessor_v2.RawFileProcessor.processFolder">
+<tt class="descname">processFolder</tt><big>(</big><em>grain=2</em><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor_v2.html#RawFileProcessor.processFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor_v2.RawFileProcessor.processFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract data from MassLynx raw file and create
+Amphitrite data file.
+:parameter grain: m/z bin width (minimum is 0.5 Th)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.RawFileProcessor_v2.RawFileProcessor.setOutputFolder">
+<tt class="descname">setOutputFolder</tt><big>(</big><em>outputFolderPath</em><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor_v2.html#RawFileProcessor.setOutputFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor_v2.RawFileProcessor.setOutputFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the folder to put the Amphitrite data file
+and construct Amphitrite file name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.RawFileProcessor_v2.RawFileProcessor.unPickleAmphitriteProject">
+<tt class="descname">unPickleAmphitriteProject</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/lib/RawFileProcessor_v2.html#RawFileProcessor.unPickleAmphitriteProject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.RawFileProcessor_v2.RawFileProcessor.unPickleAmphitriteProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open an Amphitrite data file, and check that the format
+is correct.
+:parameter filename: Absolute path to data file
+:returns: mzAxis, arrival time axis and intensity matrix as a list</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-lib.SG">
+<span id="lib-sg-module"></span><h2>lib.SG module<a class="headerlink" href="#module-lib.SG" title="Permalink to this headline">¶</a></h2>
+<p>Savitzky-Golay smoothing, copied directly from:
+<a class="reference external" href="http://wiki.scipy.org/Cookbook/SavitzkyGolay">http://wiki.scipy.org/Cookbook/SavitzkyGolay</a></p>
+<dl class="function">
+<dt id="lib.SG.sg">
+<tt class="descclassname">lib.SG.</tt><tt class="descname">sg</tt><big>(</big><em>y</em>, <em>window_size</em>, <em>order</em>, <em>deriv=0</em><big>)</big><a class="reference internal" href="_modules/lib/SG.html#sg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.SG.sg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
+The Savitzky-Golay filter removes high frequency noise from data.
+It has the advantage of preserving the original shape and
+features of the signal better than other types of filtering
+approaches, such as moving averages techhniques.
+Parameters
+&#8212;&#8212;&#8212;-
+y : array_like, shape (N,)</p>
+<blockquote>
+<div>the values of the time history of the signal.</div></blockquote>
+<dl class="docutils">
+<dt>window_size <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>the length of the window. Must be an odd integer number.</dd>
+<dt>order <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>the order of the polynomial used in the filtering.
+Must be less then <cite>window_size</cite> - 1.</dd>
+<dt>deriv: int</dt>
+<dd>the order of the derivative to compute (default = 0 means only smoothing)</dd>
+</dl>
+<dl class="docutils">
+<dt>ys <span class="classifier-delimiter">:</span> <span class="classifier">ndarray, shape (N)</span></dt>
+<dd>the smoothed signal (or it&#8217;s n-th derivative).</dd>
+</dl>
+<p>The Savitzky-Golay is a type of low-pass filter, particularly
+suited for smoothing noisy data. The main idea behind this
+approach is to make for each point a least-square fit with a
+polynomial of high order over a odd-sized window centered at
+the point.
+Examples
+&#8212;&#8212;&#8211;
+t = np.linspace(-4, 4, 500)
+y = np.exp( -t**2 ) + np.random.normal(0, 0.05, t.shape)
+ysg = savitzky_golay(y, window_size=31, order=4)
+import matplotlib.pyplot as plt
+plt.plot(t, y, label=&#8217;Noisy signal&#8217;)
+plt.plot(t, np.exp(-t**2), &#8216;k&#8217;, lw=1.5, label=&#8217;Original signal&#8217;)
+plt.plot(t, ysg, &#8216;r&#8217;, label=&#8217;Filtered signal&#8217;)
+plt.legend()
+plt.show()
+References
+&#8212;&#8212;&#8212;-
+.. [1] A. Savitzky, M. J. E. Golay, Smoothing and Differentiation of</p>
+<blockquote>
+<div>Data by Simplified Least Squares Procedures. Analytical
+Chemistry, 1964, 36 (8), pp 1627-1639.</div></blockquote>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td>Numerical Recipes 3rd Edition: The Art of Scientific Computing
+W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery
+Cambridge University Press ISBN-13: 9780521880688</td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-lib.fast_driftscope_image">
+<span id="lib-fast-driftscope-image-module"></span><h2>lib.fast_driftscope_image module<a class="headerlink" href="#module-lib.fast_driftscope_image" title="Permalink to this headline">¶</a></h2>
+<p>Driftscope image class:
+Draws a simple driftscope style contour plot with the
+mass spectrum below it.
+Deprecated, replaced by DriftscopeImage.py.</p>
+<dl class="class">
+<dt id="lib.fast_driftscope_image.Driftscope_image">
+<em class="property">class </em><tt class="descclassname">lib.fast_driftscope_image.</tt><tt class="descname">Driftscope_image</tt><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.draw_figure">
+<tt class="descname">draw_figure</tt><big>(</big><em>projectFolder</em>, <em>dataFolder</em>, <em>dataLocation</em><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.draw_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.draw_figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not used by GUI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.driftscope">
+<tt class="descname">driftscope</tt><big>(</big><em>mz_range=0</em>, <em>a_range=0</em><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.driftscope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.driftscope" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.limit_axes">
+<tt class="descname">limit_axes</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.limit_axes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.limit_axes" title="Permalink to this definition">¶</a></dt>
+<dd><p>still to be implemented, 
+ensures that original data is preserved</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.load_file">
+<tt class="descname">load_file</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.load_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.load_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load an amphitrite data file (&#8216;.a&#8217;).
+:parameter filename: Absolute path to file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.load_folder">
+<tt class="descname">load_folder</tt><big>(</big><em>folderPath</em><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.load_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.load_folder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.load_mobility">
+<tt class="descname">load_mobility</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.load_mobility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.load_mobility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.load_x">
+<tt class="descname">load_x</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.load_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.load_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.load_y">
+<tt class="descname">load_y</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.load_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.load_y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.normalise_mobility">
+<tt class="descname">normalise_mobility</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.normalise_mobility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.normalise_mobility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lib.fast_driftscope_image.Driftscope_image.savefig">
+<tt class="descname">savefig</tt><big>(</big><em>outputfolder</em>, <em>rawfilename</em><big>)</big><a class="reference internal" href="_modules/lib/fast_driftscope_image.html#Driftscope_image.savefig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.fast_driftscope_image.Driftscope_image.savefig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-lib.testRecursiveImport">
+<span id="lib-testrecursiveimport-module"></span><h2>lib.testRecursiveImport module<a class="headerlink" href="#module-lib.testRecursiveImport" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="lib.testRecursiveImport.dos">
+<em class="property">class </em><tt class="descclassname">lib.testRecursiveImport.</tt><tt class="descname">dos</tt><a class="reference internal" href="_modules/lib/testRecursiveImport.html#dos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.testRecursiveImport.dos" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="lib.testRecursiveImport.dos.check">
+<tt class="descname">check</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/lib/testRecursiveImport.html#dos.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.testRecursiveImport.dos.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lib.testRecursiveImport.tres">
+<em class="property">class </em><tt class="descclassname">lib.testRecursiveImport.</tt><tt class="descname">tres</tt><a class="reference internal" href="_modules/lib/testRecursiveImport.html#tres"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.testRecursiveImport.tres" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="lib.testRecursiveImport.tres.check">
+<tt class="descname">check</tt><big>(</big><em>ob</em><big>)</big><a class="reference internal" href="_modules/lib/testRecursiveImport.html#tres.check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.testRecursiveImport.tres.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lib.testRecursiveImport.uno">
+<em class="property">class </em><tt class="descclassname">lib.testRecursiveImport.</tt><tt class="descname">uno</tt><big>(</big><em>d</em><big>)</big><a class="reference internal" href="_modules/lib/testRecursiveImport.html#uno"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.testRecursiveImport.uno" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="lib.testRecursiveImport.uno.uSetD">
+<tt class="descname">uSetD</tt><big>(</big><em>n</em><big>)</big><a class="reference internal" href="_modules/lib/testRecursiveImport.html#uno.uSetD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.testRecursiveImport.uno.uSetD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-lib.utils">
+<span id="lib-utils-module"></span><h2>lib.utils module<a class="headerlink" href="#module-lib.utils" title="Permalink to this headline">¶</a></h2>
+<p>Utility functions for handling data.</p>
+<dl class="function">
+<dt id="lib.utils.checkAx">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">checkAx</tt><big>(</big><em>ax</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#checkAx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.checkAx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if ax is a matplotlib axis object
+If it is, just return it back
+If it isn&#8217;t create one and return it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ax</strong> &#8211; Unknown object (usually False or Matplotlib Axes instance)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Matplotlib Axes instance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.closest">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">closest</tt><big>(</big><em>target</em>, <em>xs</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#closest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.closest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the index of the value closest to the target in an array</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>target</strong> &#8211; Value you want the index for</li>
+<li><strong>xs</strong> &#8211; The array to find the target in</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.commaNumber">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">commaNumber</tt><big>(</big><em>intOrFloat</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#commaNumber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.commaNumber" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.findFirstNonZeroXvalue">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">findFirstNonZeroXvalue</tt><big>(</big><em>x</em>, <em>y</em>, <em>zero=0</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#findFirstNonZeroXvalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.findFirstNonZeroXvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Numpy arrays only, finds first y value
+above zero and returns the corresponding x value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; x axis values</li>
+<li><strong>y</strong> &#8211; y axis values</li>
+<li><strong>zero</strong> &#8211; Use this to change the highest allowed value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>e.g. zero=1, would return the first y value above 1.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.findLastNonZeroXvalue">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">findLastNonZeroXvalue</tt><big>(</big><em>x</em>, <em>y</em>, <em>zero=0</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#findLastNonZeroXvalue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.findLastNonZeroXvalue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Numpy arrays only, finds last y value
+above zero and returns the corresponding x value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> &#8211; x axis values</li>
+<li><strong>y</strong> &#8211; y axis values</li>
+<li><strong>zero</strong> &#8211; Use this to change the highest allowed value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>e.g. zero=1, would return the first y value above 1.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.gaussian">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">gaussian</tt><big>(</big><em>mzs</em>, <em>amp</em>, <em>mu</em>, <em>fwhh</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#gaussian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.gaussian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a three parameter Gaussian distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mzs</strong> &#8211; x axis (numpy array or float)</li>
+<li><strong>amp</strong> &#8211; Amplitude of distribution</li>
+<li><strong>mu</strong> &#8211; Mean/centre of the distribution</li>
+<li><strong>fwhm</strong> &#8211; Width of distribution (full width half maximum)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.getBinaryReponse">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">getBinaryReponse</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#getBinaryReponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.getBinaryReponse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.getHyphenCommaList">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">getHyphenCommaList</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#getHyphenCommaList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.getHyphenCommaList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert complicated number strings which can include
+commas and hyphens e.g. &#8216;1,2,5-7&#8217; == [1,2,5,6,7].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> &#8211; String to test</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">False if there is a problem, or an list of converted ints</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.get_mass">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">get_mass</tt><big>(</big><em>mz</em>, <em>n</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#get_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.get_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the mass given m/z value and charge state.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mz</strong> &#8211; m/z ratio (Th)</li>
+<li><strong>n</strong> &#8211; Charge state</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">mass (Da)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.get_mz">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">get_mz</tt><big>(</big><em>mass</em>, <em>n</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#get_mz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.get_mz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the m/z value given the mass and charge.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mass</strong> &#8211; Mass of protein/molecule</li>
+<li><strong>n</strong> &#8211; Charge state</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">m/z value (Th)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.hybrid">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">hybrid</tt><big>(</big><em>mzs</em>, <em>amp</em>, <em>mu</em>, <em>fwhh</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#hybrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.hybrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a three parameter hybrid distribution. Distribution is
+Gaussian at values less than the mean and Lorentzian above it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mzs</strong> &#8211; x axis (numpy array or float)</li>
+<li><strong>amp</strong> &#8211; Amplitude of distribution</li>
+<li><strong>mu</strong> &#8211; Mean/centre of the distribution</li>
+<li><strong>fwhm</strong> &#8211; Width of distribution (full width half maximum)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.isBinaryResponse">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">isBinaryResponse</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#isBinaryResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.isBinaryResponse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.isInDir">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">isInDir</tt><big>(</big><em>folder</em>, <em>fileNames</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#isInDir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.isInDir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.isMplColour">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">isMplColour</tt><big>(</big><em>colour</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#isMplColour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.isMplColour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if colour is one of the matplotlib full name
+colors or single letter code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>colour</strong> &#8211; Colour string to test</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Boolean</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.isNumber">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">isNumber</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#isNumber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.isNumber" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.label1dPlots">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">label1dPlots</tt><big>(</big><em>ax</em>, <em>lift</em>, <em>values</em>, <em>units</em>, <em>alignment='right'</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#label1dPlots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.label1dPlots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Label stacked plots, usually mass spectra or arrival time
+distributions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> &#8211; Matplotlib Axes instance</li>
+<li><strong>lift</strong> &#8211; The vertical spacing between traces</li>
+<li><strong>values</strong> &#8211; List of values to label the traces with</li>
+<li><strong>units</strong> &#8211; Unit to display next to values (string)</li>
+<li><strong>alignment</strong> &#8211; Where to place the labels (&#8216;left&#8217;, &#8216;right&#8217; or &#8216;center&#8217;)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.localMaxima">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">localMaxima</tt><big>(</big><em>start_index</em>, <em>xs</em>, <em>ys</em>, <em>scan_range=10</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#localMaxima"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.localMaxima" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scan range to look for maximum.
+If int - value to look to the right (index). 
+If list [0] is to left, [1] is to right.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.lorentzian">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">lorentzian</tt><big>(</big><em>mzs</em>, <em>amp</em>, <em>mu</em>, <em>fwhh</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#lorentzian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.lorentzian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a three parameter Lorentzian (Cauchy) distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mzs</strong> &#8211; x axis (numpy array or float)</li>
+<li><strong>amp</strong> &#8211; Amplitude of distribution</li>
+<li><strong>mu</strong> &#8211; Mean/centre of the distribution</li>
+<li><strong>fwhm</strong> &#8211; Width of distribution (full width half maximum)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.pickleAmphitriteProject">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">pickleAmphitriteProject</tt><big>(</big><em>filename</em>, <em>xAxis</em>, <em>yAxis</em>, <em>mobility</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#pickleAmphitriteProject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.pickleAmphitriteProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an Amphitrite data file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> &#8211; Absolute path and filename for data file</li>
+<li><strong>xAxis</strong> &#8211; m/z axis</li>
+<li><strong>yAxis</strong> &#8211; Arrival time axis</li>
+<li><strong>mobility</strong> &#8211; Intensity matrix</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.unPickleAmphitriteProject">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">unPickleAmphitriteProject</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#unPickleAmphitriteProject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.unPickleAmphitriteProject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open an Amphitrite data file, and check that the format
+is correct.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> &#8211; Absolute path to data file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">mzAxis, arrival time axis and intensity matrix as a list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lib.utils.weightedAverageAndStd">
+<tt class="descclassname">lib.utils.</tt><tt class="descname">weightedAverageAndStd</tt><big>(</big><em>values</em>, <em>weights</em><big>)</big><a class="reference internal" href="_modules/lib/utils.html#weightedAverageAndStd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lib.utils.weightedAverageAndStd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the weighted average and the weighted standard deviation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>values</strong> &#8211; x axis usually</li>
+<li><strong>weights</strong> &#8211; y axis values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">average, standard deviation</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-lib">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-lib" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">lib package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#lib-amphitriteprocesscppappoutput-module">lib.AmphitriteProcessCppAppOutput module</a></li>
+<li><a class="reference internal" href="#module-lib.DriftscopeImage">lib.DriftscopeImage module</a></li>
+<li><a class="reference internal" href="#lib-processimrawfiles-module">lib.ProcessImRawFiles module</a></li>
+<li><a class="reference internal" href="#module-lib.RawFileProcessor">lib.RawFileProcessor module</a></li>
+<li><a class="reference internal" href="#lib-rawfileprocessor-basic-test-module">lib.RawFileProcessor_basic_test module</a></li>
+<li><a class="reference internal" href="#module-lib.RawFileProcessor_v2">lib.RawFileProcessor_v2 module</a></li>
+<li><a class="reference internal" href="#module-lib.SG">lib.SG module</a></li>
+<li><a class="reference internal" href="#module-lib.fast_driftscope_image">lib.fast_driftscope_image module</a></li>
+<li><a class="reference internal" href="#module-lib.testRecursiveImport">lib.testRecursiveImport module</a></li>
+<li><a class="reference internal" href="#module-lib.utils">lib.utils module</a></li>
+<li><a class="reference internal" href="#module-lib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="imClasses.html"
+                        title="previous chapter">imClasses package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="msClasses.html"
+                        title="next chapter">msClasses package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/lib.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="msClasses.html" title="msClasses package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="imClasses.html" title="imClasses package"
+             >previous</a> |</li>
+        <li><a href="index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

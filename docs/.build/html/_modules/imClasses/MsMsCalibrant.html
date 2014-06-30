@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imClasses.MsMsCalibrant &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for imClasses.MsMsCalibrant</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">msClasses.Species</span> <span class="kn">as</span> <span class="nn">Species</span>
+<span class="kn">import</span> <span class="nn">Calibration</span><span class="o">,</span> <span class="nn">Calibrant</span><span class="o">,</span> <span class="nn">Im</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="MsMsCalibrant"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsCalibrant">[docs]</a><span class="k">class</span> <span class="nc">MsMsCalibrant</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;This class allows you to build up a single Calibrant() object,</span>
+<span class="sd">    made up from  individual MSMS files of different charge states</span>
+<span class="sd">    Using getCalibrantOb returns a fully functional Calibrant() object</span>
+<span class="sd">    which should be fully compatible with other classes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">proName</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proFiles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proName</span> <span class="o">=</span> <span class="n">proName</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="bp">None</span>  <span class="c"># key = charge, value = filename</span>
+
+        <span class="c"># needed to check validity of proName</span>
+        <span class="n">calibrantOb</span> <span class="o">=</span> <span class="n">Calibrant</span><span class="o">.</span><span class="n">Calibrant</span><span class="p">(</span><span class="n">proName</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proName</span> <span class="ow">in</span> <span class="n">calibrantOb</span><span class="o">.</span><span class="n">cal_mass</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">print</span> <span class="s">&#39;Calibrant name not recognised, exiting...&#39;</span>
+            <span class="k">print</span> <span class="s">&#39;See imClasses/Calibrant.py for options&#39;</span>
+            <span class="n">quit</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MsMsCalibrant.setUpProteinFiles"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsCalibrant.setUpProteinFiles">[docs]</a>    <span class="k">def</span> <span class="nf">setUpProteinFiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Supply dictionary of charges (key) and filenames (value)</span>
+<span class="sd">        for a single protein</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="k">for</span> <span class="n">z</span><span class="p">,</span><span class="n">fn</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">pFile</span> <span class="o">=</span> <span class="n">MsMsChargeState</span><span class="p">()</span>
+            <span class="n">pFile</span><span class="o">.</span><span class="n">setProName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proName</span><span class="p">)</span>
+            <span class="n">pFile</span><span class="o">.</span><span class="n">setCharge</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+            <span class="n">pFile</span><span class="o">.</span><span class="n">setFilename</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+            <span class="n">pFile</span><span class="o">.</span><span class="n">generateCalibrationOb</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proFiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pFile</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MsMsCalibrant.getCalibrantOb"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsCalibrant.getCalibrantOb">[docs]</a>    <span class="k">def</span> <span class="nf">getCalibrantOb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">peakFwhm</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This creates a single Calibrant() object</span>
+<span class="sd">        from all the protein files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createBlankCalibrantOb</span><span class="p">(</span><span class="n">peakFwhm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkIfAxesMatch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combineChargeStateData</span><span class="p">()</span>
+
+        <span class="c"># The rest of the __init__ steps in Calibrant()</span>
+        <span class="n">cOb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span>
+        <span class="n">cOb</span><span class="o">.</span><span class="n">_generateSpeciesObject</span><span class="p">(</span><span class="n">peakFwhm</span><span class="p">)</span>
+        <span class="n">cOb</span><span class="o">.</span><span class="n">_updateSpecies</span><span class="p">(</span><span class="n">cOb</span><span class="o">.</span><span class="n">speciesObj</span><span class="p">,</span><span class="n">cOb</span><span class="o">.</span><span class="n">peakFwhm</span><span class="p">,</span>
+                           <span class="n">cOb</span><span class="o">.</span><span class="n">leftMultiplier</span><span class="p">,</span><span class="n">cOb</span><span class="o">.</span><span class="n">rightMultiplier</span><span class="p">)</span>
+        <span class="n">cOb</span><span class="o">.</span><span class="n">setCharges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">cOb</span><span class="o">.</span><span class="n">_updateSpecies</span><span class="p">()</span>
+
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span>
+</div>
+<div class="viewcode-block" id="MsMsCalibrant.setCharges"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsCalibrant.setCharges">[docs]</a>    <span class="k">def</span> <span class="nf">setCharges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">charges</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">charges</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">setCharges</span><span class="p">(</span><span class="n">charges</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">setCharges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;Dictionary of charges and files not given&#39;</span>
+                <span class="k">print</span> <span class="s">&#39;Using default charges&#39;</span>
+
+</div>
+<div class="viewcode-block" id="MsMsCalibrant.createBlankCalibrantOb"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsCalibrant.createBlankCalibrantOb">[docs]</a>    <span class="k">def</span> <span class="nf">createBlankCalibrantOb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">peakFwhm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setup calibrationOb without any data</span>
+<span class="sd">        data can then be added with combineChargeStateData()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span> <span class="o">=</span> <span class="n">Calibrant</span><span class="o">.</span><span class="n">Calibrant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proName</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span> <span class="o">=</span> <span class="n">Im</span><span class="o">.</span><span class="n">Im</span><span class="p">()</span>
+        <span class="n">spOb</span> <span class="o">=</span> <span class="n">Species</span><span class="o">.</span><span class="n">Species</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proName</span><span class="p">)</span>
+        <span class="n">spOb</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">approxMass</span>
+        <span class="n">spOb</span><span class="o">.</span><span class="n">peakFwhm</span> <span class="o">=</span> <span class="n">peakFwhm</span>
+
+</div>
+<div class="viewcode-block" id="MsMsCalibrant.checkIfAxesMatch"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsCalibrant.checkIfAxesMatch">[docs]</a>    <span class="k">def</span> <span class="nf">checkIfAxesMatch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check that the x and y axes from each charge state</span>
+<span class="sd">        data file is the same</span>
+<span class="sd">        This allows the data in the matrix to be summed directly</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) Change this so that it can use the x and y axes</span>
+        <span class="c"># as alignment for summing the matrices</span>
+        <span class="c"># This still won&#39;t work if the increments rather than the</span>
+        <span class="c"># extremities are different</span>
+        <span class="c"># You could then technically use np.interp if it is a real problem</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">imObj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proFiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span>
+        <span class="k">for</span> <span class="n">proFile</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">proFiles</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">imObj</span><span class="o">.</span><span class="n">xaxis</span><span class="p">,</span><span class="n">proFile</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span><span class="o">.</span><span class="n">xaxis</span><span class="p">):</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">imObj</span><span class="o">.</span><span class="n">yaxis</span><span class="p">,</span><span class="n">proFile</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span><span class="o">.</span><span class="n">yaxis</span><span class="p">):</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Axes do not match between input files&quot;</span>
+                <span class="k">print</span> <span class="s">&quot;Unable to combine, exiting&quot;</span>
+                <span class="n">quit</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="MsMsCalibrant.combineChargeStateData"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsCalibrant.combineChargeStateData">[docs]</a>    <span class="k">def</span> <span class="nf">combineChargeStateData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sum the data matrices from each proteinFile</span>
+<span class="sd">        also copy the x and y axes to the self.calibrantOb</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">imObj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proFiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span><span class="o">.</span><span class="n">setAxisX</span><span class="p">(</span><span class="n">imObj</span><span class="o">.</span><span class="n">xaxis</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span><span class="o">.</span><span class="n">setAxisY</span><span class="p">(</span><span class="n">imObj</span><span class="o">.</span><span class="n">yaxis</span><span class="p">)</span>
+
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">imObj</span><span class="o">.</span><span class="n">matrix</span><span class="p">),</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;float&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">proFile</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">proFiles</span><span class="p">:</span>
+            <span class="n">tempMatrix</span> <span class="o">=</span> <span class="n">proFile</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span><span class="o">.</span><span class="n">matrix</span>
+            <span class="n">matrix</span> <span class="o">+=</span> <span class="n">tempMatrix</span><span class="o">/</span><span class="n">tempMatrix</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span><span class="o">.</span><span class="n">setMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="MsMsChargeState"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsChargeState">[docs]</a><span class="k">class</span> <span class="nc">MsMsChargeState</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;This file generates a Calibrant() object</span>
+<span class="sd">    for a single charge state (isolated using MSMS)</span>
+<span class="sd">    Usage: Use all the setters, then run generateCalibrationOb()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proName</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="MsMsChargeState.setProName"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsChargeState.setProName">[docs]</a>    <span class="k">def</span> <span class="nf">setProName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proName</span> <span class="o">=</span> <span class="n">name</span></div>
+<div class="viewcode-block" id="MsMsChargeState.setCharge"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsChargeState.setCharge">[docs]</a>    <span class="k">def</span> <span class="nf">setCharge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">charge</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">charge</span></div>
+<div class="viewcode-block" id="MsMsChargeState.setFilename"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsChargeState.setFilename">[docs]</a>    <span class="k">def</span> <span class="nf">setFilename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+</div>
+<div class="viewcode-block" id="MsMsChargeState.generateCalibrationOb"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsChargeState.generateCalibrationOb">[docs]</a>    <span class="k">def</span> <span class="nf">generateCalibrationOb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span> <span class="o">=</span> <span class="n">Calibrant</span><span class="o">.</span><span class="n">Calibrant</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proName</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span></div>
+<div class="viewcode-block" id="MsMsChargeState.getCalibrantOb"><a class="viewcode-back" href="../../imClasses.html#imClasses.MsMsCalibrant.MsMsChargeState.getCalibrantOb">[docs]</a>    <span class="k">def</span> <span class="nf">getCalibrantOb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrantOb</span>
+
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">pInfo</span> <span class="o">=</span> <span class="n">MsMsCalibrant</span><span class="p">(</span><span class="s">&#39;concanavalin a&#39;</span><span class="p">)</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">folder</span> <span class="o">=</span> <span class="s">&#39;/home/ganesh/MyData/2013/11_November/131106_just_a_files/&#39;</span>
+    <span class="n">d</span><span class="p">[</span><span class="mi">19</span><span class="p">]</span> <span class="o">=</span> <span class="n">folder</span><span class="o">+</span><span class="s">&#39;131106_CAL4130904_CONA_19Z.a&#39;</span> <span class="c"># bush doesn&#39;t see 19...</span>
+    <span class="n">d</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span> <span class="o">=</span> <span class="n">folder</span><span class="o">+</span><span class="s">&#39;131106_CAL4130904_CONA_20Z.a&#39;</span>
+
+    <span class="n">pInfo</span><span class="o">.</span><span class="n">setUpProteinFiles</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="n">calibrantOb</span> <span class="o">=</span> <span class="n">pInfo</span><span class="o">.</span><span class="n">getCalibrantOb</span><span class="p">()</span>
+
+    <span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span><span class="o">.</span><span class="n">plotHeatmap</span><span class="p">()</span>
+    <span class="n">calibrantOb</span><span class="o">.</span><span class="n">setCharges</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">calibrantOb</span><span class="o">.</span><span class="n">_updateSpecies</span><span class="p">()</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">axAtds</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">211</span><span class="p">)</span>
+    <span class="n">calibrantOb</span><span class="o">.</span><span class="n">plotChargeStateAtds</span><span class="p">(</span><span class="n">axAtds</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="n">calibrantOb</span><span class="o">.</span><span class="n">imObj</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="s">&#39;concanavalin a&#39;</span><span class="p">][</span><span class="mi">20</span><span class="p">]</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">xvals</span>
+
+    <span class="n">axMs</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">212</span><span class="p">)</span>
+    <span class="n">calibrantOb</span><span class="o">.</span><span class="n">plotMsAndExtractionLimits</span><span class="p">(</span><span class="n">axMs</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

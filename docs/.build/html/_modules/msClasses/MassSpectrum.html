@@ -1,0 +1,376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>msClasses.MassSpectrum &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for msClasses.MassSpectrum</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Class for deconvoluting and plotting native mass spectra.&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Ganesh N. Sivalingam &lt;g.n.sivalingam@gmail.com&gt;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">TwoDdata</span> <span class="kn">as</span> <span class="nn">tdd</span>
+<span class="kn">import</span> <span class="nn">Species</span><span class="o">,</span> <span class="nn">Gaussian</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">lib.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.font_manager</span> <span class="kn">import</span> <span class="n">FontProperties</span>
+
+
+<div class="viewcode-block" id="MassSpectrum"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum">[docs]</a><span class="k">class</span> <span class="nc">MassSpectrum</span><span class="p">(</span><span class="n">tdd</span><span class="o">.</span><span class="n">TwoDdata</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for storing and deconvoluting mass spectra</span>
+
+<span class="sd">    Inherits from TwoDdata:</span>
+<span class="sd">    def __init__(self)</span>
+<span class="sd">    def readFile(self,filename,x_range=0,grain=1)</span>
+<span class="sd">    def normalisationBpi(self)</span>
+<span class="sd">    def normalisationArea(self)</span>
+<span class="sd">    def setNormalisationType(self,type)</span>
+<span class="sd">    def smoothingSG(self,window_len=3,smoothes=2,poly_order=1)</span>
+<span class="sd">    def _normalisePreset(self)</span>
+<span class="sd">    def restoreRawYvals(self)</span>
+<span class="sd">    def getAxesWithoutNans(self)</span>
+<span class="sd">    def calculateWeightedMeanStandardDeviation(self)</span>
+<span class="sd">    def calculateAreaUnderCurve(self)</span>
+<span class="sd">    def _calculateGradient(self)</span>
+<span class="sd">    def findPeaks(self,limit=0)</span>
+<span class="sd">    def addPeak(self,mz)</span>
+<span class="sd">    def plot(self,ax,**kwargs)</span>
+<span class="sd">    def plotgPeaks(self,ax,labels=0,**kwargs)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tdd</span><span class="o">.</span><span class="n">TwoDdata</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">species</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpecies</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpectrum</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="MassSpectrum.addSpecies"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.addSpecies">[docs]</a>    <span class="k">def</span> <span class="nf">addSpecies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">speciesObj</span><span class="p">,</span><span class="n">allowReplace</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a Species() object to the MassSpectrum.species dictionary.</span>
+<span class="sd">        This allows it to be used in the fitting procedure.</span>
+<span class="sd">        allowReplace means adding a second species with the same name to overwrite existing</span>
+<span class="sd">        items in the dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">speciesObj</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">speciesObj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">allowReplace</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Species with this name already exists.</span><span class="se">\n</span><span class="s">Operation failed&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Species with this name exists, overwriting&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">speciesObj</span>
+
+</div>
+<div class="viewcode-block" id="MassSpectrum.leastSquaresOptimisation"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.leastSquaresOptimisation">[docs]</a>    <span class="k">def</span> <span class="nf">leastSquaresOptimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">speciesNames</span><span class="p">,</span><span class="n">oneFwhm</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deconvolute mass spectrum using non linear least squares.</span>
+<span class="sd">        Setting oneFwhm to true results in the same value for peak full width</span>
+<span class="sd">        half height being used for all species.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># setting up initial parameters</span>
+        <span class="n">zs</span><span class="p">,</span><span class="n">p0</span> <span class="o">=</span> <span class="p">[],[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">speciesNames</span><span class="p">:</span>
+            <span class="n">zs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">charges</span><span class="p">)</span>
+            <span class="n">p0</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">getp0</span><span class="p">(</span><span class="n">oneFwhm</span><span class="p">)</span>
+
+        <span class="c"># using scipy optimize</span>
+        <span class="k">def</span> <span class="nf">errorfunc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">xvals</span><span class="p">,</span><span class="n">yvals</span><span class="p">,</span><span class="n">zs</span><span class="p">,</span><span class="n">oneFwhm</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forLeastSquaresOptimisation</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">xvals</span><span class="p">,</span><span class="n">zs</span><span class="p">,</span><span class="n">oneFwhm</span><span class="p">)</span> <span class="o">-</span> <span class="n">yvals</span>
+
+        <span class="n">startTime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">p1</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">errorfunc</span><span class="p">,</span><span class="n">p0</span><span class="p">[:],</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">,</span><span class="n">zs</span><span class="p">,</span><span class="n">oneFwhm</span><span class="p">))</span>
+        <span class="k">print</span> <span class="s">&quot;Optimisation took:&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">startTime</span><span class="p">,</span> <span class="s">&quot;s&quot;</span>
+
+        <span class="c"># storing the fit</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_splitPs</span><span class="p">(</span><span class="n">p1</span><span class="p">)):</span>
+            <span class="n">tempSp</span> <span class="o">=</span> <span class="n">Species</span><span class="o">.</span><span class="n">Species</span><span class="p">(</span><span class="n">speciesNames</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">oneFwhm</span><span class="p">:</span>
+                <span class="n">peakFwhm</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">peakFwhm</span> <span class="o">=</span> <span class="n">oneFwhm</span>
+            <span class="n">tempSp</span><span class="o">.</span><span class="n">setValsFromp1</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">peakFwhm</span><span class="p">])</span>
+            <span class="n">tempSp</span><span class="o">.</span><span class="n">setCharges</span><span class="p">(</span><span class="n">zs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpecies</span><span class="p">[</span><span class="n">speciesNames</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">tempSp</span>
+            <span class="k">if</span> <span class="n">oneFwhm</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpecies</span><span class="p">[</span><span class="n">speciesNames</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">.</span><span class="n">peakFwhm</span> <span class="o">=</span> <span class="n">p1</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulateSpectrum</span><span class="p">(</span><span class="n">speciesNames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_simulateSpectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">speciesNames</span><span class="p">,</span><span class="n">xvals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Builds a simulated spectrum using the fitted parameters of given species names.</span>
+<span class="sd">        (uses the result of deconvolution)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">speciesNames</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">combined</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpecies</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">simulateSpecies</span><span class="p">(</span><span class="n">xvals</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">combined</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpecies</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">simulateSpecies</span><span class="p">(</span><span class="n">xvals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">combined</span>
+
+<div class="viewcode-block" id="MassSpectrum.errorCalculations"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.errorCalculations">[docs]</a>    <span class="k">def</span> <span class="nf">errorCalculations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xvals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates and prints to console error statistics for comparing the simulated</span>
+<span class="sd">        spectrum to the original data.</span>
+<span class="sd">        + average error per data point</span>
+<span class="sd">        + average error per m/z unit</span>
+<span class="sd">        + RMSD (root mean square deviation)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dataBpi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="n">simBpi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpectrum</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpectrum</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="n">difference</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dataBpi</span><span class="o">-</span><span class="n">simBpi</span><span class="p">)</span>
+
+        <span class="n">avErrorPerDataPoint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">difference</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">difference</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;Average error per datapoint: </span><span class="si">%.2f</span><span class="s"> </span><span class="si">%%</span><span class="s">&quot;</span> <span class="o">%</span><span class="n">avErrorPerDataPoint</span>
+
+        <span class="n">mzGap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">xvals</span><span class="p">))</span>
+        <span class="n">avErrorPerMz</span> <span class="o">=</span> <span class="n">avErrorPerDataPoint</span><span class="o">/</span><span class="n">mzGap</span>
+        <span class="k">print</span> <span class="s">&quot;Average error per $m/z$ unit: </span><span class="si">%.2f</span><span class="s"> </span><span class="si">%%</span><span class="s">&quot;</span> <span class="o">%</span><span class="n">avErrorPerMz</span>
+
+        <span class="n">rmsd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dataBpi</span><span class="o">-</span><span class="n">simBpi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">dataBpi</span><span class="p">))</span>
+        <span class="k">print</span> <span class="s">&quot;RMSD: </span><span class="si">%.2f</span><span class="s">&quot;</span> <span class="o">%</span><span class="n">rmsd</span>
+</div>
+<div class="viewcode-block" id="MassSpectrum.forLeastSquaresOptimisation"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.forLeastSquaresOptimisation">[docs]</a>    <span class="k">def</span> <span class="nf">forLeastSquaresOptimisation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p0</span><span class="p">,</span><span class="n">xvals</span><span class="p">,</span><span class="n">zs</span><span class="p">,</span><span class="n">oneFwhm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates the simulated mass spectrum for MassSpectrum.leastSquaresOptimisation().</span>
+<span class="sd">        p0 - parameters to be used in simulation</span>
+<span class="sd">        zs - charges to be simulated</span>
+<span class="sd">        oneFwhm - if True use same FWHM for each species.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_splitPs</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xvals</span><span class="p">))</span>
+        <span class="n">zGauss</span> <span class="o">=</span> <span class="n">Gaussian</span><span class="o">.</span><span class="n">Gaussian</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ps</span><span class="p">):</span>
+            <span class="n">zGauss</span><span class="o">.</span><span class="n">setParameters</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span><span class="n">z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">zs</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">centre</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_mz</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">)</span>
+                <span class="n">amplitude</span> <span class="o">=</span> <span class="n">zGauss</span><span class="o">.</span><span class="n">calculateAmplitude</span><span class="p">(</span><span class="n">centre</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">oneFwhm</span><span class="p">:</span>
+                    <span class="n">combined</span> <span class="o">+=</span> <span class="n">utils</span><span class="o">.</span><span class="n">draw_peaks</span><span class="p">[</span><span class="s">&#39;hybrid&#39;</span><span class="p">](</span><span class="n">xvals</span><span class="p">,</span><span class="n">amplitude</span><span class="p">,</span><span class="n">centre</span><span class="p">,</span><span class="n">p0</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">combined</span> <span class="o">+=</span> <span class="n">utils</span><span class="o">.</span><span class="n">draw_peaks</span><span class="p">[</span><span class="s">&#39;hybrid&#39;</span><span class="p">](</span><span class="n">xvals</span><span class="p">,</span><span class="n">amplitude</span><span class="p">,</span><span class="n">centre</span><span class="p">,</span><span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">combined</span>
+</div>
+    <span class="k">def</span> <span class="nf">_splitPs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pLong</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Splits 1D list created by leastSquaresOptimisation into a multidimensional list.</span>
+<span class="sd">        One dimension per species.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#5 params per species</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">pLong</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">5</span><span class="p">]</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pLong</span><span class="p">),</span><span class="mi">5</span><span class="p">)]</span>
+
+
+<div class="viewcode-block" id="MassSpectrum.getgPeaksFromIds"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.getgPeaksFromIds">[docs]</a>    <span class="k">def</span> <span class="nf">getgPeaksFromIds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generates a new gPeaks dictionary containing only the gPeaks</span>
+<span class="sd">        with the supplied ids.</span>
+<span class="sd">        gPeak format is gPeak[id] = [mz,intensity]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gPeaksOut</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+            <span class="n">gPeaksOut</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gPeaks</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">gPeaksOut</span>
+
+    <span class="c"># ================================================================</span>
+    <span class="c"># Plotting functions</span>
+
+</div>
+<div class="viewcode-block" id="MassSpectrum.plotSimulatedSpectrum"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.plotSimulatedSpectrum">[docs]</a>    <span class="k">def</span> <span class="nf">plotSimulatedSpectrum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">xvals</span><span class="p">,</span><span class="n">speciesNames</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots just the simulated mass spectrum as generated by self.leastSquaresOptimisation(),</span>
+<span class="sd">        with a default color of red.</span>
+<span class="sd">        All matplotlib.pyplot.plot() arguments are allowed in **kwargs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) speciesNames is an uneeded argument, remove and bug test</span>
+        <span class="c"># TODO(gns)</span>
+        <span class="c">#ax = utils.checkAx(ax) # to add in later</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;r&#39;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpectrum</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MassSpectrum.plotTheoreticalMzs"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.plotTheoreticalMzs">[docs]</a>    <span class="k">def</span> <span class="nf">plotTheoreticalMzs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">absolute</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span><span class="n">mass</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used to draw the positions of calculated charge state peaks.</span>
+<span class="sd">        Can be used with a Species() object stored in self.species by entering a &#39;name&#39;</span>
+<span class="sd">        or can be calculated directly from &#39;mass&#39;</span>
+<span class="sd">        If a value for absolute is given, it is used as the y axis position for charge</span>
+<span class="sd">        state labels.</span>
+<span class="sd">        All matplotlib.pyplot.plot() arguments are allowed in **kwargs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">plotTheoreticalMzs</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">,</span>
+                                              <span class="n">absolute</span><span class="p">,</span><span class="n">mass</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="MassSpectrum.plotAllComponents"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.plotAllComponents">[docs]</a>    <span class="k">def</span> <span class="nf">plotAllComponents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">xvals</span><span class="p">,</span><span class="n">yvals</span><span class="p">,</span><span class="n">liftPercentage</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">speciesNames</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">colourList</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">traceLabels</span><span class="o">=</span><span class="s">&#39;mass&#39;</span><span class="p">,</span><span class="n">labelSize</span><span class="o">=</span><span class="s">&#39;small&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot mass spectrum, each of the deconvoluted elements and the simulated spectrum</span>
+<span class="sd">        traceLabels can be &#39;mass&#39; or &#39;name&#39;, with name the Species name is printed on the</span>
+<span class="sd">        right tail of the trace.</span>
+<span class="sd">        Species names allow you to change the order of the list</span>
+<span class="sd">        All matplotlib.pyplot.plot() arguments are allowed in **kwargs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO - if you work out why you want to be able to supply the axes, write it down here!</span>
+        <span class="c"># colours</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">colourList</span><span class="p">:</span>
+            <span class="n">colourList</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">colourList</span>
+        <span class="n">colourList</span> <span class="o">=</span> <span class="n">colourList</span> <span class="o">*</span> <span class="mi">50</span>
+
+        <span class="c"># heights and widths</span>
+        <span class="nb">max</span> <span class="o">=</span> <span class="n">yvals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">lift</span> <span class="o">=</span> <span class="n">liftPercentage</span><span class="o">/</span><span class="mf">100.</span> <span class="o">*</span><span class="nb">max</span>
+        <span class="n">xleft</span> <span class="o">=</span> <span class="n">xvals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><span class="n">xvals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">-</span><span class="n">xvals</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">*</span><span class="mf">0.005</span>
+
+        <span class="c"># plotting species</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">speciesNames</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;int&#39;</span><span class="p">:</span>
+            <span class="n">speciesNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpecies</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">speciesNames</span><span class="p">):</span>
+            <span class="n">tempys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpecies</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">simulateSpecies</span><span class="p">(</span><span class="n">xvals</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span><span class="n">tempys</span><span class="o">+</span><span class="p">(</span><span class="n">j</span><span class="o">*</span><span class="n">lift</span><span class="o">+</span> <span class="n">lift</span><span class="o">/</span><span class="mf">3.</span><span class="p">),</span><span class="n">color</span><span class="o">=</span><span class="n">colourList</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">traceLabels</span> <span class="o">==</span> <span class="s">&#39;mass&#39;</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%.2f</span><span class="s"> Da&#39;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpecies</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span><span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">xleft</span><span class="p">,(</span><span class="n">j</span><span class="o">*</span><span class="n">lift</span><span class="o">+</span> <span class="n">lift</span><span class="o">/</span><span class="mf">2.5</span><span class="p">)),</span><span class="n">size</span><span class="o">=</span><span class="n">labelSize</span><span class="p">,</span><span class="n">horizontalalignment</span><span class="o">=</span><span class="s">&#39;right&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">traceLabels</span> <span class="o">==</span> <span class="s">&#39;name&#39;</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span><span class="n">name</span><span class="p">,</span><span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">xleft</span><span class="p">,(</span><span class="n">j</span><span class="o">*</span><span class="n">lift</span><span class="o">+</span> <span class="n">lift</span><span class="o">/</span><span class="mf">2.5</span><span class="p">)),</span><span class="n">size</span><span class="o">=</span><span class="n">labelSize</span><span class="p">,</span><span class="n">horizontalalignment</span><span class="o">=</span><span class="s">&#39;right&#39;</span><span class="p">)</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c"># plotting combined</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">simulatedSpectrum</span><span class="o">+</span><span class="p">(</span><span class="n">j</span><span class="o">*</span><span class="n">lift</span><span class="o">+</span> <span class="n">lift</span><span class="o">/</span><span class="mf">3.</span><span class="p">),</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;Simulated&#39;</span><span class="p">)</span>
+
+        <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c"># data</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span><span class="n">yvals</span><span class="o">+</span><span class="p">(</span><span class="n">j</span><span class="o">*</span><span class="n">lift</span><span class="o">+</span> <span class="n">lift</span><span class="o">/</span><span class="mf">3.</span><span class="p">),</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;Experimental&#39;</span><span class="p">)</span>
+
+        <span class="c"># plotting parameters</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s">&#39;upper right&#39;</span><span class="p">,</span><span class="n">prop</span><span class="o">=</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">legendFontSize</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;$m/z$&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="MassSpectrum.writeCoordinatesToTxt"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.writeCoordinatesToTxt">[docs]</a>    <span class="k">def</span> <span class="nf">writeCoordinatesToTxt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write the base mass spectrum data to file</span>
+<span class="sd">        Each line is in the format of mz\tintensity (tab separated).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">):</span>
+            <span class="k">print</span><span class="o">&gt;&gt;</span><span class="nb">file</span><span class="p">,</span> <span class="s">&quot;</span><span class="si">%.3f</span><span class="se">\t</span><span class="si">%.3f</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+        <span class="nb">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="MassSpectrum.plotPeakWidthLimits"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.plotPeakWidthLimits">[docs]</a>    <span class="k">def</span> <span class="nf">plotPeakWidthLimits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">charge</span><span class="p">,</span><span class="n">leftMultiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">rightMultiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fill in the area between the max and min limits of FWHM around the</span>
+<span class="sd">        peak mean. (only use after calculating the mass spectrum fit).</span>
+
+<span class="sd">        :parameter name: Species name</span>
+<span class="sd">        :parameter charge: Charge to display</span>
+<span class="sd">        :parameter leftMultiplier: Value to multiply the peak fwhm below the mean</span>
+<span class="sd">        :parameter rightMultiplier: Value to multiply the peak fwhm above the mean</span>
+<span class="sd">        :parameter ax: Matplotlib Axes object or False to create one</span>
+<span class="sd">        :returns: m/z limits when using multiplier as [lowerLimit,upperLimit]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">checkAx</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+        <span class="n">lims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPeakWidthLimits</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">charge</span><span class="p">,</span><span class="n">leftMultiplier</span><span class="p">,</span><span class="n">rightMultiplier</span><span class="p">)</span>
+        <span class="n">ylims</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+        
+        <span class="n">ax</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span><span class="n">ylims</span><span class="p">,</span><span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">lims</span>
+</div>
+<div class="viewcode-block" id="MassSpectrum.getPeakWidthLimits"><a class="viewcode-back" href="../../msClasses.html#msClasses.MassSpectrum.MassSpectrum.getPeakWidthLimits">[docs]</a>    <span class="k">def</span> <span class="nf">getPeakWidthLimits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">charge</span><span class="p">,</span><span class="n">leftMultiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">rightMultiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the lower and upper m/z limits for a particular peak in relation</span>
+<span class="sd">        to the multiplier values. (only use after calculating the mass spectrum fit).</span>
+
+<span class="sd">        :parameter name: Species name</span>
+<span class="sd">        :parameter charge: Charge to display</span>
+<span class="sd">        :parameter leftMultiplier: Value to multiply the peak fwhm below the mean</span>
+<span class="sd">        :parameter rightMultiplier: Value to multiply the peak fwhm above the mean</span>
+<span class="sd">        :returns: m/z limits when using multiplier as [lowerLimit,upperLimit]</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">mass</span>
+        <span class="n">fwhm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">peakFwhm</span>
+        <span class="n">mz</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_mz</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span><span class="n">charge</span><span class="p">)</span>
+
+        <span class="n">leftLim</span> <span class="o">=</span> <span class="n">mz</span> <span class="o">-</span> <span class="p">(</span><span class="n">fwhm</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="n">leftMultiplier</span><span class="p">)</span>
+        <span class="n">rightLim</span> <span class="o">=</span> <span class="n">mz</span> <span class="o">+</span> <span class="p">(</span><span class="n">fwhm</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rightMultiplier</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">leftLim</span><span class="p">,</span><span class="n">rightLim</span><span class="p">]</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

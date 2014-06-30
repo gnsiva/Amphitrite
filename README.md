@@ -2,3 +2,66 @@ Amphitrite
 ==========
 
 Program for processing ion mobility mass spectrometry (MS) and native MS data.
+
+Using Amphitrite (Windows)
+==========================
+
+Windows binaries are available from mscalculator.com. They were compiled in Windows 7 64 bit, Windows 8 64 bit has also been tested and works fine.
+
+Spectrum deconvolution can be run on spectrum list text files using AtroposGui.exe:
+- The copy spectrum list button in Mass Lynx works for this on the G1 and G2.
+- For other instrumentation, please put a pair of coordinates per line as so:
+  - mz I
+    - mz is mass to charge ratio
+    - I is intensity
+
+To run ImProcessor.exe which converts Synapt G1 data into Amphitrite data files:
+- You need to install cygwin (32 bit only), and make sure the cygwin bin directory (C:\cygwin\bin usually) is in your path.
+- You need to put cdt.dll into the Amphitrite folder (alongside the ImProcessor.exe file)
+  - This is distributed with Waters Driftscope software.
+
+*Do not move the exe files out of the Amphitrite folder or they will stop working*
+
+Using Amphitrite (Mac OS X and GNU/Linux)
+=========================================
+
+We have not compiled binaries for OS X or Linux but the program can be easily be run from the command line.	
+Waters only have the binary used for reading their datafiles in a Windows format, so processing Synapy G1 ion mobility files into an Amphitrite compatible format has to be done in Windows.
+
+Dependencies
+============
+
+- Python 2.x
+- NumPy
+- SciPy
+- Matplotlib
+- wxPython 
+
+To install the dependencies in Ubuntu, run the following command in the terminal:
+
+``sudo apt-get install python-numpy python-scipy python-matplotlib python-wxtools``
+
+On OS X, download the latest Python 2.x release and install it, then run the following command:
+
+``pip install numpy scipy matplotlib wx``
+
+
+Then to run one of the programs navigate to the program directory e.g.:
+
+``cd Amphitrite/gui/AtroposGui/ ``
+
+And launch the python file ending in 'Gui' e.g.:
+
+``python AtroposGui.py``
+
+Fin
+===
+
+If you have any problems please let us know on the Google group:
+https://groups.google.com/forum/#!forum/amphitrite-im-ms
+
+Let us know your email address if you would like to be updated with new versions and bug fixes.
+
+
+
+ 

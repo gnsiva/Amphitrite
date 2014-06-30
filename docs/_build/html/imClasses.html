@@ -1,0 +1,1291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imClasses package &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="lib package" href="lib.html" />
+    <link rel="prev" title="gui package" href="gui.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lib.html" title="lib package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gui.html" title="gui package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="imclasses-package">
+<h1>imClasses package<a class="headerlink" href="#imclasses-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-imClasses.Atd">
+<span id="imclasses-atd-module"></span><h2>imClasses.Atd module<a class="headerlink" href="#module-imClasses.Atd" title="Permalink to this headline">¶</a></h2>
+<p>Class for arrival time distributions (ATD) - plotting, peak identification and calculations.</p>
+<dl class="class">
+<dt id="imClasses.Atd.Atd">
+<em class="property">class </em><tt class="descclassname">imClasses.Atd.</tt><tt class="descname">Atd</tt><a class="reference internal" href="_modules/imClasses/Atd.html#Atd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Atd.Atd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="msClasses.html#msClasses.TwoDdata.TwoDdata" title="msClasses.TwoDdata.TwoDdata"><tt class="xref py py-class docutils literal"><span class="pre">msClasses.TwoDdata.TwoDdata</span></tt></a></p>
+<dl class="method">
+<dt id="imClasses.Atd.Atd.autoAxisX">
+<tt class="descname">autoAxisX</tt><big>(</big><em>ax</em>, <em>limit=0.1</em>, <em>percExtra=10</em>, <em>ccsAxisValues=False</em><big>)</big><a class="reference internal" href="_modules/imClasses/Atd.html#Atd.autoAxisX"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Atd.Atd.autoAxisX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically crop the x axis of the axes instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> &#8211; matplotlib.axes() object</li>
+<li><strong>limit</strong> &#8211; highest value allowed to be excluded (1 = 1% of BPI)</li>
+<li><strong>percExtra</strong> &#8211; how far past the limit values to set axis limits</li>
+<li><strong>ccsAxisValues</strong> &#8211; Provide to use CCS axis instead of td.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Atd.Atd.autoAxisXoff">
+<tt class="descname">autoAxisXoff</tt><big>(</big><em>ax</em>, <em>ccsAxisValues=False</em><big>)</big><a class="reference internal" href="_modules/imClasses/Atd.html#Atd.autoAxisXoff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Atd.Atd.autoAxisXoff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revert axis limits to original values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> &#8211; matplotlib.axes() object</li>
+<li><strong>ccsAxisValues</strong> &#8211; Provide to use CCS axis instead of td.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Atd.Atd.plot">
+<tt class="descname">plot</tt><big>(</big><em>ax</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Atd.html#Atd.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Atd.Atd.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites TwoDdata()&#8217;s function to get axis labels right
+Can take matplotlib axes object, as well as any standard
+inputs for matplotlib.pyplot.plot().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Atd.Atd.plotCcs">
+<tt class="descname">plotCcs</tt><big>(</big><em>ax</em>, <em>ccsAxis</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Atd.html#Atd.plotCcs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Atd.Atd.plotCcs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a CCS distribution, handles figure labelling.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ax</strong> &#8211; matplotlib axes instance or False</li>
+<li><strong>ccsAxis</strong> &#8211; CCS axis which corresponds to the arrival time axis</li>
+<li><strong>**kwargs</strong> &#8211; matplotlib.pyplot.plot() arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Atd.Atd.setAtdXvals">
+<tt class="descname">setAtdXvals</tt><big>(</big><em>xvals</em><big>)</big><a class="reference internal" href="_modules/imClasses/Atd.html#Atd.setAtdXvals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Atd.Atd.setAtdXvals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the x axis values for the object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yvals</strong> &#8211; Arrival time values for the Atd() object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Atd.Atd.setAtdYvals">
+<tt class="descname">setAtdYvals</tt><big>(</big><em>yvals</em><big>)</big><a class="reference internal" href="_modules/imClasses/Atd.html#Atd.setAtdYvals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Atd.Atd.setAtdYvals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the y axis values for the object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yvals</strong> &#8211; Intensity values for the Atd() object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-imClasses.Calibrant">
+<span id="imclasses-calibrant-module"></span><h2>imClasses.Calibrant module<a class="headerlink" href="#module-imClasses.Calibrant" title="Permalink to this headline">¶</a></h2>
+<p>Class for ion mobility protein calibrant data and analysis.</p>
+<dl class="class">
+<dt id="imClasses.Calibrant.Calibrant">
+<em class="property">class </em><tt class="descclassname">imClasses.Calibrant.</tt><tt class="descname">Calibrant</tt><big>(</big><em>proteinName</em>, <em>folderName</em>, <em>peakFwhm=10</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.generateCorrectedTdsAndCcss">
+<tt class="descname">generateCorrectedTdsAndCcss</tt><big>(</big><em>waveVelocity</em>, <em>gas='Nitrogen'</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.generateCorrectedTdsAndCcss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.generateCorrectedTdsAndCcss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate td prime and CCS prime, using the calibration equations
+including the reduced mass equation.
+:parameter waveVelocity: Velocity in m/s
+:parameter gas: Mobililty gas used (default: &#8216;Nitrogen&#8217;)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.getCcssPrime">
+<tt class="descname">getCcssPrime</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.getCcssPrime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.getCcssPrime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate CCS&#8217;&#8216;.
+:returns: List of CCS&#8217;&#8217; values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.getChargeTdsDict">
+<tt class="descname">getChargeTdsDict</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.getChargeTdsDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.getChargeTdsDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dictionary for the arrival time values for each charge
+state specified in self.charges.
+:returns: Dictionary of form d[ChargeState] = arrival time</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.getTdsDoublePrime">
+<tt class="descname">getTdsDoublePrime</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.getTdsDoublePrime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.getTdsDoublePrime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate td&#8217;&#8216;.
+:returns: List of td&#8217;&#8217; values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.plotCalibrantTdPeaks">
+<tt class="descname">plotCalibrantTdPeaks</tt><big>(</big><em>ax</em>, <em>colourList=0</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.plotCalibrantTdPeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.plotCalibrantTdPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the arrival time values which are to be used in calibration
+(usually using the ATD apex as the time value).
+:parameter ax: Matplotlib Axes instance
+:parameter colourList: List of colours to use or 0/False to use defaults</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.plotChargeStateAtds">
+<tt class="descname">plotChargeStateAtds</tt><big>(</big><em>ax</em>, <em>lift=0</em>, <em>colourList=0</em>, <em>charges=0</em>, <em>smoothing=1</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.plotChargeStateAtds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.plotChargeStateAtds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the arrival time distributions for the charge states of
+the calibrant.
+:parameter ax: Matplotlib Axes instances
+:parameter lift: Vertical spacing between traces
+:parameter colourList: List of colours to use or 0/False to use defaults
+:parameter charges: List of charges to display (or 0 to display all)
+:parameter smoothing: Boolean; whether or not to smooth the ATDs
+:parameter **kwargs: Matplotlib.pyplot compatible commands for mass spectrum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.plotMsAndExtractionLimits">
+<tt class="descname">plotMsAndExtractionLimits</tt><big>(</big><em>ax</em>, <em>colourList=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.plotMsAndExtractionLimits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.plotMsAndExtractionLimits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the calibrant&#8217;s mass spectrum on the supplied axes and
+shade in the areas which is to be used for extraction of arrival
+time data.
+:parameter ax: Matplotlib Axes instances
+:parameter colourList: List of colours to use or 0/False to use defaults
+:parameter **kwargs: Matplotlib.pyplot compatible commands for mass spectrum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.setCharges">
+<tt class="descname">setCharges</tt><big>(</big><em>charges</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.setCharges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.setCharges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the charges for the species. (Used for ATD extraction).
+:parameter charges: List of charge states (int)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.setPeakFwhm">
+<tt class="descname">setPeakFwhm</tt><big>(</big><em>fwhm</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.setPeakFwhm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.setPeakFwhm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the m/z width to be used for extracting arrival time
+information and update the extraction.
+:parameter fwhm: Peak full width half maximum (m/z)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.setPeakFwhmMultipliers">
+<tt class="descname">setPeakFwhmMultipliers</tt><big>(</big><em>leftMultiplier</em>, <em>rightMultiplier</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.setPeakFwhmMultipliers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.setPeakFwhmMultipliers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set values to multiply the m/z value peak width for the lower
+and upper boundary for arrival time extraction. (Then update td data)
+:parameter leftMultiplier: Multiply by the peak width lower than the mean
+:parameter rightMultiplier: Multiply by the peak width above the mean</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibrant.Calibrant.setTdValue">
+<tt class="descname">setTdValue</tt><big>(</big><em>td</em>, <em>z</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibrant.html#Calibrant.setTdValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibrant.Calibrant.setTdValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the arrival time value for a particular charge state.
+:parameter td: Arrival time value for peak (usually apex)
+:parameter z: Charge state</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-imClasses.Calibration">
+<span id="imclasses-calibration-module"></span><h2>imClasses.Calibration module<a class="headerlink" href="#module-imClasses.Calibration" title="Permalink to this headline">¶</a></h2>
+<p>Class for calculating travelling wave ion mobility calibration curves
+for converting arrival time into collision cross section.</p>
+<dl class="class">
+<dt id="imClasses.Calibration.Calibration">
+<em class="property">class </em><tt class="descclassname">imClasses.Calibration.</tt><tt class="descname">Calibration</tt><a class="reference internal" href="_modules/imClasses/Calibration.html#Calibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibration.Calibration" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="imClasses.Calibration.Calibration.addCalibrant">
+<tt class="descname">addCalibrant</tt><big>(</big><em>calibrantObj</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibration.html#Calibration.addCalibrant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibration.Calibration.addCalibrant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a calibrant (which is another protein or charge state) to the calibration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>calibrantObj</strong> &#8211; A Calibrant() object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibration.Calibration.apply1dCalibration">
+<tt class="descname">apply1dCalibration</tt><big>(</big><em>mzs</em>, <em>tds</em>, <em>charge</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibration.html#Calibration.apply1dCalibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibration.Calibration.apply1dCalibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the arrival time values (tds) to collision cross section (CCS).
+Usually used to convert the arrival time axis directly into CCS. Can also be
+used to calculate individual points.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mzs</strong> &#8211; numpy array or float</li>
+<li><strong>tds</strong> &#8211; numpy array or float</li>
+<li><strong>charge</strong> &#8211; integer value for charge</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibration.Calibration.createCalibration">
+<tt class="descname">createCalibration</tt><big>(</big><em>waveVelocity</em>, <em>gas='Nitrogen'</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibration.html#Calibration.createCalibration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibration.Calibration.createCalibration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a calibration curve.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>waveVelocity</strong> &#8211; IM cell wave velocity (m/s)</li>
+<li><strong>gas</strong> &#8211; &#8216;Nitrogen&#8217; or &#8216;Helium&#8217;, used to calculate reduced mass</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibration.Calibration.getCcsAxisGrid">
+<tt class="descname">getCcsAxisGrid</tt><big>(</big><em>mzs</em>, <em>tds</em>, <em>charge</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibration.html#Calibration.getCcsAxisGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibration.Calibration.getCcsAxisGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>CCS calibration is dependent on m/z and td, so this calculates the CCS values associated
+with the matrix of intensity values in the 3 dimensional data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mzs</strong> &#8211; numpy array</li>
+<li><strong>tds</strong> &#8211; numpy array</li>
+<li><strong>charge</strong> &#8211; integer value for charge</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibration.Calibration.pickle">
+<tt class="descname">pickle</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibration.html#Calibration.pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibration.Calibration.pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serialise the calibration data for future use using cPickle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> &#8211; Absolute path and filename to use to save the pickle.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibration.Calibration.plotCalibrationCurve">
+<tt class="descname">plotCalibrationCurve</tt><big>(</big><em>ax</em>, <em>colourList=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibration.html#Calibration.plotCalibrationCurve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibration.Calibration.plotCalibrationCurve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot graph of the calibration including the R^2 value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> &#8211; matplotlib.axes.Axes() object</li>
+<li><strong>colourList</strong> &#8211; List of matplotlib colours to use. If False default colours are used</li>
+<li><strong>**kwargs</strong> &#8211; matplotlib.pyplot.plot() arguments</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Calibration.Calibration.removeCalibrant">
+<tt class="descname">removeCalibrant</tt><big>(</big><em>calibrantName</em><big>)</big><a class="reference internal" href="_modules/imClasses/Calibration.html#Calibration.removeCalibrant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Calibration.Calibration.removeCalibrant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a calibrant from the calibration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>calibrantName</strong> &#8211; Name of calibrant to be removed (dictionary key)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-imClasses.CcsD">
+<span id="imclasses-ccsd-module"></span><h2>imClasses.CcsD module<a class="headerlink" href="#module-imClasses.CcsD" title="Permalink to this headline">¶</a></h2>
+<p>Class for collision cross section distributions (CCSDs) - plotting, peak identification and calculations.</p>
+<dl class="class">
+<dt id="imClasses.CcsD.CcsD">
+<em class="property">class </em><tt class="descclassname">imClasses.CcsD.</tt><tt class="descname">CcsD</tt><big>(</big><em>calibrationOb</em>, <em>dataSlice</em><big>)</big><a class="reference internal" href="_modules/imClasses/CcsD.html#CcsD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.CcsD.CcsD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="msClasses.html#msClasses.TwoDdata.TwoDdata" title="msClasses.TwoDdata.TwoDdata"><tt class="xref py py-class docutils literal"><span class="pre">msClasses.TwoDdata.TwoDdata</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>calibrationOb</strong> &#8211; Calibration() object for converting ATD to CCSD</li>
+<li><strong>dataSlice</strong> &#8211; DataSlice() object containing the data for the CCSD</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="imClasses.CcsD.CcsD.plot">
+<tt class="descname">plot</tt><big>(</big><em>ax</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/CcsD.html#CcsD.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.CcsD.CcsD.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrites TwoDdata()&#8217;s function to get axis labels right
+Can take matplotlib axes object, as well as any standard
+inputs for matplotlib.pyplot.plot().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.CcsD.CcsD.setXvals">
+<tt class="descname">setXvals</tt><big>(</big><em>xvals</em><big>)</big><a class="reference internal" href="_modules/imClasses/CcsD.html#CcsD.setXvals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.CcsD.CcsD.setXvals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the x axis values for the object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yvals</strong> &#8211; Arrival time values for the Atd() object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.CcsD.CcsD.setYvals">
+<tt class="descname">setYvals</tt><big>(</big><em>yvals</em><big>)</big><a class="reference internal" href="_modules/imClasses/CcsD.html#CcsD.setYvals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.CcsD.CcsD.setYvals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the y axis values for the object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>yvals</strong> &#8211; Intensity values for the Atd() object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-imClasses.DataSlice">
+<span id="imclasses-dataslice-module"></span><h2>imClasses.DataSlice module<a class="headerlink" href="#module-imClasses.DataSlice" title="Permalink to this headline">¶</a></h2>
+<p>Class for handling a portion of an IM dataset. Usually is used for holding
+the data within a signle mass spectrum charge state peak.</p>
+<dl class="class">
+<dt id="imClasses.DataSlice.DataSlice">
+<em class="property">class </em><tt class="descclassname">imClasses.DataSlice.</tt><tt class="descname">DataSlice</tt><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imClasses.ImData.ImData" title="imClasses.ImData.ImData"><tt class="xref py py-class docutils literal"><span class="pre">imClasses.ImData.ImData</span></tt></a></p>
+<dl class="attribute">
+<dt id="imClasses.DataSlice.DataSlice.ccsd">
+<tt class="descname">ccsd</tt><em class="property"> = None</em><a class="headerlink" href="#imClasses.DataSlice.DataSlice.ccsd" title="Permalink to this definition">¶</a></dt>
+<dd><p>self.xaxis = []
+self.yaxis = []
+self.matrix = []
+self.matrixUnaltered = []
+self.xlims = []
+self.ylims = []</p>
+<p>self.ccsMatrix # dno where from</p>
+<p>self.atd = Atd.Atd()
+self.massSpectrum = MassSpectrum.MassSpectrum()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.generateCcsAxisAndGrid">
+<tt class="descname">generateCcsAxisAndGrid</tt><big>(</big><em>calibrationObj</em>, <em>ccsInterval=1</em><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.generateCcsAxisAndGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.generateCcsAxisAndGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create CCS axis which corresponds to the intensity information of an arrival
+time distribution, also create CCS grid which provides the CCS value for each
+datapoint in the intensity matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>calibrationObj</strong> &#8211; imClasses.Calibration() object (IM calibration)</li>
+<li><strong>ccsInterval</strong> &#8211; Spacing between each CCS value in Angstrom**2</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.generateCcsDistribution">
+<tt class="descname">generateCcsDistribution</tt><big>(</big><em>calibrationObj</em><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.generateCcsDistribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.generateCcsDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a CcsD() out of this object&#8217;s data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>calibrationObj</strong> &#8211; imClasses.Calibration() object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">imClasses.CcsD() object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.getAtdApex">
+<tt class="descname">getAtdApex</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.getAtdApex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.getAtdApex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the arrival time value for the point of highest intensity.
+Get the highest point of the arrival time distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Arrival time of maximum intensity (float)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.getAtdPeaks">
+<tt class="descname">getAtdPeaks</tt><big>(</big><em>smoothes</em>, <em>window_len</em>, <em>limit=0</em><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.getAtdPeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.getAtdPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find peaks using gradient method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">atdPeaks (list of arrival time values)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.getCcsDistribution">
+<tt class="descname">getCcsDistribution</tt><big>(</big><em>calibrationObj</em><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.getCcsDistribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.getCcsDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the matrix into CCS, sum it and return the intensity
+values for the CCS distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>calibrationObj</strong> &#8211; imClasses.Calibration() object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">ccsLine (CCS distribution y axis values)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.getCcsMatrix">
+<tt class="descname">getCcsMatrix</tt><big>(</big><em>calibrationObj</em><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.getCcsMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.getCcsMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use calibration to create a grid of CCS values associated with
+each entry in the intensity matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>calibrationObj</strong> &#8211; imClasses.Calibration() object (IM calibration)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">CCS matrix, x axis and y axis (all numpy arrays)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.getCcsPeaks">
+<tt class="descname">getCcsPeaks</tt><big>(</big><em>smoothes</em>, <em>window_len</em>, <em>mz</em>, <em>calibrationOb</em>, <em>limit=0</em><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.getCcsPeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.getCcsPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smooth data then find peaks using the gradient method in the arrival time
+distribution. Convert the arrival time values to CCS.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>smoothes</strong> &#8211; Number of rounds of Savitzky-Golay smoothing</li>
+<li><strong>window_len</strong> &#8211; Savitzky-Golay smoothing window size (size used is window_len*2 + 1)</li>
+<li><strong>mz</strong> &#8211; m/z value to use for CCS conversion</li>
+<li><strong>calibrationObj</strong> &#8211; imClasses.Calibration() object</li>
+<li><strong>limit</strong> &#8211; Percentage of base peak under which to ignore peaks found</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">ccsPeaks (list of CCS values)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.getData">
+<tt class="descname">getData</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.getData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.getData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the intensity matrix, m/z axis and arrival time axis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">matrix, x axis, y axis (all numpy arrays)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.getMsApex">
+<tt class="descname">getMsApex</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.getMsApex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.getMsApex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the m/z value for the point of highest intensity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">m/z value (float)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.getMsApexI">
+<tt class="descname">getMsApexI</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.getMsApexI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.getMsApexI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get index of the m/z axis for the point of highest intensity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">index</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.getMsApexProportion">
+<tt class="descname">getMsApexProportion</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.getMsApexProportion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.getMsApexProportion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Relative to width of the slice e.g. 0.5 for in the middle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">proportion of axis (float)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.DataSlice.DataSlice.plotCcsDistribution">
+<tt class="descname">plotCcsDistribution</tt><big>(</big><em>ax</em>, <em>calibrationObj</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/DataSlice.html#DataSlice.plotCcsDistribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.DataSlice.DataSlice.plotCcsDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the CCS distribution for this DataSlice.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> &#8211; matplotlib axes instance or False</li>
+<li><strong>calibrationObj</strong> &#8211; imClasses.Calibration() object (IM calibration)</li>
+<li><strong>**kwargs</strong> &#8211; matplotlib.pyplot.plot() arguments</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-imClasses.Im">
+<span id="imclasses-im-module"></span><h2>imClasses.Im module<a class="headerlink" href="#module-imClasses.Im" title="Permalink to this headline">¶</a></h2>
+<p>Class for holding full ion mobility data files, containing data for
+multiple charge states.</p>
+<dl class="class">
+<dt id="imClasses.Im.Im">
+<em class="property">class </em><tt class="descclassname">imClasses.Im.</tt><tt class="descname">Im</tt><a class="reference internal" href="_modules/imClasses/Im.html#Im"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#imClasses.ImData.ImData" title="imClasses.ImData.ImData"><tt class="xref py py-class docutils literal"><span class="pre">imClasses.ImData.ImData</span></tt></a></p>
+<dl class="method">
+<dt id="imClasses.Im.Im.calculateAtdStatistics">
+<tt class="descname">calculateAtdStatistics</tt><big>(</big><em>speciesName</em>, <em>charge</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.calculateAtdStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.calculateAtdStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the weighted mean and standard deviation for an arrival
+time distribution.
+:parameter speciesName: Name of molecular species
+:parameter charge: Charge state to use
+:returns: average, standard deviation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.calculateCcsdStatistics">
+<tt class="descname">calculateCcsdStatistics</tt><big>(</big><em>speciesName</em>, <em>charge</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.calculateCcsdStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.calculateCcsdStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the weighted mean and standard deviation for a CCS
+distribution.
+:parameter speciesName: Name of molecular species
+:parameter charge: Charge state to use
+:returns: average, standard deviation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.calculateStatistics">
+<tt class="descname">calculateStatistics</tt><big>(</big><em>twoDdata</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.calculateStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.calculateStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the weighted mean and standard deviation
+:parameter twoDdata: An object which inherits from msClasses.TwoDdata()
+(e.g. MassSpectrum() or Atd()).
+:returns: average, standard deviation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.generateCcsAxesAndGrids">
+<tt class="descname">generateCcsAxesAndGrids</tt><big>(</big><em>calibrationObj</em>, <em>ccsInterval=1</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.generateCcsAxesAndGrids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.generateCcsAxesAndGrids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calibrate the ion mobility data by calculating CCS equivalents
+of the arrival time data.
+:parameter calibrationObj: imClasses.Calibration() object
+:parameter ccsInterval: Interval in Angstrom**2 to use for interpolation
+of the calibrated arrival time axes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.generateSpeciesSlicesExplicit">
+<tt class="descname">generateSpeciesSlicesExplicit</tt><big>(</big><em>limitDic</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.generateSpeciesSlicesExplicit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.generateSpeciesSlicesExplicit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create data slices using explicit m/z limits for arrival
+time data extraction, for all supplied species and charge states.
+:parameter limitDic: d[species][z] = [lowerLimit,upperLimit]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.generateSpeciesSlicesFwhm">
+<tt class="descname">generateSpeciesSlicesFwhm</tt><big>(</big><em>speciesName</em>, <em>leftMultiplier=1</em>, <em>rightMultiplier=1</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.generateSpeciesSlicesFwhm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.generateSpeciesSlicesFwhm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create data slices using peak width from mass spectrum fit
+for a specific species.
+:parameter speciesName: Name of molecular species
+:parameter leftMultiplier: Value to multiply the peak fwhm below the mean
+:parameter rightMultiplier: Value to multiply the peak fwhm above the mean</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.getAtd">
+<tt class="descname">getAtd</tt><big>(</big><em>speciesName</em>, <em>charge</em>, <em>normalised=True</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.getAtd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.getAtd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the arrival time distribution for the specific
+charge state of a species.
+:parameter speciesName: Name of molecular species
+:parameter charge: Charge state to use
+:parameter normalised: Boolean for whether to normalise data to
+base peak intensity
+:returns: imClasses.Atd() object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.getDataSlice">
+<tt class="descname">getDataSlice</tt><big>(</big><em>speciesName</em>, <em>charge</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.getDataSlice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.getDataSlice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the section of the data related to this charge state
+of this species.
+:parameter speciesName: Name of molecular species
+:parameter charge: Charge state to use
+:returns: imClasses.DataSlice() object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.getDataSlices">
+<tt class="descname">getDataSlices</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.getDataSlices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.getDataSlices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all available data slices.
+:returns: Dictionary of imClasses.DataSlice() objects in the form
+d[speciesName][chargeState] = DataSlice()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.labelChargeStateContourPlots">
+<tt class="descname">labelChargeStateContourPlots</tt><big>(</big><em>ax</em>, <em>species</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.labelChargeStateContourPlots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.labelChargeStateContourPlots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Annotate 3D Clemmer-style contour plots with charge
+state numbering.
+:parameter ax: Matplotlib Axes instance
+:parameter species: The molecular species to be labelled</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.loadAmphiFile">
+<tt class="descname">loadAmphiFile</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.loadAmphiFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.loadAmphiFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data from amphitrite data file (&#8216;.a&#8217;).
+:parameter filename: Absolute path to data file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.loadFolder">
+<tt class="descname">loadFolder</tt><big>(</big><em>folderPath</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.loadFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.loadFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data from text files. Files should be named &#8216;MassMobilityXaxis.txt&#8217;
+for the m/z axis, &#8216;MassMobilityYaxis.txt&#8217; for arrival time axis and
+&#8216;MassMobility.txt&#8217; for the matrix of intensities.
+:parameter folderPath: Absolute path to directory containing text files.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.loadFolderAuto">
+<tt class="descname">loadFolderAuto</tt><big>(</big><em>folderName</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.loadFolderAuto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.loadFolderAuto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically carries out the processing depending on what is input.
+If the folder is MassLynx raw data file, it will detect and process that
+(windows only), if the folder contains correctly named text files it will
+do the same. Finally if the folderName points to an Amphitrite data file
+(&#8216;.a&#8217;) it will detect this and process accordingly.
+:parameter folderName: Absolute path to data folder or file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.loadMsFit">
+<tt class="descname">loadMsFit</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.loadMsFit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.loadMsFit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and set the Amphitrite mass spectrum fit from
+file. (Erases currently set mass spectrum data).
+:parameter filename: Absolute path to pickled
+msClasses.MassSpectrum() object (&#8216;.afit&#8217; file).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.loadRawFolder">
+<tt class="descname">loadRawFolder</tt><big>(</big><em>rawPath</em>, <em>grain=2</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.loadRawFolder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.loadRawFolder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data from MassLynx raw data set.
+:parameter rawPath: Path to raw data directory
+:parameter grain: m/z spacing for extracting the data
+(minimum 0.5).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.plotAtdSlicesHeatMap">
+<tt class="descname">plotAtdSlicesHeatMap</tt><big>(</big><em>ax</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.plotAtdSlicesHeatMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.plotAtdSlicesHeatMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw 3D contour plots showing each dataslice.
+:parameter ax: Matplotlib Axes instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.plotCcsHeatMap">
+<tt class="descname">plotCcsHeatMap</tt><big>(</big><em>ax</em>, <em>calibrationOb</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.plotCcsHeatMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.plotCcsHeatMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a 3D m/z against CCS contour plot.
+:parameter ax: Matplotlib Axes instance
+:parameter calibrationOb: imClasses.Calibration() object
+:parameter **kwargs: Matplotlib imshow compatible arguments</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.plotCcsHeatMapFromDataSlices">
+<tt class="descname">plotCcsHeatMapFromDataSlices</tt><big>(</big><em>ax</em>, <em>calibrationOb</em>, <em>dataSlices</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.plotCcsHeatMapFromDataSlices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.plotCcsHeatMapFromDataSlices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a 3D m/z against CCS contour plot given dataSlices. (Used
+when you don&#8217;t want to plot all dataSlices available).
+:parameter ax: Matplotlib Axes instance
+:parameter calibrationOb: imClasses.Calibration() object
+:parameter dataSlices: Dictionary of imClasses.DataSlice() objects
+(d[chargeState] = dataSlice)
+:parameter **kwargs: Matplotlib imshow compatible arguments</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.plotChargeStateAtd">
+<tt class="descname">plotChargeStateAtd</tt><big>(</big><em>ax</em>, <em>speciesName</em>, <em>charge</em>, <em>colour='gray'</em>, <em>normalise='bpi'</em>, <em>label=''</em>, <em>lift=0</em>, <em>smoothing=0</em>, <em>window_len=3</em>, <em>smoothes=1</em>, <em>poly_order=1</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.plotChargeStateAtd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.plotChargeStateAtd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the arrival time distribution of a particular charge state of
+a species.
+:parameter ax: matplotlib.axes.Axes() object
+:parameter speciesName: Name of species
+:parameter charge: Charge state
+:parameter colour: Matplotlib.pyplot compatible colour
+:parameter normalise: Normalisation method; base peak intensity (&#8216;bpi&#8217;) or
+per area (&#8216;area&#8217;).
+:parameter label: Label to be used in legend
+:parameter lift: Absolute value to lift the trace vertically (used for stacking
+multiple ATDs
+:parameter smoothing: Boolean for Savitzky Golay smoothing
+:parameter window_len: Window size for smoothing
+:parameter poly_order: Polynormial to use for smoothing
+:parameter **kwargs: matplotlib.pyplot.plot() arguments</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.plotChargeStateAtds">
+<tt class="descname">plotChargeStateAtds</tt><big>(</big><em>ax</em>, <em>speciesName</em>, <em>charges=0</em>, <em>lift=0</em>, <em>colourList=0</em>, <em>smoothing=0</em>, <em>window_len=3</em>, <em>smoothes=1</em>, <em>poly_order=1</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.plotChargeStateAtds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.plotChargeStateAtds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw the arrival time distribution of all (or given) charge states of
+a species.
+:parameter ax: matplotlib.axes.Axes() object
+:parameter speciesName: Name of species
+:parameter charges: List of charges to use (or 0/False to use all charges)
+:parameter colour: Matplotlib.pyplot compatible colour
+:parameter lift: Absolute value to separate ATDs vertically
+:parameter smoothing: Boolean for Savitzky Golay smoothing
+:parameter window_len: Window size for smoothing
+:parameter poly_order: Polynormial to use for smoothing
+:parameter **kwargs: matplotlib.pyplot.plot() arguments</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.plotChargeStateContourPeaktops">
+<tt class="descname">plotChargeStateContourPeaktops</tt><big>(</big><em>ax</em>, <em>calibrationOb</em>, <em>species</em>, <em>smths</em>, <em>wlen</em>, <em>colour='b'</em>, <em>limit=0</em>, <em>dataType='ccs'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.plotChargeStateContourPeaktops"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.plotChargeStateContourPeaktops" title="Permalink to this definition">¶</a></dt>
+<dd><p>For contour plots in Clemmer-style charge state mode;
+plots the peak tops as found using derivative.
+:parameter ax: Matplotlib Axes instance
+:parameter calibrationOb: imClasses.Calibration() object
+:parameter species: Name of molecular species to use
+:parameter smths: Rounds of smoothing to do before picking peaks
+:parameter wlen: Window length for smoothing (Savitzky Golay)
+:parameter colour: Colour for peak top markers
+:parameter dataType: Either CCS (&#8216;ccs&#8217;) or arrival time (&#8216;std&#8217;)
+:parameter **kwargs: Matplotlib scatter compatible arguments</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.plotChargeStateContourPlots">
+<tt class="descname">plotChargeStateContourPlots</tt><big>(</big><em>ax</em>, <em>calibrationOb</em>, <em>species</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.plotChargeStateContourPlots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.plotChargeStateContourPlots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw 3D Clemmer-style contour plots given species name.
+:parameter ax: Matplotlib Axes instance
+:parameter calibrationOb: imClasses.Calibration() object
+:parameter species: Species name
+:parameter **kwargs: Matplotlib imshow compatible arguments</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.plotChargeStateContourPlotsFromDataSlices">
+<tt class="descname">plotChargeStateContourPlotsFromDataSlices</tt><big>(</big><em>ax</em>, <em>calibrationOb</em>, <em>dataSlices</em>, <em>species</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.plotChargeStateContourPlotsFromDataSlices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.plotChargeStateContourPlotsFromDataSlices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw 3D Clemmer-style contour plots from provided dataSlices.
+:parameter ax: Matplotlib Axes instance
+:parameter calibrationOb: imClasses.Calibration() object
+:parameter dataSlices: Dictionary of imClasses.DataSlice() objects
+(d[chargeState] = dataSlice)
+:parameter species: The molecular species the dataSlices are from
+:parameter **kwargs: Matplotlib imshow compatible arguments</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.plotMsExtractionLimits">
+<tt class="descname">plotMsExtractionLimits</tt><big>(</big><em>ax</em>, <em>speciesName</em>, <em>colourList=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.plotMsExtractionLimits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.plotMsExtractionLimits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill in the area between the max and min limits of FWHM around the
+peak mean.
+:parameter ax: Matplotlib Axes instance
+:parameter speciesName: Species name
+:parameter colourList: List of matplotlib colours to use. If False default colours are used
+:parameter **kwargs: matplotlib.pyplot.plot() arguments</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.setDataFromAmphiExtract">
+<tt class="descname">setDataFromAmphiExtract</tt><big>(</big><em>dataList</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.setDataFromAmphiExtract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.setDataFromAmphiExtract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the m/z and arrival time axis as well as the
+intensity matrix from a list of those arrays.
+:parameter dataList: List of form [xaxis,yaxis,intensityArray]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.setMsFit">
+<tt class="descname">setMsFit</tt><big>(</big><em>msOb</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.setMsFit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.setMsFit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the Amphitrite mass spectrum fit, and as a by product,
+the species objects.
+:parameter msOb: msClasses.MassSpectrum() object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.Im.Im.setSpecies">
+<tt class="descname">setSpecies</tt><big>(</big><em>species</em><big>)</big><a class="reference internal" href="_modules/imClasses/Im.html#Im.setSpecies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.Im.Im.setSpecies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a species object to the self.species dictionary.
+:parameter species: msClasses.Species() object</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-imClasses.ImData">
+<span id="imclasses-imdata-module"></span><h2>imClasses.ImData module<a class="headerlink" href="#module-imClasses.ImData" title="Permalink to this headline">¶</a></h2>
+<p>Class for describing ion mobility data. This is used for both
+small sections of the full set of mobility data (DataSlice) and whole
+datasets (its the superclass of Im()).</p>
+<dl class="class">
+<dt id="imClasses.ImData.ImData">
+<em class="property">class </em><tt class="descclassname">imClasses.ImData.</tt><tt class="descname">ImData</tt><a class="reference internal" href="_modules/imClasses/ImData.html#ImData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="imClasses.ImData.ImData.generateAtd">
+<tt class="descname">generateAtd</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.generateAtd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.generateAtd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum the intensity matrix to create an arrival time distribution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.generateMassSpectrum">
+<tt class="descname">generateMassSpectrum</tt><big>(</big><em>keepExisting=True</em><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.generateMassSpectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.generateMassSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum the intensity matrix to create a mass spectrum.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>keepExisting</strong> &#8211; if True don&#8217;t overwrite exisiting mass spectrum for this object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.getMassSpectrum">
+<tt class="descname">getMassSpectrum</tt><big>(</big><em>keepExisting=True</em><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.getMassSpectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.getMassSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum the intensity matrix to create a mass spectrum and return it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>keepExisting</strong> &#8211; If False recreate the mass spectrum before returning it</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">msClasses.MassSpectrum() object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.limitAxisX">
+<tt class="descname">limitAxisX</tt><big>(</big><em>lims</em><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.limitAxisX"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.limitAxisX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set limits for the m/z axis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lims</strong> &#8211; list in format of [lower,upper] limits</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.limitAxisY">
+<tt class="descname">limitAxisY</tt><big>(</big><em>lims</em><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.limitAxisY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.limitAxisY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set limits for the arrival time axis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>lims</strong> &#8211; list in format of [lower,upper] limits</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.normalisationArea">
+<tt class="descname">normalisationArea</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.normalisationArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.normalisationArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalise intensity matrix to the area under the matrix.</p>
+<p>Calculation is done by dividing by the sum of the intensity matrix and
+multipling by the number of entries.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.normalisationBpi">
+<tt class="descname">normalisationBpi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.normalisationBpi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.normalisationBpi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalise intensity matrix to the peak height at its highest
+point.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.normalisationBpiByMs">
+<tt class="descname">normalisationBpiByMs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.normalisationBpiByMs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.normalisationBpiByMs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented yet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.plotHeatmap">
+<tt class="descname">plotHeatmap</tt><big>(</big><em>ax=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.plotHeatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.plotHeatmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a heatmap of this object&#8217;s data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> &#8211; matplotlib Axes instance or boolean</li>
+<li><strong>**kwargs</strong> &#8211; matplotlib.pyplot.plot() arguments</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.plotHeatmapFromMatrix">
+<tt class="descname">plotHeatmapFromMatrix</tt><big>(</big><em>matrix</em>, <em>x</em>, <em>y</em>, <em>ax=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.plotHeatmapFromMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.plotHeatmapFromMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a heatmap from provided information instead of using
+this object&#8217;s properties.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>matrix</strong> &#8211; numpy array (intensity data)</li>
+<li><strong>x</strong> &#8211; numpy array (m/z axis)</li>
+<li><strong>y</strong> &#8211; numpy array (arrival time axis)</li>
+<li><strong>ax</strong> &#8211; matplotlib Axes instance or boolean</li>
+<li><strong>**kwargs</strong> &#8211; matplotlib.pyplot.plot() arguments</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.setAxisX">
+<tt class="descname">setAxisX</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.setAxisX"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.setAxisX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set x (m/z) axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> &#8211; numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.setAxisY">
+<tt class="descname">setAxisY</tt><big>(</big><em>y</em><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.setAxisY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.setAxisY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set y (arrival time) axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>y</strong> &#8211; numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.setMatrix">
+<tt class="descname">setMatrix</tt><big>(</big><em>matrix</em><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.setMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.setMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the matrix of intensity values (which aligns with the x
+and y axes).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>matrix</strong> &#8211; numpy array (2D)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="imClasses.ImData.ImData.show">
+<tt class="descname">show</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/imClasses/ImData.html#ImData.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.ImData.ImData.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function with calls matplotlib.pyplot.show().</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-imClasses.SpecialFigures">
+<span id="imclasses-specialfigures-module"></span><h2>imClasses.SpecialFigures module<a class="headerlink" href="#module-imClasses.SpecialFigures" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="imClasses.SpecialFigures.SpecialFigures">
+<em class="property">class </em><tt class="descclassname">imClasses.SpecialFigures.</tt><tt class="descname">SpecialFigures</tt><a class="reference internal" href="_modules/imClasses/SpecialFigures.html#SpecialFigures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.SpecialFigures.SpecialFigures" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="imClasses.SpecialFigures.SpecialFigures.atDistributions">
+<tt class="descname">atDistributions</tt><big>(</big><em>ax</em>, <em>imObj</em>, <em>spName=0</em>, <em>colourList=0</em>, <em>lift=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/SpecialFigures.html#SpecialFigures.atDistributions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.SpecialFigures.SpecialFigures.atDistributions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="imClasses.SpecialFigures.SpecialFigures.calibrationFigure">
+<tt class="descname">calibrationFigure</tt><big>(</big><em>fig</em>, <em>calibrationObj</em>, <em>spToDisplay=0</em>, <em>autoAxesLimits=1</em>, <em>colourList=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/SpecialFigures.html#SpecialFigures.calibrationFigure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.SpecialFigures.SpecialFigures.calibrationFigure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="imClasses.SpecialFigures.SpecialFigures.ccsDistributions">
+<tt class="descname">ccsDistributions</tt><big>(</big><em>ax</em>, <em>imObj</em>, <em>calibrationObj</em>, <em>spName=0</em>, <em>ccsInterval=1</em>, <em>colourList=0</em>, <em>lift=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/imClasses/SpecialFigures.html#SpecialFigures.ccsDistributions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imClasses.SpecialFigures.SpecialFigures.ccsDistributions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract arrival time distributions for each charge state of a species,
+convert to CCS and plot them vertically stacked.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> &#8211; matplotlib Axes instance</li>
+<li><strong>imObj</strong> &#8211; imClasses.Im() object</li>
+<li><strong>calibrationObj</strong> &#8211; imClasses.Calibration() object (IM calibration)</li>
+<li><strong>spName</strong> &#8211; Name of molecular species to use from imObj</li>
+<li><strong>ccsInterval</strong> &#8211; Spacing of CCS values in Angstrom**2</li>
+<li><strong>colourList</strong> &#8211; List of matplotlib compatible colours to use</li>
+<li><strong>**kwargs</strong> &#8211; matplotlib.pyplot.plot() arguments</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-imClasses">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-imClasses" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">imClasses package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-imClasses.Atd">imClasses.Atd module</a></li>
+<li><a class="reference internal" href="#module-imClasses.Calibrant">imClasses.Calibrant module</a></li>
+<li><a class="reference internal" href="#module-imClasses.Calibration">imClasses.Calibration module</a></li>
+<li><a class="reference internal" href="#module-imClasses.CcsD">imClasses.CcsD module</a></li>
+<li><a class="reference internal" href="#module-imClasses.DataSlice">imClasses.DataSlice module</a></li>
+<li><a class="reference internal" href="#module-imClasses.Im">imClasses.Im module</a></li>
+<li><a class="reference internal" href="#module-imClasses.ImData">imClasses.ImData module</a></li>
+<li><a class="reference internal" href="#module-imClasses.SpecialFigures">imClasses.SpecialFigures module</a></li>
+<li><a class="reference internal" href="#module-imClasses">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gui.html"
+                        title="previous chapter">gui package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lib.html"
+                        title="next chapter">lib package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/imClasses.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lib.html" title="lib package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gui.html" title="gui package"
+             >previous</a> |</li>
+        <li><a href="index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

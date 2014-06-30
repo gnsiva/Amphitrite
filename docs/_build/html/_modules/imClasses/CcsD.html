@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imClasses.CcsD &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for imClasses.CcsD</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Class for collision cross section distributions (CCSDs) - plotting, peak identification and calculations.&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Ganesh N. Sivalingam &lt;g.n.sivalingam@gmail.com&quot;</span>
+
+<span class="kn">import</span> <span class="nn">Im</span><span class="o">,</span><span class="nn">Atd</span>
+<span class="kn">from</span> <span class="nn">msClasses</span> <span class="kn">import</span> <span class="n">TwoDdata</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<div class="viewcode-block" id="CcsD"><a class="viewcode-back" href="../../imClasses.html#imClasses.CcsD.CcsD">[docs]</a><span class="k">class</span> <span class="nc">CcsD</span><span class="p">(</span><span class="n">TwoDdata</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :parameter calibrationOb: Calibration() object for converting ATD to CCSD</span>
+<span class="sd">    :parameter dataSlice: DataSlice() object containing the data for the CCSD</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">dataSlice</span><span class="p">):</span>
+        <span class="c"># TODO(gns) - Shouldn&#39;t you call the TwoDdata init here?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawyvals</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalisationType</span> <span class="o">=</span> <span class="s">&#39;bpi&#39;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">createCcsD</span><span class="p">(</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">dataSlice</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_createCcsD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">dataSlice</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a CCS distribution from a DataSlice(), updates self.xvals and self.yvals.</span>
+
+<span class="sd">        :parameter calibrationOb: Calibration() object for converting ATD to CCSD</span>
+<span class="sd">        :parameter dataSlice: DataSlice() object containing the data for the CCSD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) - this function used to be called self.createCcsD(), so check for problems.</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">dataSlice</span>
+        <span class="n">ccsMatrixAxis</span><span class="p">,</span><span class="n">mzs</span><span class="p">,</span><span class="n">ccsAxis</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">getCcsMatrix</span><span class="p">(</span><span class="n">calibrationOb</span><span class="p">)</span>
+        <span class="n">ccsSignal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ccsMatrixAxis</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c"># the range of values is too large so interpolate back to</span>
+        <span class="c"># original size</span>
+
+        <span class="c"># calibrate the td axis directly</span>
+        <span class="n">charge</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">charge</span>
+        <span class="n">mz</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">getMsApex</span><span class="p">()</span>
+        <span class="n">tds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">xvals</span>
+
+        <span class="n">tdsConvertedToCcss</span> <span class="o">=</span> <span class="n">calibrationOb</span><span class="o">.</span><span class="n">apply1dCalibration</span><span class="p">(</span><span class="n">mz</span><span class="p">,</span><span class="n">tds</span><span class="p">,</span><span class="n">charge</span><span class="p">)</span>
+
+        <span class="c"># interpolate</span>
+        <span class="n">yInterp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">tdsConvertedToCcss</span><span class="p">,</span><span class="n">ccsAxis</span><span class="p">,</span><span class="n">ccsSignal</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setXvals</span><span class="p">(</span><span class="n">tdsConvertedToCcss</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setYvals</span><span class="p">(</span><span class="n">yInterp</span><span class="o">/</span><span class="n">yInterp</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+
+        
+<div class="viewcode-block" id="CcsD.setYvals"><a class="viewcode-back" href="../../imClasses.html#imClasses.CcsD.CcsD.setYvals">[docs]</a>    <span class="k">def</span> <span class="nf">setYvals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">yvals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the y axis values for the object.</span>
+<span class="sd">        </span>
+<span class="sd">        :parameter yvals: Intensity values for the Atd() object</span>
+<span class="sd">        :type numpy array:</span>
+<span class="sd">        :returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) - This should be in TwoDdata, same problem in Atd()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawyvals</span> <span class="o">=</span> <span class="n">yvals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawyvals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CcsD.setXvals"><a class="viewcode-back" href="../../imClasses.html#imClasses.CcsD.CcsD.setXvals">[docs]</a>    <span class="k">def</span> <span class="nf">setXvals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xvals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the x axis values for the object.</span>
+<span class="sd">        </span>
+<span class="sd">        :parameter yvals: Arrival time values for the Atd() object</span>
+<span class="sd">        :type numpy array:</span>
+<span class="sd">        :returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span> <span class="o">=</span> <span class="n">xvals</span>
+        
+    </div>
+<div class="viewcode-block" id="CcsD.plot"><a class="viewcode-back" href="../../imClasses.html#imClasses.CcsD.CcsD.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrites TwoDdata()&#39;s function to get axis labels right</span>
+<span class="sd">        Can take matplotlib axes object, as well as any standard</span>
+<span class="sd">        inputs for matplotlib.pyplot.plot().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">checkAx</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;black&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;lw&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;lw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;CCS ($\AA^2$)&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

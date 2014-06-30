@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imClasses.DataSlice &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for imClasses.DataSlice</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Class for handling a portion of an IM dataset. Usually is used for holding</span>
+<span class="sd">the data within a signle mass spectrum charge state peak.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Ganesh N. Sivalingam &lt;g.n.sivalingam@gmail.com&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ImData</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">imClasses</span> <span class="kn">import</span> <span class="n">Atd</span><span class="p">,</span><span class="n">CcsD</span>
+<span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">utils</span>
+
+
+<div class="viewcode-block" id="DataSlice"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice">[docs]</a><span class="k">class</span> <span class="nc">DataSlice</span><span class="p">(</span><span class="n">ImData</span><span class="o">.</span><span class="n">ImData</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ImData</span><span class="o">.</span><span class="n">ImData</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atd</span> <span class="o">=</span> <span class="n">Atd</span><span class="o">.</span><span class="n">Atd</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ccsAxisGrid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ccsAxis</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ccsd</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ---------------------</span>
+<span class="sd">        Inherited:</span>
+<span class="sd">        ---------------------</span>
+<span class="sd">        self.xaxis = []</span>
+<span class="sd">        self.yaxis = []</span>
+<span class="sd">        self.matrix = []</span>
+<span class="sd">        self.matrixUnaltered = []</span>
+<span class="sd">        self.xlims = []</span>
+<span class="sd">        self.ylims = []</span>
+
+<span class="sd">        self.ccsMatrix # dno where from</span>
+<span class="sd">        </span>
+<span class="sd">        self.atd = Atd.Atd()</span>
+<span class="sd">        self.massSpectrum = MassSpectrum.MassSpectrum()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+<div class="viewcode-block" id="DataSlice.getAtdApex"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.getAtdApex">[docs]</a>    <span class="k">def</span> <span class="nf">getAtdApex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the arrival time value for the point of highest intensity.</span>
+<span class="sd">        Get the highest point of the arrival time distribution.</span>
+
+<span class="sd">        :returns: Arrival time of maximum intensity (float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">xvals</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="DataSlice.getMsApexI"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.getMsApexI">[docs]</a>    <span class="k">def</span> <span class="nf">getMsApexI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get index of the m/z axis for the point of highest intensity.</span>
+
+<span class="sd">        :returns: index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generateMassSpectrum</span><span class="p">()</span>
+        <span class="n">maxI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">maxI</span>
+        </div>
+<div class="viewcode-block" id="DataSlice.getMsApex"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.getMsApex">[docs]</a>    <span class="k">def</span> <span class="nf">getMsApex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the m/z value for the point of highest intensity.</span>
+
+<span class="sd">        :returns: m/z value (float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">maxI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMsApexI</span><span class="p">()</span>
+        <span class="n">maxMz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">xvals</span><span class="p">[</span><span class="n">maxI</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">maxMz</span>
+</div>
+<div class="viewcode-block" id="DataSlice.getMsApexProportion"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.getMsApexProportion">[docs]</a>    <span class="k">def</span> <span class="nf">getMsApexProportion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Relative to width of the slice e.g. 0.5 for in the middle</span>
+
+<span class="sd">        :returns: proportion of axis (float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">maxI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMsApexI</span><span class="p">()</span>
+        <span class="n">entries</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">massSpectrum</span><span class="o">.</span><span class="n">xvals</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">maxI</span><span class="p">)</span><span class="o">/</span><span class="n">entries</span>
+</div>
+<div class="viewcode-block" id="DataSlice.getAtdPeaks"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.getAtdPeaks">[docs]</a>    <span class="k">def</span> <span class="nf">getAtdPeaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">smoothes</span><span class="p">,</span><span class="n">window_len</span><span class="p">,</span><span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find peaks using gradient method.</span>
+
+<span class="sd">        :returns: atdPeaks (list of arrival time values)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">smoothingSG</span><span class="p">(</span><span class="n">window_len</span><span class="p">,</span><span class="n">smoothes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">findPeaks</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">atdPeaks</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">gPeaks</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="n">atdPeaks</span>
+</div>
+<div class="viewcode-block" id="DataSlice.getCcsPeaks"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.getCcsPeaks">[docs]</a>    <span class="k">def</span> <span class="nf">getCcsPeaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">smoothes</span><span class="p">,</span><span class="n">window_len</span><span class="p">,</span><span class="n">mz</span><span class="p">,</span><span class="n">calibrationOb</span><span class="p">,</span><span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Smooth data then find peaks using the gradient method in the arrival time</span>
+<span class="sd">        distribution. Convert the arrival time values to CCS.</span>
+
+<span class="sd">        :parameter smoothes: Number of rounds of Savitzky-Golay smoothing </span>
+<span class="sd">        :parameter window_len: Savitzky-Golay smoothing window size (size used is window_len*2 + 1)</span>
+<span class="sd">        :parameter mz: m/z value to use for CCS conversion</span>
+<span class="sd">        :parameter calibrationObj: imClasses.Calibration() object</span>
+<span class="sd">        :parameter limit: Percentage of base peak under which to ignore peaks found</span>
+<span class="sd">        :returns: ccsPeaks (list of CCS values)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">atdPeaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAtdPeaks</span><span class="p">(</span><span class="n">smoothes</span><span class="p">,</span><span class="n">window_len</span><span class="p">,</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">ccsPeaks</span> <span class="o">=</span> <span class="n">calibrationOb</span><span class="o">.</span><span class="n">apply1dCalibration</span><span class="p">(</span><span class="n">mz</span><span class="p">,</span><span class="n">atdPeaks</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ccsPeaks</span>
+    
+    </div>
+<div class="viewcode-block" id="DataSlice.getCcsDistribution"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.getCcsDistribution">[docs]</a>    <span class="k">def</span> <span class="nf">getCcsDistribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">calibrationObj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert the matrix into CCS, sum it and return the intensity</span>
+<span class="sd">        values for the CCS distribution.</span>
+
+<span class="sd">        :parameter calibrationObj: imClasses.Calibration() object</span>
+<span class="sd">        :returns: ccsLine (CCS distribution y axis values)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) - test first but replace the code in this function with</span>
+        <span class="c"># generateCcsDistribution()</span>
+        <span class="sd">&#39;&#39;&#39;PHASE THIS OUT, REPLACED BY WHATS SEEN IN generateCcsDistribution</span>
+<span class="sd">        USE IN CCSD OBJECT FORM&#39;&#39;&#39;</span>
+        <span class="n">ccsMatrix</span><span class="p">,</span> <span class="n">mzs</span><span class="p">,</span> <span class="n">ccss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCcsMatrix</span><span class="p">(</span><span class="n">calibrationObj</span><span class="p">)</span>
+        <span class="n">ccsLine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ccsMatrix</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ccsLine</span>
+</div>
+<div class="viewcode-block" id="DataSlice.generateCcsDistribution"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.generateCcsDistribution">[docs]</a>    <span class="k">def</span> <span class="nf">generateCcsDistribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">calibrationObj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a CcsD() out of this object&#39;s data.</span>
+
+<span class="sd">        :parameter calibrationObj: imClasses.Calibration() object</span>
+<span class="sd">        :returns: imClasses.CcsD() object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ccsd</span> <span class="o">=</span> <span class="n">CcsD</span><span class="o">.</span><span class="n">CcsD</span><span class="p">(</span><span class="n">calibrationObj</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span>
+
+    </div>
+<div class="viewcode-block" id="DataSlice.getData"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.getData">[docs]</a>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the intensity matrix, m/z axis and arrival time axis.</span>
+
+<span class="sd">        :returns: matrix, x axis, y axis (all numpy arrays)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yaxis</span>
+    </div>
+<div class="viewcode-block" id="DataSlice.getCcsMatrix"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.getCcsMatrix">[docs]</a>    <span class="k">def</span> <span class="nf">getCcsMatrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">calibrationObj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use calibration to create a grid of CCS values associated with</span>
+<span class="sd">        each entry in the intensity matrix.</span>
+
+<span class="sd">        :parameter calibrationObj: imClasses.Calibration() object (IM calibration)</span>
+<span class="sd">        :returns: CCS matrix, x axis and y axis (all numpy arrays)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generateCcsAxisAndGrid</span><span class="p">(</span><span class="n">calibrationObj</span><span class="p">)</span>
+        <span class="n">ccsMatrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ccsAxis</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="p">)])</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">mz</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="p">):</span>
+            <span class="n">ccsMatrix</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ccsAxis</span><span class="p">,</span> <span class="n">xp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ccsAxisGrid</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="n">fp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">ccsMatrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ccsAxis</span>
+
+</div>
+<div class="viewcode-block" id="DataSlice.generateCcsAxisAndGrid"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.generateCcsAxisAndGrid">[docs]</a>    <span class="k">def</span> <span class="nf">generateCcsAxisAndGrid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">calibrationObj</span><span class="p">,</span><span class="n">ccsInterval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create CCS axis which corresponds to the intensity information of an arrival</span>
+<span class="sd">        time distribution, also create CCS grid which provides the CCS value for each</span>
+<span class="sd">        datapoint in the intensity matrix.</span>
+
+<span class="sd">        :parameter calibrationObj: imClasses.Calibration() object (IM calibration)</span>
+<span class="sd">        :parameter ccsInterval: Spacing between each CCS value in Angstrom**2</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&#39;&#39;&#39;calculates the equivalent CCS values for each</span>
+<span class="sd">        td mz combination (used as an axis)&#39;&#39;&#39;</span>
+        <span class="n">mzs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xaxis</span>
+        <span class="n">tds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaxis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ccsAxisGrid</span> <span class="o">=</span> <span class="n">calibrationObj</span><span class="o">.</span><span class="n">getCcsAxisGrid</span><span class="p">(</span><span class="n">mzs</span><span class="p">,</span><span class="n">tds</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ccsAxis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ccsAxisGrid</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span>
+                                 <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ccsAxisGrid</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">ccsInterval</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;float64&#39;</span><span class="p">)</span>
+        
+</div>
+<div class="viewcode-block" id="DataSlice.plotCcsDistribution"><a class="viewcode-back" href="../../imClasses.html#imClasses.DataSlice.DataSlice.plotCcsDistribution">[docs]</a>    <span class="k">def</span> <span class="nf">plotCcsDistribution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">calibrationObj</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the CCS distribution for this DataSlice.</span>
+
+<span class="sd">        :parameter ax: matplotlib axes instance or False</span>
+<span class="sd">        :parameter calibrationObj: imClasses.Calibration() object (IM calibration)</span>
+<span class="sd">        :parameter \*\*kwargs: matplotlib.pyplot.plot() arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ccsLine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCcsDistribution</span><span class="p">(</span><span class="n">calibrationObj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;label&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;+</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ccsAxis</span><span class="p">,</span><span class="n">ccsLine</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;CCS ($\AA$)&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

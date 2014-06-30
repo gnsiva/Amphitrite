@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>lib.DriftscopeImage &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for lib.DriftscopeImage</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Driftscope image class:</span>
+<span class="sd">Draws a simple driftscope style contour plot with the</span>
+<span class="sd">mass spectrum below it.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Ganesh N. Sivalingam &lt;g.n.sivalingam@gmail.com&quot;</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="kn">as</span> <span class="nn">mpl</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.gridspec</span> <span class="kn">as</span> <span class="nn">gridspec</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+
+<div class="viewcode-block" id="DriftscopeImage"><a class="viewcode-back" href="../../lib.html#lib.DriftscopeImage.DriftscopeImage">[docs]</a><span class="k">class</span> <span class="nc">DriftscopeImage</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :parameter filename: Absolute path to Amphitrite data file - draw figure</span>
+<span class="sd">        and save in same folder as data file. OR False, then just instantiate</span>
+<span class="sd">        class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mzs</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mobility</span> <span class="o">=</span> <span class="bp">None</span>
+    
+<div class="viewcode-block" id="DriftscopeImage.loadFile"><a class="viewcode-back" href="../../lib.html#lib.DriftscopeImage.DriftscopeImage.loadFile">[docs]</a>    <span class="k">def</span> <span class="nf">loadFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load an amphitrite data file (&#39;.a&#39;).</span>
+<span class="sd">        :parameter filename: Absolute path to file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># load data</span>
+        <span class="n">npObj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mzs</span> <span class="o">=</span> <span class="n">npObj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tds</span> <span class="o">=</span> <span class="n">npObj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mobility</span> <span class="o">=</span> <span class="n">npObj</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">its</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mobility</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c"># process data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normaliseMobility</span><span class="p">()</span>
+        
+    <span class="c">#===========================================================================</span>
+    <span class="c"># Data preparation</span>
+    <span class="c">#===========================================================================</span></div>
+<div class="viewcode-block" id="DriftscopeImage.normaliseMobility"><a class="viewcode-back" href="../../lib.html#lib.DriftscopeImage.DriftscopeImage.normaliseMobility">[docs]</a>    <span class="k">def</span> <span class="nf">normaliseMobility</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Normalise the intensity of the intensity matrix</span>
+<span class="sd">        to its highest point. (Necessary for proper colouring of</span>
+<span class="sd">        heatmap).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mobility</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mobility</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">mobility</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="o">*</span><span class="mi">1000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mobility</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mobility</span><span class="p">)</span>    
+        <span class="n">infinite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mobility</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mobility</span><span class="p">[</span><span class="n">infinite</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mobility</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mobility</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        
+    <span class="c">#===========================================================================</span>
+    <span class="c"># THE GRAPH</span>
+    <span class="c">#===========================================================================</span></div>
+<div class="viewcode-block" id="DriftscopeImage.driftscope"><a class="viewcode-back" href="../../lib.html#lib.DriftscopeImage.DriftscopeImage.driftscope">[docs]</a>    <span class="k">def</span> <span class="nf">driftscope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mz_range</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">a_range</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw the driftscope image. Top region is the contour</span>
+<span class="sd">        plot, bottom section is mass spectrum.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#================</span>
+        <span class="c"># Set up colour scheme for driftscope image</span>
+        <span class="c"># TODO(gns) - Change the colour map used </span>
+        <span class="n">grayNums</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;0.9&#39;</span><span class="p">,</span><span class="s">&#39;0.85&#39;</span><span class="p">,</span><span class="s">&#39;0.8&#39;</span><span class="p">,</span><span class="s">&#39;0.75&#39;</span><span class="p">,</span><span class="s">&#39;0.7&#39;</span><span class="p">,</span><span class="s">&#39;0.65&#39;</span><span class="p">,</span><span class="s">&#39;0.6&#39;</span><span class="p">,</span><span class="s">&#39;0.5&#39;</span><span class="p">]</span>
+        <span class="n">c_array</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;black&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">grayNums</span><span class="o">+</span><span class="p">[</span><span class="s">&#39;r&#39;</span><span class="p">,</span><span class="s">&#39;magenta&#39;</span><span class="p">,</span><span class="s">&#39;purple&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">]</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="s">&#39;my_cmap&#39;</span><span class="p">,</span><span class="n">c_array</span><span class="p">,</span><span class="mi">256</span><span class="p">)</span>
+
+        <span class="c">#================</span>
+        <span class="c"># Setup ranges to plot</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mz_range</span><span class="p">:</span>
+            <span class="n">mz_range</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mzs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">mzs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">a_range</span><span class="p">:</span>
+            <span class="n">a_range</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">tds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="n">mzLims</span> <span class="o">=</span> <span class="p">[</span><span class="n">mz_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">mz_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">tdLims</span> <span class="o">=</span> <span class="p">[</span><span class="n">a_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">a_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="c">#================</span>
+        <span class="c"># Do plotting</span>
+        
+        <span class="n">f</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">])</span> <span class="c">#FIGSIZE</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c"># Contour plot</span>
+        <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">xlim</span><span class="o">=</span><span class="n">mzLims</span><span class="p">,</span><span class="n">ylim</span><span class="o">=</span><span class="n">tdLims</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s">&#39;Arrival Time ($ms$)&#39;</span><span class="p">,</span><span class="n">xlabel</span><span class="o">=</span><span class="s">&#39;$m/z$&#39;</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mobility</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span><span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span><span class="n">extent</span><span class="o">=</span><span class="n">mzLims</span><span class="o">+</span><span class="n">tdLims</span><span class="p">)</span>
+
+        <span class="c"># Mass Spectrum</span>
+        <span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">xlabel</span><span class="o">=</span><span class="s">&quot;$m/z$&quot;</span><span class="p">,</span><span class="n">xlim</span><span class="o">=</span><span class="n">mzLims</span><span class="p">,</span><span class="n">yticks</span><span class="o">=</span><span class="p">[],</span><span class="n">ylabel</span><span class="o">=</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mzs</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">its</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+    
+    <span class="c">#===========================================================================</span>
+    <span class="c"># The Function</span>
+    <span class="c">#===========================================================================</span></div>
+<div class="viewcode-block" id="DriftscopeImage.drawFigure"><a class="viewcode-back" href="../../lib.html#lib.DriftscopeImage.DriftscopeImage.drawFigure">[docs]</a>    <span class="k">def</span> <span class="nf">drawFigure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run the program. Open Amphitrite data file, draw a</span>
+<span class="sd">        driftscope-like diagram and save the figure in the same</span>
+<span class="sd">        directory as the data file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">outputDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driftscope</span><span class="p">()</span>
+
+        <span class="n">searcher</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;(.*)\.a$&#39;</span><span class="p">,</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">searcher</span><span class="p">:</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="n">searcher</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;_ATDandMS.png&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fn</span> <span class="o">=</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&quot;_ATDandMS.png&quot;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+<span class="c"># Example usage        </span></div></div>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">fn = &quot;/home/gns/Downloads/BetaLactoglobulin.a&quot;</span>
+<span class="sd">ob = DriftscopeImage(fn)</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

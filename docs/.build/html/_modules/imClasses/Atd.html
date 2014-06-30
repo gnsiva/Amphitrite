@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imClasses.Atd &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for imClasses.Atd</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Class for arrival time distributions (ATD) - plotting, peak identification and calculations.&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Ganesh N. Sivalingam &lt;g.n.sivalingam@gmail.com&gt;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">msClasses</span> <span class="kn">import</span> <span class="n">TwoDdata</span>
+<span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<div class="viewcode-block" id="Atd"><a class="viewcode-back" href="../../imClasses.html#imClasses.Atd.Atd">[docs]</a><span class="k">class</span> <span class="nc">Atd</span><span class="p">(</span><span class="n">TwoDdata</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">TwoDdata</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Atd.setAtdYvals"><a class="viewcode-back" href="../../imClasses.html#imClasses.Atd.Atd.setAtdYvals">[docs]</a>    <span class="k">def</span> <span class="nf">setAtdYvals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">yvals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the y axis values for the object.</span>
+<span class="sd">        </span>
+<span class="sd">        :parameter yvals: Intensity values for the Atd() object</span>
+<span class="sd">        :type numpy array:</span>
+<span class="sd">        :returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rawyvals</span> <span class="o">=</span> <span class="n">yvals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rawyvals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    </div>
+<div class="viewcode-block" id="Atd.setAtdXvals"><a class="viewcode-back" href="../../imClasses.html#imClasses.Atd.Atd.setAtdXvals">[docs]</a>    <span class="k">def</span> <span class="nf">setAtdXvals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xvals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the x axis values for the object.</span>
+<span class="sd">        </span>
+<span class="sd">        :parameter yvals: Arrival time values for the Atd() object</span>
+<span class="sd">        :type numpy array:</span>
+<span class="sd">        :returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># TODO(gns) - there should be a function for this and the above in TwoDdata()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span> <span class="o">=</span><span class="n">xvals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> 
+</div>
+<div class="viewcode-block" id="Atd.plotCcs"><a class="viewcode-back" href="../../imClasses.html#imClasses.Atd.Atd.plotCcs">[docs]</a>    <span class="k">def</span> <span class="nf">plotCcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">ccsAxis</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot a CCS distribution, handles figure labelling.</span>
+<span class="sd">        </span>
+<span class="sd">        :parameter ax: matplotlib axes instance or False</span>
+<span class="sd">        :parameter ccsAxis: CCS axis which corresponds to the arrival time axis</span>
+<span class="sd">        :type numpy array:</span>
+<span class="sd">        :parameter \*\*kwargs: matplotlib.pyplot.plot() arguments</span>
+<span class="sd">        :returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;black&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;lw&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;lw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ccsAxis</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;$\Omega$ ($\AA^2$)&#39;</span><span class="p">)</span>
+        
+    </div>
+<div class="viewcode-block" id="Atd.autoAxisX"><a class="viewcode-back" href="../../imClasses.html#imClasses.Atd.Atd.autoAxisX">[docs]</a>    <span class="k">def</span> <span class="nf">autoAxisX</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">limit</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="n">percExtra</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">ccsAxisValues</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Automatically crop the x axis of the axes instance.</span>
+<span class="sd">        </span>
+<span class="sd">        :parameter ax: matplotlib.axes() object</span>
+<span class="sd">        :parameter limit: highest value allowed to be excluded (1 = 1% of BPI)</span>
+<span class="sd">        :parameter percExtra: how far past the limit values to set axis limits</span>
+<span class="sd">        :parameter ccsAxisValues: Provide to use CCS axis instead of td.</span>
+<span class="sd">        :returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ccsAxisValues</span><span class="p">:</span>
+            <span class="n">xvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xvals</span> <span class="o">=</span> <span class="n">ccsAxisValues</span>
+        
+        <span class="n">ys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>        
+        <span class="n">xsAboveLimit</span> <span class="o">=</span> <span class="n">xvals</span><span class="p">[</span><span class="n">ys</span><span class="o">&gt;=</span><span class="n">limit</span><span class="p">]</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="n">xsAboveLimit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">percExtra</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="n">xvals</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="n">xsAboveLimit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">percExtra</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="n">xvals</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">left</span><span class="p">,</span><span class="n">right</span><span class="p">])</span>
+    </div>
+<div class="viewcode-block" id="Atd.autoAxisXoff"><a class="viewcode-back" href="../../imClasses.html#imClasses.Atd.Atd.autoAxisXoff">[docs]</a>    <span class="k">def</span> <span class="nf">autoAxisXoff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">ccsAxisValues</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Revert axis limits to original values.</span>
+
+<span class="sd">        :parameter ax: matplotlib.axes() object</span>
+<span class="sd">        :parameter ccsAxisValues: Provide to use CCS axis instead of td.</span>
+<span class="sd">        :returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ccsAxisValues</span><span class="p">:</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">left</span><span class="p">,</span><span class="n">right</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="n">ccsAxisValues</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">ccsAxisValues</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="Atd.plot"><a class="viewcode-back" href="../../imClasses.html#imClasses.Atd.Atd.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrites TwoDdata()&#39;s function to get axis labels right</span>
+<span class="sd">        Can take matplotlib axes object, as well as any standard</span>
+<span class="sd">        inputs for matplotlib.pyplot.plot().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">checkAx</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;color&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;black&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s">&#39;lw&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;lw&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">yvals</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Intensity&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;$t_d$&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

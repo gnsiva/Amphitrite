@@ -1,0 +1,563 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>msClasses package &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="index.html" />
+    <link rel="prev" title="lib package" href="lib.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lib.html" title="lib package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="msclasses-package">
+<h1>msClasses package<a class="headerlink" href="#msclasses-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-msClasses.Gaussian">
+<span id="msclasses-gaussian-module"></span><h2>msClasses.Gaussian module<a class="headerlink" href="#module-msClasses.Gaussian" title="Permalink to this headline">¶</a></h2>
+<p>Class for fitting and plotting 3 parameter Gaussian distributions.</p>
+<dl class="class">
+<dt id="msClasses.Gaussian.Gaussian">
+<em class="property">class </em><tt class="descclassname">msClasses.Gaussian.</tt><tt class="descname">Gaussian</tt><a class="reference internal" href="_modules/msClasses/Gaussian.html#Gaussian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Gaussian.Gaussian" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="msClasses.Gaussian.Gaussian.calculateAmplitude">
+<tt class="descname">calculateAmplitude</tt><big>(</big><em>xval</em><big>)</big><a class="reference internal" href="_modules/msClasses/Gaussian.html#Gaussian.calculateAmplitude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Gaussian.Gaussian.calculateAmplitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return Gaussian... think this is an unfinished function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Gaussian.Gaussian.estimateParameters">
+<tt class="descname">estimateParameters</tt><big>(</big><em>xvals</em>, <em>yvals</em>, <em>setValues=True</em><big>)</big><a class="reference internal" href="_modules/msClasses/Gaussian.html#Gaussian.estimateParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Gaussian.Gaussian.estimateParameters" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line">Estimate values for the 3 parameter Gaussian</div>
+<div class="line">The estimation is crude and is usually used to determine initial values for</div>
+</div>
+<p>optimise parameters, which is much more robust.
+| If setValues is True, use the estimated parameters as the values
+for self.amplitude, self.centre and self.fwhm.
+| Otherwise values are returned as a list [amplitude,centre,fwhm]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Gaussian.Gaussian.getData">
+<tt class="descname">getData</tt><big>(</big><em>xvals</em><big>)</big><a class="reference internal" href="_modules/msClasses/Gaussian.html#Gaussian.getData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Gaussian.Gaussian.getData" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line">Generates the associated Gaussian y values for the supplied xvals (which should be a numpy array or scalar).</div>
+<div class="line">self.amplitude, self.centre and self.fwhm should already have been set</div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Gaussian.Gaussian.optimiseParameters">
+<tt class="descname">optimiseParameters</tt><big>(</big><em>xvals</em>, <em>yvals</em>, <em>setValues=1</em><big>)</big><a class="reference internal" href="_modules/msClasses/Gaussian.html#Gaussian.optimiseParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Gaussian.Gaussian.optimiseParameters" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line">Use non linear least squares to fit the parameters of the</div>
+</div>
+<p>Gaussian.
+| setValues means the optimised parameters are set to this object,
+else the parameters are returned as a dictionary.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Gaussian.Gaussian.plot">
+<tt class="descname">plot</tt><big>(</big><em>xvals</em>, <em>ax</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/msClasses/Gaussian.html#Gaussian.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Gaussian.Gaussian.plot" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line">Plot the Gaussian using the objects Gaussian parameters</div>
+<div class="line">All matplotlib.pyplot.plot() arguments are allowed in <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs.</div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Gaussian.Gaussian.setParameters">
+<tt class="descname">setParameters</tt><big>(</big><em>amplitude</em>, <em>centre</em>, <em>fwhm</em><big>)</big><a class="reference internal" href="_modules/msClasses/Gaussian.html#Gaussian.setParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Gaussian.Gaussian.setParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the values for a three parameter Gaussian</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-msClasses.MassSpectrum">
+<span id="msclasses-massspectrum-module"></span><h2>msClasses.MassSpectrum module<a class="headerlink" href="#module-msClasses.MassSpectrum" title="Permalink to this headline">¶</a></h2>
+<p>Class for deconvoluting and plotting native mass spectra.</p>
+<dl class="class">
+<dt id="msClasses.MassSpectrum.MassSpectrum">
+<em class="property">class </em><tt class="descclassname">msClasses.MassSpectrum.</tt><tt class="descname">MassSpectrum</tt><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#msClasses.TwoDdata.TwoDdata" title="msClasses.TwoDdata.TwoDdata"><tt class="xref py py-class docutils literal"><span class="pre">msClasses.TwoDdata.TwoDdata</span></tt></a></p>
+<p>Class for storing and deconvoluting mass spectra</p>
+<p>Inherits from TwoDdata:
+def __init__(self)
+def readFile(self,filename,x_range=0,grain=1)
+def normalisationBpi(self)
+def normalisationArea(self)
+def setNormalisationType(self,type)
+def smoothingSG(self,window_len=3,smoothes=2,poly_order=1)
+def _normalisePreset(self)
+def restoreRawYvals(self)
+def getAxesWithoutNans(self)
+def calculateWeightedMeanStandardDeviation(self)
+def calculateAreaUnderCurve(self)
+def _calculateGradient(self)
+def findPeaks(self,limit=0)
+def addPeak(self,mz)
+def plot(self,ax,**kwargs)
+def plotgPeaks(self,ax,labels=0,**kwargs)</p>
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.addSpecies">
+<tt class="descname">addSpecies</tt><big>(</big><em>speciesObj</em>, <em>allowReplace=False</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.addSpecies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.addSpecies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a Species() object to the MassSpectrum.species dictionary.
+This allows it to be used in the fitting procedure.
+allowReplace means adding a second species with the same name to overwrite existing
+items in the dictionary.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.errorCalculations">
+<tt class="descname">errorCalculations</tt><big>(</big><em>xvals</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.errorCalculations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.errorCalculations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and prints to console error statistics for comparing the simulated
+spectrum to the original data.
++ average error per data point
++ average error per m/z unit
++ RMSD (root mean square deviation)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.forLeastSquaresOptimisation">
+<tt class="descname">forLeastSquaresOptimisation</tt><big>(</big><em>p0</em>, <em>xvals</em>, <em>zs</em>, <em>oneFwhm</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.forLeastSquaresOptimisation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.forLeastSquaresOptimisation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the simulated mass spectrum for MassSpectrum.leastSquaresOptimisation().
+p0 - parameters to be used in simulation
+zs - charges to be simulated
+oneFwhm - if True use same FWHM for each species.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.getPeakWidthLimits">
+<tt class="descname">getPeakWidthLimits</tt><big>(</big><em>name</em>, <em>charge</em>, <em>leftMultiplier=1</em>, <em>rightMultiplier=1</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.getPeakWidthLimits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.getPeakWidthLimits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the lower and upper m/z limits for a particular peak in relation
+to the multiplier values. (only use after calculating the mass spectrum fit).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; Species name</li>
+<li><strong>charge</strong> &#8211; Charge to display</li>
+<li><strong>leftMultiplier</strong> &#8211; Value to multiply the peak fwhm below the mean</li>
+<li><strong>rightMultiplier</strong> &#8211; Value to multiply the peak fwhm above the mean</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">m/z limits when using multiplier as [lowerLimit,upperLimit]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.getgPeaksFromIds">
+<tt class="descname">getgPeaksFromIds</tt><big>(</big><em>ids</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.getgPeaksFromIds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.getgPeaksFromIds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a new gPeaks dictionary containing only the gPeaks
+with the supplied ids.
+gPeak format is gPeak[id] = [mz,intensity]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.leastSquaresOptimisation">
+<tt class="descname">leastSquaresOptimisation</tt><big>(</big><em>speciesNames</em>, <em>oneFwhm=False</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.leastSquaresOptimisation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.leastSquaresOptimisation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deconvolute mass spectrum using non linear least squares.
+Setting oneFwhm to true results in the same value for peak full width
+half height being used for all species.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.plotAllComponents">
+<tt class="descname">plotAllComponents</tt><big>(</big><em>ax</em>, <em>xvals</em>, <em>yvals</em>, <em>liftPercentage=10</em>, <em>speciesNames=0</em>, <em>colourList=0</em>, <em>traceLabels='mass'</em>, <em>labelSize='small'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.plotAllComponents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.plotAllComponents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot mass spectrum, each of the deconvoluted elements and the simulated spectrum
+traceLabels can be &#8216;mass&#8217; or &#8216;name&#8217;, with name the Species name is printed on the
+right tail of the trace.
+Species names allow you to change the order of the list
+All matplotlib.pyplot.plot() arguments are allowed in <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.plotPeakWidthLimits">
+<tt class="descname">plotPeakWidthLimits</tt><big>(</big><em>name</em>, <em>charge</em>, <em>leftMultiplier=1</em>, <em>rightMultiplier=1</em>, <em>ax=False</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.plotPeakWidthLimits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.plotPeakWidthLimits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill in the area between the max and min limits of FWHM around the
+peak mean. (only use after calculating the mass spectrum fit).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> &#8211; Species name</li>
+<li><strong>charge</strong> &#8211; Charge to display</li>
+<li><strong>leftMultiplier</strong> &#8211; Value to multiply the peak fwhm below the mean</li>
+<li><strong>rightMultiplier</strong> &#8211; Value to multiply the peak fwhm above the mean</li>
+<li><strong>ax</strong> &#8211; Matplotlib Axes object or False to create one</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">m/z limits when using multiplier as [lowerLimit,upperLimit]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.plotSimulatedSpectrum">
+<tt class="descname">plotSimulatedSpectrum</tt><big>(</big><em>ax</em>, <em>xvals</em>, <em>speciesNames=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.plotSimulatedSpectrum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.plotSimulatedSpectrum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots just the simulated mass spectrum as generated by self.leastSquaresOptimisation(),
+with a default color of red.
+All matplotlib.pyplot.plot() arguments are allowed in <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.plotTheoreticalMzs">
+<tt class="descname">plotTheoreticalMzs</tt><big>(</big><em>ax</em>, <em>name</em>, <em>absolute=False</em>, <em>mass=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.plotTheoreticalMzs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.plotTheoreticalMzs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to draw the positions of calculated charge state peaks.
+Can be used with a Species() object stored in self.species by entering a &#8216;name&#8217;
+or can be calculated directly from &#8216;mass&#8217;
+If a value for absolute is given, it is used as the y axis position for charge
+state labels.
+All matplotlib.pyplot.plot() arguments are allowed in <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.MassSpectrum.MassSpectrum.writeCoordinatesToTxt">
+<tt class="descname">writeCoordinatesToTxt</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/msClasses/MassSpectrum.html#MassSpectrum.writeCoordinatesToTxt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.MassSpectrum.MassSpectrum.writeCoordinatesToTxt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the base mass spectrum data to file
+Each line is in the format of mz        intensity (tab separated).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-msClasses.Species">
+<span id="msclasses-species-module"></span><h2>msClasses.Species module<a class="headerlink" href="#module-msClasses.Species" title="Permalink to this headline">¶</a></h2>
+<p>Class to hold the information for molecular species which can used with MassSpectrum().</p>
+<dl class="class">
+<dt id="msClasses.Species.Species">
+<em class="property">class </em><tt class="descclassname">msClasses.Species.</tt><tt class="descname">Species</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species" title="Permalink to this definition">¶</a></dt>
+<dd><p>Holds the data for a single species.
+Separate objects should be created for before and
+after (auto) simulation</p>
+<dl class="method">
+<dt id="msClasses.Species.Species.calculateMass">
+<tt class="descname">calculateMass</tt><big>(</big><em>mzs</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.calculateMass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.calculateMass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the mass of a molecular species using the given m/z
+values.
+Returns mass and error, where error is the average absolute
+difference between the given m/z values and the m/z from the
+calculated mass.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.calculateMassAndCharges">
+<tt class="descname">calculateMassAndCharges</tt><big>(</big><em>mzs</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.calculateMassAndCharges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.calculateMassAndCharges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the mass of a molecular species using the given m/z
+values.
+Primarily used as a subfunction of self.calculateMass().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.getMz">
+<tt class="descname">getMz</tt><big>(</big><em>z</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.getMz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.getMz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the m/z value for a given charge state using the mass 
+from self.mass</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.getPeakLimits">
+<tt class="descname">getPeakLimits</tt><big>(</big><em>z</em>, <em>leftMultiplier=1.0</em>, <em>rightMultiplier=1.0</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.getPeakLimits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.getPeakLimits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns lower and upper m/z limits for charge state peaks
+using self.peakFwhm as the original value, and using multipliers
+to alter the left and right limits independently.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.getTotalArea">
+<tt class="descname">getTotalArea</tt><big>(</big><em>xvals</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.getTotalArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.getTotalArea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the area under the deconvoluted mass spectrum for just this
+species using the trapezium method of integration.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.getTotalIntensity">
+<tt class="descname">getTotalIntensity</tt><big>(</big><em>xvals</em>, <em>yvals</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.getTotalIntensity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.getTotalIntensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using the supplied data, sum the intensity of the highest
+point of the data at the m/z value for each charge state in
+self.charges using self.mass as the mass.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.getp0">
+<tt class="descname">getp0</tt><big>(</big><em>oneFwhm=0</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.getp0"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.getp0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of initial parameters for leastSquaresOptimisation()
+(in MassSpectrum()) from this Species() object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.plotTheoreticalMzs">
+<tt class="descname">plotTheoreticalMzs</tt><big>(</big><em>ax</em>, <em>xvals</em>, <em>yvals</em>, <em>absolute=0</em>, <em>mass=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.plotTheoreticalMzs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.plotTheoreticalMzs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to draw the positions of calculated charge state peaks.
+If a value for absolute is given, it is used as the y axis position for charge
+state labels.
+All matplotlib.pyplot.plot() arguments are allowed in <a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.setCharges">
+<tt class="descname">setCharges</tt><big>(</big><em>charges</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.setCharges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.setCharges" title="Permalink to this definition">¶</a></dt>
+<dd><p>For this molecular species, set the charges which
+are detected in the mass spectrometer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.setSpecies">
+<tt class="descname">setSpecies</tt><big>(</big><em>gPeaks</em>, <em>peakFwhm=10</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.setSpecies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.setSpecies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup this Species() object using gPeaks (d[id]=[mz,intensity])
+Calculates the mass and estimates parameters for the other
+Species() parameters for later use as initial values for
+leastSquaresOptimisation() (MassSpectrum()).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.setSpeciesGivenMass">
+<tt class="descname">setSpeciesGivenMass</tt><big>(</big><em>mass</em>, <em>xvals</em>, <em>yvals</em>, <em>peakFwhm</em>, <em>zs</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.setSpeciesGivenMass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.setSpeciesGivenMass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to Species.setSpecies(). Except that instead of using
+gPeaks, the Species() object is setup automatically when given
+values for mass and the charges to be analysed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.setVals">
+<tt class="descname">setVals</tt><big>(</big><em>mass</em>, <em>z_mu</em>, <em>z_amp</em>, <em>z_fwhh</em>, <em>p_fwhh=0</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.setVals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.setVals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set parameters for this object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.setValsFromp1">
+<tt class="descname">setValsFromp1</tt><big>(</big><em>p1</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.setValsFromp1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.setValsFromp1" title="Permalink to this definition">¶</a></dt>
+<dd><p>After leastSquaresOptimisation() set the fitted parameters (p1)
+to this Species() object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.Species.Species.simulateSpecies">
+<tt class="descname">simulateSpecies</tt><big>(</big><em>xvals</em>, <em>peakShape='hybrid'</em><big>)</big><a class="reference internal" href="_modules/msClasses/Species.html#Species.simulateSpecies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.Species.Species.simulateSpecies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulates a mass spectrum using the object&#8217;s attributes
+Valid peak shapes are: &#8216;hybrid&#8217;, &#8216;gaussian&#8217; &amp; &#8216;lorentzian
+if one_fwhh is to be used be sure to set self.peakFwhm before
+calling this function.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-msClasses.TwoDdata">
+<span id="msclasses-twoddata-module"></span><h2>msClasses.TwoDdata module<a class="headerlink" href="#module-msClasses.TwoDdata" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="msClasses.TwoDdata.TwoDdata">
+<em class="property">class </em><tt class="descclassname">msClasses.TwoDdata.</tt><tt class="descname">TwoDdata</tt><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.addPeak">
+<tt class="descname">addPeak</tt><big>(</big><em>mz</em><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.addPeak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.addPeak" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function allows you to add additional peaks not found using the
+findPeaks method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.calculateAreaUnderCurve">
+<tt class="descname">calculateAreaUnderCurve</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.calculateAreaUnderCurve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.calculateAreaUnderCurve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrates data using trapezium method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.calculateWeightedMeanStandardDeviation">
+<tt class="descname">calculateWeightedMeanStandardDeviation</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.calculateWeightedMeanStandardDeviation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.calculateWeightedMeanStandardDeviation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.findPeaks">
+<tt class="descname">findPeaks</tt><big>(</big><em>limit=0</em><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.findPeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.findPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>limit allows you to ignore slow peaks (remove noise)
+percentage of BPI e.g. 5 % cutoff should be 5</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.getAxesWithoutNans">
+<tt class="descname">getAxesWithoutNans</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.getAxesWithoutNans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.getAxesWithoutNans" title="Permalink to this definition">¶</a></dt>
+<dd><p>The CCS calibration can cause some xvals
+to become NaNs, this function returns x and yvals
+truncated to remove the NaNs</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.normalisationArea">
+<tt class="descname">normalisationArea</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.normalisationArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.normalisationArea" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.normalisationBpi">
+<tt class="descname">normalisationBpi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.normalisationBpi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.normalisationBpi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalise to base peak intensity (0-100)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.plot">
+<tt class="descname">plot</tt><big>(</big><em>ax</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot 2D data (e.g. MS and ATDs)
+Can take matplotlib axes object, as well as any standard
+inputs for matplotlib.pyplot.plot().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.plotgPeaks">
+<tt class="descname">plotgPeaks</tt><big>(</big><em>ax</em>, <em>labels=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.plotgPeaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.plotgPeaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>if labels=0 then only peak id&#8217;s are displayed
+otherwise x-values are shown as well</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.readFile">
+<tt class="descname">readFile</tt><big>(</big><em>filename</em>, <em>x_range=0</em>, <em>grain=1</em><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.readFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.readFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in x y coordinate pairs from text file
+&#8216; &#8216; separator as in copy spectrum list in MassLynx</p>
+<p>x_range - allows you to select lower and upper bounds
+in the format of [lower,upper]</p>
+<p>grain - allows the missing of data to speed up processing
+a grain of 2 means that every second value will be used</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.restoreRawYvals">
+<tt class="descname">restoreRawYvals</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.restoreRawYvals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.restoreRawYvals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.setNormalisationType">
+<tt class="descname">setNormalisationType</tt><big>(</big><em>type</em><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.setNormalisationType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.setNormalisationType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="msClasses.TwoDdata.TwoDdata.smoothingSG">
+<tt class="descname">smoothingSG</tt><big>(</big><em>window_len=3</em>, <em>smoothes=2</em>, <em>poly_order=1</em><big>)</big><a class="reference internal" href="_modules/msClasses/TwoDdata.html#TwoDdata.smoothingSG"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#msClasses.TwoDdata.TwoDdata.smoothingSG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should only really be used on equally spaced data
+Actual window length used is 2*window_len+1 to avoid breakage</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-msClasses">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-msClasses" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">msClasses package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-msClasses.Gaussian">msClasses.Gaussian module</a></li>
+<li><a class="reference internal" href="#module-msClasses.MassSpectrum">msClasses.MassSpectrum module</a></li>
+<li><a class="reference internal" href="#module-msClasses.Species">msClasses.Species module</a></li>
+<li><a class="reference internal" href="#module-msClasses.TwoDdata">msClasses.TwoDdata module</a></li>
+<li><a class="reference internal" href="#module-msClasses">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="lib.html"
+                        title="previous chapter">lib package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/msClasses.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lib.html" title="lib package"
+             >previous</a> |</li>
+        <li><a href="index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imClasses.SpecialFigures &mdash; Amphitrite 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Amphitrite 1.0.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for imClasses.SpecialFigures</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Ganesh N. Sivalingam &lt;g.n.sivalingam@gmail.com&gt;&quot;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file isn&#39;t imported by any of the GUI apps, probably not needed in release</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">lib.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">matplotlib.font_manager</span> <span class="kn">import</span> <span class="n">FontProperties</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="SpecialFigures"><a class="viewcode-back" href="../../imClasses.html#imClasses.SpecialFigures.SpecialFigures">[docs]</a><span class="k">class</span> <span class="nc">SpecialFigures</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+    
+    
+<div class="viewcode-block" id="SpecialFigures.ccsDistributions"><a class="viewcode-back" href="../../imClasses.html#imClasses.SpecialFigures.SpecialFigures.ccsDistributions">[docs]</a>    <span class="k">def</span> <span class="nf">ccsDistributions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">imObj</span><span class="p">,</span><span class="n">calibrationObj</span><span class="p">,</span><span class="n">spName</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                         <span class="n">ccsInterval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">colourList</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Extract arrival time distributions for each charge state of a species,</span>
+<span class="sd">        convert to CCS and plot them vertically stacked.</span>
+
+<span class="sd">        :parameter ax: matplotlib Axes instance</span>
+<span class="sd">        :parameter imObj: imClasses.Im() object</span>
+<span class="sd">        :parameter calibrationObj: imClasses.Calibration() object (IM calibration)</span>
+<span class="sd">        :parameter spName: Name of molecular species to use from imObj</span>
+<span class="sd">        :parameter ccsInterval: Spacing of CCS values in Angstrom**2</span>
+<span class="sd">        :parameter colourList: List of matplotlib compatible colours to use</span>
+<span class="sd">        :parameter \*\*kwargs: matplotlib.pyplot.plot() arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&#39;&#39;&#39;use spName=0 if there is only one species in imObj&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">spName</span><span class="p">:</span>
+            <span class="n">spName</span> <span class="o">=</span> <span class="n">imObj</span><span class="o">.</span><span class="n">dataSlices</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">colourist</span><span class="p">:</span>
+            <span class="n">colourList</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">colourList</span>
+
+        <span class="n">ccsLines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">maxIntensity</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="n">spCharge</span> <span class="o">=</span> <span class="n">imObj</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">spName</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spCharge</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">dataSlice</span><span class="o">.</span><span class="n">generateCcsAxisAndGrid</span><span class="p">(</span><span class="n">calibrationObj</span><span class="p">,</span><span class="n">ccsInterval</span><span class="p">)</span>
+            <span class="n">ccsLines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataSlice</span><span class="o">.</span><span class="n">getCcsDistribution</span><span class="p">(</span><span class="n">calibrationObj</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">ccsLines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">maxIntensity</span><span class="p">:</span>
+                <span class="n">maxIntensity</span> <span class="o">=</span> <span class="n">ccsLines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spCharge</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;+</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span><span class="n">charge</span>
+            <span class="n">ccsLine</span> <span class="o">=</span> <span class="n">ccsLines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">maxIntensity</span> <span class="o">*</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">lift</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dataSlice</span><span class="o">.</span><span class="n">ccsAxis</span><span class="p">,</span><span class="n">ccsLine</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s">&#39;upper left&#39;</span><span class="p">,</span><span class="n">prop</span><span class="o">=</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">legendFontSize</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;$\Omega$ ($\AA^2$)&#39;</span><span class="p">)</span>
+
+        </div>
+<div class="viewcode-block" id="SpecialFigures.calibrationFigure"><a class="viewcode-back" href="../../imClasses.html#imClasses.SpecialFigures.SpecialFigures.calibrationFigure">[docs]</a>    <span class="k">def</span> <span class="nf">calibrationFigure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fig</span><span class="p">,</span><span class="n">calibrationObj</span><span class="p">,</span><span class="n">spToDisplay</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">autoAxesLimits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">colourList</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># TODO(gns) - This can probably be removed only used in:</span>
+        <span class="c"># 121207_test_SpecialFigureCalibration.py, 121209_test_SpecialFigureCalibration2.py</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">spToDisplay</span><span class="p">:</span>
+            <span class="n">spToDisplay</span> <span class="o">=</span> <span class="n">calibrationObj</span><span class="o">.</span><span class="n">calibrants</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">colourList</span><span class="p">:</span>
+            <span class="n">colourList</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">colourList</span>
+        
+        <span class="n">sps</span> <span class="o">=</span> <span class="n">calibrationObj</span><span class="o">.</span><span class="n">calibrants</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>          
+        <span class="n">bandColour</span> <span class="o">=</span> <span class="n">colourList</span><span class="p">[</span><span class="n">sps</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">spToDisplay</span><span class="p">)]</span>
+        
+        <span class="n">calibrant</span> <span class="o">=</span> <span class="n">calibrationObj</span><span class="o">.</span><span class="n">calibrants</span><span class="p">[</span><span class="n">spToDisplay</span><span class="p">]</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">311</span><span class="p">)</span> <span class="c"># mass spectrum</span>
+        <span class="n">calibrant</span><span class="o">.</span><span class="n">plotMsAndExtractionLimits</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">bandColour</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">autoAxesLimits</span><span class="p">:</span>
+            <span class="n">mzs</span> <span class="o">=</span> <span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">get_mz</span><span class="p">(</span><span class="n">calibrant</span><span class="o">.</span><span class="n">approxMass</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">calibrant</span><span class="o">.</span><span class="n">charges</span><span class="p">]</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">mzs</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span><span class="nb">max</span><span class="p">(</span><span class="n">mzs</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">])</span>
+        
+        
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">312</span><span class="p">)</span> <span class="c"># atds</span>
+        <span class="n">calibrant</span><span class="o">.</span><span class="n">plotChargeStateAtds</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">colourList</span><span class="o">=</span><span class="n">colourList</span><span class="p">)</span>
+        <span class="n">calibrant</span><span class="o">.</span><span class="n">plotCalibrantTdPeaks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">colourList</span><span class="o">=</span><span class="n">colourList</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">autoAxesLimits</span><span class="p">:</span>
+            <span class="n">tdPrimes</span> <span class="o">=</span> <span class="p">[</span><span class="n">calibrant</span><span class="o">.</span><span class="n">tdsDoublePrime</span><span class="p">[</span><span class="n">z</span><span class="p">]</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">calibrant</span><span class="o">.</span><span class="n">charges</span><span class="p">]</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">tdPrimes</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span><span class="nb">max</span><span class="p">(</span><span class="n">tdPrimes</span><span class="p">)</span><span class="o">*</span><span class="mf">2.0</span><span class="p">])</span>
+        
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">313</span><span class="p">)</span> <span class="c"># fit</span>
+        <span class="n">calibrationObj</span><span class="o">.</span><span class="n">plotCalibrationCurve</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">colourList</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        </div>
+<div class="viewcode-block" id="SpecialFigures.atDistributions"><a class="viewcode-back" href="../../imClasses.html#imClasses.SpecialFigures.SpecialFigures.atDistributions">[docs]</a>    <span class="k">def</span> <span class="nf">atDistributions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">imObj</span><span class="p">,</span><span class="n">spName</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">colourList</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">lift</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c"># TODO(gns) - Delete this function, only used in an obscure test file</span>
+        <span class="c"># Amphitrite_2.1/test_files/121207_test_CalibrationOnDataGrid2.0.py</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">spName</span><span class="p">:</span>
+            <span class="n">spName</span> <span class="o">=</span> <span class="n">imObj</span><span class="o">.</span><span class="n">dataSlices</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">colourList</span><span class="p">:</span>
+            <span class="n">colourList</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">colourList</span>
+        
+        <span class="n">atdIntensities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">maxIntensity</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="n">spCharge</span> <span class="o">=</span> <span class="n">imObj</span><span class="o">.</span><span class="n">dataSlices</span><span class="p">[</span><span class="n">spName</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spCharge</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">intensities</span> <span class="o">=</span> <span class="n">dataSlice</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">yvals</span>
+            <span class="n">atdIntensities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intensities</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">atdIntensities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">maxIntensity</span><span class="p">:</span>
+                <span class="n">maxIntensity</span> <span class="o">=</span> <span class="n">atdIntensities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">charge</span><span class="p">,</span><span class="n">dataSlice</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spCharge</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;+</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span><span class="n">charge</span>
+            <span class="n">intensities</span> <span class="o">=</span> <span class="n">atdIntensities</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="p">(</span><span class="n">maxIntensity</span> <span class="o">*</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">lift</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dataSlice</span><span class="o">.</span><span class="n">atd</span><span class="o">.</span><span class="n">xvals</span><span class="p">,</span><span class="n">intensities</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s">&#39;upper left&#39;</span><span class="p">,</span><span class="n">prop</span><span class="o">=</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">legendFontSize</span><span class="p">))</span>   
+        </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Amphitrite 1.0.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Ganesh N. Sivalingam.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

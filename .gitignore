@@ -4,7 +4,6 @@ cdt.dll
 temp/*
 paths.py
 src/*
-docs/*
 *.wxg
 *.wxg*
 *~
