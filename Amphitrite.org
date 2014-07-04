@@ -148,6 +148,12 @@ But when you change that it has no effect on the simulation
 *** To Do Later
 **** This [[file:~/Dropbox/workspaces/Amphitrite_2.0/gui/ContourGui/CtrPlotPanel.py::def%20plotCcsVsMzPeakTops%20self%20ax%20species%20colour%20b][function]] should be in Im.Im()
 See [[file:~/Dropbox/workspaces/Amphitrite_2.0/gui/ContourGui/CtrPlotPanel.py::self%20settings%20imOb%20plotChargeStateContourPeaktops][here]] for example
+** Calibration
+*** You want to be able to add additional calibrants
+**** from csv or something
+**** or even a web form
++ it could create a calibrant file, which you could then import into the program
+*** Open from Atropos as well as independently
 ** General
 *** TODO Fix resizing plot display bug
 - You could alter the function of the zoom out button so that it takes lims you provide
