@@ -18,7 +18,10 @@ Spectrum deconvolution can be run on spectrum list text files using AtroposGui.e
 To run ImProcessor.exe which converts Synapt G1 data into Amphitrite data files:
 - You need to install cygwin (32 bit only), and make sure the cygwin bin directory (C:\cygwin\bin usually) is in your path.
 - You need to put cdt.dll into the Amphitrite folder (alongside the ImProcessor.exe file)
-  - This is distributed with Waters Driftscope software.
+  - This is distributed with Waters Driftscope v2.1, and currently will not work with versions of the file shipped with the Synapt G2 and newer.
+    If you are unsure about which version you have, the correct one is ~64 kb, where newer versions are larger (~74 kb)
+  - The default file location is C:\Driftscope\lib\cdt.ll
+
 
 *Do not move the exe files out of the Amphitrite folder or they will stop working*
 
