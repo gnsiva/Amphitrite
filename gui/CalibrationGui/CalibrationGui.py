@@ -19,8 +19,6 @@ import matplotlib.pyplot as plt
 import lib.utils as utils
 import collections, CalibrationGuiSettings
 import cPickle as pickle
-import paths as p
-
 
 class CalibrationGui(wx.Frame):
     def __init__(self, *args, **kwds):
