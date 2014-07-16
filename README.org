@@ -1,6 +1,5 @@
 * Amphitrite
 Program for processing ion mobility mass spectrometry (MS) and native MS data.
-
 ** Using Amphitrite (Windows)
 Windows binaries are available from mscalculator.com. They were compiled in Windows 7 64 bit, Windows 8 64 bit has also been tested and works fine.
 
@@ -42,6 +41,9 @@ On OS X, download the latest Python 2.x release and install it, then run the fol
 
 =pip install numpy scipy matplotlib wx=
 
+*** Adding the library to $PYTHONPATH
+**** Mac OS X
+I wrote a blog post with instructions for this, you can view it [[http://www.gnsiva.com/2014/07/mac-os-x-adding-project-to-pythonpath.html][here]].
 *** Running the programs
 Then to run one of the programs navigate to the program directory e.g.:
 
@@ -57,3 +59,5 @@ If you have any problems please let us know on the Google group:
 https://groups.google.com/forum/#!forum/amphitrite-im-ms
 
 Let us know your email address if you would like to be updated with new versions and bug fixes.
+
+

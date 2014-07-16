@@ -136,7 +136,7 @@ class MassSpectrumPanel():
         :parameter filename: Amphitrite data file (.a)
         """
         dataList = utils.unPickleAmphitriteProject(filename)
-        imOb = Im.Im()
+        imOb = Im()
         imOb.setDataFromAmphiExtract(dataList)
 
         import copy

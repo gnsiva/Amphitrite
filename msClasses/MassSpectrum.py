@@ -281,3 +281,21 @@ class MassSpectrum(tdd.TwoDdata):
         leftLim = mz - (fwhm/2 * leftMultiplier)
         rightLim = mz + (fwhm/2 * rightMultiplier)
         return [leftLim,rightLim]
+
+    def lineariseData(self,binWidth=0.5):
+        """Change the data to have an equally spaced x axis, using linear interpolation.
+        The function overwrites the existing self.data information.
+
+        :parameter binWidth: The space between x axis (m/z) data points
+        """
+        newXvals = np.arange(self.xvals[0],self.xvals[-1],binWidth)
+        newYvals = np.interp(newXvals,self.xvals,self.yvals)
+
+        self.xvals = newXvals
+        self.yvals = newYvals
+        self.rawyvals = newYvals
+        
+
+        
+        
+        

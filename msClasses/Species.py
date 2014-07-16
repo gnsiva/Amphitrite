@@ -171,6 +171,7 @@ class Species():
         values for mass and the charges to be analysed.
         """
         self.mass = mass
+        self.charges = zs
         pseudogPeaks = {}
 
         for z in zs:
@@ -204,7 +205,6 @@ class Species():
             height = self.zGauss.calculateAmplitude(xval)
             if height > self.zGauss.amplitude*(float(limit)/100):
                 charges.append(z)
-        print charges
         return charges
     
     def getTotalArea(self,xvals):
