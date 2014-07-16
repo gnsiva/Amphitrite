@@ -4,7 +4,7 @@ __author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com>"
 
 
 import TwoDdata as tdd
-import Species, Gaussian
+from msClasses import Species, Gaussian
 from scipy import optimize
 import time
 import numpy as np
@@ -79,7 +79,7 @@ class MassSpectrum(tdd.TwoDdata):
 
         # storing the fit
         for i,p in enumerate(self._splitPs(p1)):
-            tempSp = Species.Species(speciesNames[i])
+            tempSp = Species(speciesNames[i])
             if not oneFwhm:
                 peakFwhm = p[4]
             else:
@@ -131,7 +131,7 @@ class MassSpectrum(tdd.TwoDdata):
         """
         ps = self._splitPs(p0)
         combined = np.zeros(len(xvals))
-        zGauss = Gaussian.Gaussian()
+        zGauss = Gaussian()
 
         for i,p in enumerate(ps):
             zGauss.setParameters(p[1], p[2], p[3])

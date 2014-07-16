@@ -7,7 +7,7 @@ __author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
 import ImData
 import numpy as np
 import matplotlib.pyplot as plt
-from imClasses import Atd,CcsD
+from imClasses import Atd, CcsD
 from lib import utils
 
 
@@ -15,7 +15,7 @@ class DataSlice(ImData.ImData):
     
     def __init__(self):
         ImData.ImData.__init__(self)
-        self.atd = Atd.Atd()
+        self.atd = Atd()
         self.ccsAxisGrid = []
         self.ccsAxis = []
         self.charge = None
@@ -121,7 +121,7 @@ class DataSlice(ImData.ImData):
         :parameter calibrationObj: imClasses.Calibration() object
         :returns: imClasses.CcsD() object
         """
-        self.ccsd = CcsD.CcsD(calibrationObj,self)
+        self.ccsd = CcsD(calibrationObj,self)
 
     
     def getData(self):

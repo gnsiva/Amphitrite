@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import collections
 from lib import utils
-from imClasses.Calibration import Calibration
+from imClasses import Calibration
 
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
     

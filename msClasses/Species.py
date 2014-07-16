@@ -5,7 +5,7 @@ __author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com>"
 
 import numpy as np
 import lib.utils as utils
-import Gaussian
+from msClasses import Gaussian
 import collections
 from scipy import integrate
 
@@ -16,7 +16,7 @@ class Species():
     
     def __init__(self,name):
         self.name = name
-        self.zGauss = Gaussian.Gaussian()
+        self.zGauss = Gaussian()
         self.charges = []
         self.mass = 0.0
         self.calcMassError = 0.0

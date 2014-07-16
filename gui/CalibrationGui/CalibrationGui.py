@@ -234,7 +234,7 @@ class CalibrationGui(wx.Frame):
         calibrantName = self.settings.getCalNameCurrent()
         
         # Mass Spectrum panel
-        calibrant = Calibrant.Calibrant(calibrantName,self.settings.calPath)
+        calibrant = Calibrant(calibrantName,self.settings.calPath)
         calibrant.plotMsAndExtractionLimits(self.getAxMS())
         if autoAxesLimits:
             mzs = [utils.get_mz(calibrant.approxMass, z) for z in calibrant.charges]

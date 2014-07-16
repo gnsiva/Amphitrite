@@ -2,7 +2,6 @@
 
 __author__ = "Ganesh N. Sivalingam <g.n.sivalingam@gmail.com"
 
-import Im,Atd
 from msClasses import TwoDdata
 import numpy as np
 from lib import utils
@@ -14,6 +13,8 @@ class CcsD(TwoDdata):
     """
     def __init__(self,calibrationOb,dataSlice):
         # TODO(gns) - Shouldn't you call the TwoDdata init here?
+        TwoDdata.__init__(self)
+
         self.xvals = None
         self.yvals = None
 

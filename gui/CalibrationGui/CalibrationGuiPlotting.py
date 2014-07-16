@@ -14,7 +14,7 @@ import wx
 matplotlib.rc('xtick', labelsize=8) 
 matplotlib.rc('ytick', labelsize=8) 
 
-import imClasses.Calibration as Calibration
+from imClasses import Calibration
 
 class CalGuiFigure():
     """
@@ -80,7 +80,7 @@ class CalGuiFigure():
         gas = self.settings.getGas()
         waveVelocity = self.settings.getWaveVelocity()
 
-        self.calibration = Calibration.Calibration()
+        self.calibration = Calibration()
         # This checks to make sure there are at least 2 peaks which can be used
         # in the least squared fitting (2 charges or multiple proteins)
         n = 0
