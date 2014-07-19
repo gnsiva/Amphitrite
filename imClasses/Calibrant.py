@@ -6,13 +6,11 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 import numpy as np
 # from imClasses.Im import Im
-# from msClasses.MassSpectrum import MassSpectrum
 # from msClasses.Species import Species
 
 from imClasses import Im
-from msClasses import MassSpectrum, Species
+from msClasses import Species
 
-im = Im()
 
 import lib.utils as utils
 import collections

@@ -84,6 +84,19 @@ class TwoDdata():
         self.yvals = self.rawyvals.copy()
         self._normalisePreset()
 
+    def limitAxisX(self,lims):
+        """Reduce the range of values in the dataset. Reducing the xlimits here
+        automatically reduces the yaxis.
+
+        :parameter lims: List of limits in the form [lower,upper]
+        """
+        lowerI = utils.closest(lims[0],self.xvals)
+        higherI = utils.closest(lims[1],self.xvals)
+
+        self.xvals = self.xvals[lowerI:higherI]
+        self.yvals = self.yvals[lowerI:higherI]
+        self.rawyvals = self.rawyvals[lowerI:higherI]
+
     def getAxesWithoutNans(self):
         """The CCS calibration can cause some xvals
         to become NaNs, this function returns x and yvals

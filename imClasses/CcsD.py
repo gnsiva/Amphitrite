@@ -21,7 +21,7 @@ class CcsD(TwoDdata):
         self.rawyvals = None
         self.normalisationType = 'bpi'
         
-        self.createCcsD(calibrationOb,dataSlice)
+        self._createCcsD(calibrationOb,dataSlice)
 
     def _createCcsD(self,calibrationOb,dataSlice):
         """Generate a CCS distribution from a DataSlice(), updates self.xvals and self.yvals.

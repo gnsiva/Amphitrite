@@ -10,3 +10,4 @@ src/*
 .DS_Store
 *.emacs.desktop
 *.html
+classes/*

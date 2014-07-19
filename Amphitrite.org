@@ -43,6 +43,7 @@ Ask if reloading or entering a different protein (i.e. the assignment listctrl n
 **** TODO There is a bug in the peak finding making it take much longer (can't recreate on linux)
 This is definitely happening with amphi files
 **** TODO Radiobox for spectrum labels to be mass or species name
+**** TODO Save afit - warning dialog if simulation hasn't been completed
 *** Got a plan
 *** Completed
 **** DONE Add please wait bar to Atropos fit button

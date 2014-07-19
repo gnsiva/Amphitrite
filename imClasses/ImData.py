@@ -64,10 +64,11 @@ class ImData():
 
     # limiting axes
     def limitAxisX(self,lims):
-        """Set limits for the m/z axis.
+        """Set limits for the m/z axis. 
 
         :parameter lims: list in format of [lower,upper] limits
         """
+        lowerI = u.closest(lims[0],self.xvals)
         self.xlims = [lims[0],lims[1]]
     def limitAxisY(self,lims):
         """Set limits for the arrival time axis.

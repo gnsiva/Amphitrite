@@ -260,7 +260,7 @@ class ContourGui(wx.Frame):
             # deal with data
             dataList = utils.unPickleAmphitriteProject(path)
             if dataList:
-                imOb = Im.Im()
+                imOb = Im()
                 imOb.setDataFromAmphiExtract(dataList)
                 imOb.normalisationBpi()
                 imOb.generateMassSpectrum()
