@@ -226,8 +226,6 @@ class Species():
             intensity += yvals[i]
         return intensity
         
-        
-    
     def getPeakLimits(self,z,leftMultiplier=1.0,rightMultiplier=1.0):
         """Returns lower and upper m/z limits for charge state peaks
         using self.peakFwhm as the original value, and using multipliers
@@ -237,3 +235,14 @@ class Species():
         left = mz - (self.peakFwhm/2)*leftMultiplier
         right = mz + (self.peakFwhm/2)*rightMultiplier
         return [left,right]
+
+    def printSettings(self):
+        print self.name
+        print '================'
+        print "Mass = %f" %self.mass
+        print "FWHM (peak) = %f" %self.peakFwhm
+        print "Amplitude - (charge state Gaussian) = %f" %self.zGauss.amplitude
+        print "Mean/centre - (charge state Gaussian) = %f" %self.zGauss.centre
+        print "FWHM - (charge state Gaussian) = %f" %self.zGauss.fwhm
+        print '================'
+

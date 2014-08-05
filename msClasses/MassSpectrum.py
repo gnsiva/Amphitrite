@@ -192,8 +192,8 @@ class MassSpectrum(tdd.TwoDdata):
 
     def plotAllComponents(self,ax,xvals,yvals,liftPercentage=10,speciesNames=0,colourList=0,traceLabels='mass',labelSize='small',**kwargs):
         """Plot mass spectrum, each of the deconvoluted elements and the simulated spectrum
-        traceLabels can be 'mass' or 'name', with name the Species name is printed on the
-        right tail of the trace.
+        traceLabels can be 'mass' (deconvoluted), 'original-mass' (mass from peak picking) or 'name', 
+        with name the Species name is printed on the right tail of the trace.
         Species names allow you to change the order of the list
         All matplotlib.pyplot.plot() arguments are allowed in **kwargs.
         """
@@ -219,6 +219,10 @@ class MassSpectrum(tdd.TwoDdata):
                 ax.annotate('%.2f Da' %self.simulatedSpecies[name].mass,xy=(xleft,(j*lift+ lift/2.5)),size=labelSize,horizontalalignment='right')
             elif traceLabels == 'name':
                 ax.annotate('%s' %name,xy=(xleft,(j*lift+ lift/2.5)),size=labelSize,horizontalalignment='right')
+            elif traceLabels == 'original-mass':
+                ax.annotate('%.2f Da' %self.species[name].mass,xy=(xleft,(j*lift+ lift/2.5)),size=labelSize,horizontalalignment='right')
+            else:
+                print 'Unknown traceLabels parameter passed to plotAllComponents'
             j += 1
 
         # plotting combined

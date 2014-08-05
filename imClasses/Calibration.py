@@ -16,11 +16,11 @@ class Calibration():
     
     def __init__(self):
         self.calibrants = collections.OrderedDict()
-        self.coefficientA = 0.0
-        self.coefficientB = 0.0
-        self.rSquared = 1.0
-        self.waveVelocity = 0.0
-        self.gas = ''
+        self.coefficientA = None
+        self.coefficientB = None
+        self.rSquared = None
+        self.waveVelocity = None
+        self.gas = None
     #===========================================================================
     # Pickling
     #===========================================================================
@@ -36,7 +36,19 @@ class Calibration():
         c.waveVelocity = self.waveVelocity
         c.gas = self.gas        
         pickle.dump(c,open(filename,'wb'))
-    
+
+    def testAfterUnpickling(self):
+        try:
+            float(self.coefficientA)
+            float(self.coefficientB)
+            float(self.rSquared)
+            float(self.waveVelocity)
+            str(self.gas)
+            return True
+        except:
+            print 'Calibration object broken or incomplete'
+            return False
+        
     ###########################################################################
     # Calibration set up functions
     ###########################################################################     
