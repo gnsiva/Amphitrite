@@ -151,6 +151,7 @@ class ImData():
         :returns: msClasses.MassSpectrum() object
         """
         # TODO(gns) - make the same function for ATDs
+        # TODO(gns) - need to implement keepExisting
         self.generateMassSpectrum()
         return self.massSpectrum
 

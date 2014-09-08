@@ -165,7 +165,7 @@ class IesSettings():
         """
         for fn in filenames:
             if not fn in self.loadedFiles.keys():
-                imOb = Im.Im()
+                imOb = Im()
                 imOb.loadFolderAuto(fn)              
                 ms = imOb.getMassSpectrum()
                 self.massSpectra[fn] = ms
