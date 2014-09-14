@@ -173,6 +173,7 @@ See [[file:~/Dropbox/workspaces/Amphitrite_2.0/gui/ContourGui/CtrPlotPanel.py::s
 **** or even a web form
 + it could create a calibrant file, which you could then import into the program
 *** Open from Atropos as well as independently
+*** Update calibration function, separate wave velocity values for IM and transfer cells
 ** General
 *** TODO Fix resizing plot display bug
 - You could alter the function of the zoom out button so that it takes lims you provide
