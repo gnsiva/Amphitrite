@@ -173,6 +173,6 @@ class DataSlice(ImData.ImData):
         if not 'label' in kwargs:
             kwargs['label'] = '+%d' %self.charge
         ax.plot(self.ccsAxis,ccsLine,**kwargs)
-        ax.xlabel('CCS ($\AA$)')
-        ax.ylabel('Intensity')
+        ax.set_xlabel('CCS ($\AA$)')
+        ax.set_ylabel('Intensity')
 
