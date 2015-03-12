@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from imClasses import Atd, CcsD
 from lib import utils
-
+import copy
 
 class DataSlice(ImData.ImData):
     
@@ -46,6 +46,13 @@ class DataSlice(ImData.ImData):
         """
         index = self.atd.yvals.argmax()
         return self.atd.xvals[index]
+
+    def getAtdObject(self):
+        """Get an arrival time distribution object (sliceAtd()) for the dataslice.
+
+        :returns: Atd()
+        """
+        return copy.deepcopy(self.atd)
 
     def getMsApexI(self):
         """Get index of the m/z axis for the point of highest intensity.
@@ -114,6 +121,9 @@ class DataSlice(ImData.ImData):
         ccsMatrix, mzs, ccss = self.getCcsMatrix(calibrationObj)
         ccsLine = np.sum(ccsMatrix, axis=1)
         return ccsLine
+
+    def getCcsDObject(self,calibrationObj):
+        return CcsD(calibrationObj,self)
 
     def generateCcsDistribution(self,calibrationObj):
         """Create a CcsD() out of this object's data.
