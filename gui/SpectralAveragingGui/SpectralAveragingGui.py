@@ -253,14 +253,13 @@ class SpectralAveragingGui(wx.Frame):
     def eventButtonOpenAmphiFiles(self, event):  # wxGlade: SpectralAveragingGui.<event_handler>
         """Open amphitrite data files.
         """
-        # TODO(gns) - This needs to change to the new single file based system
-        home = os.path.expanduser('~')
-        dlg = MDD.MultiDirDialog(self, title="Choose a directory:",
-                                 defaultPath=os.path.join(home,
-                                           '/Dropbox/workspaces/Amphitrite_2.0/gui/tempData'))
+        dlg = wx.FileDialog(self,message="Choose Amphitrite file(s)",
+                            wildcard="Amphitrite IM file (*.a)|*.a",
+                            style=wx.MULTIPLE)
+
         if dlg.ShowModal() == wx.ID_OK:
             paths = dlg.GetPaths()
-            self.listCtrlFiles.addFiles(paths)        
+            self.listCtrlFiles.addFiles(paths)
         else:
             print 'multidir dialog error'
         dlg.Destroy()

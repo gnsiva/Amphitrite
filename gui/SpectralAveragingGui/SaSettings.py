@@ -97,7 +97,7 @@ class SaSettings():
         for fn in filenames:
             if not fn in self.loadedFiles.keys():
                 print fn 
-                imOb = Im.Im()
+                imOb = Im()
                 imOb.loadFolderAuto(fn)              
                 imOb.generateMassSpectrum()
                 imOb.massSpectrum.normalisationBpi()
